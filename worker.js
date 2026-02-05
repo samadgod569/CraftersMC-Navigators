@@ -23,7 +23,7 @@ export default {
     const response = await fetch(
       "https://api.craftersmc.net/v1/skyblock/bazaar/items",
       {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           "X-Api-Key": apiKey,
