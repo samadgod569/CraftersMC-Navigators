@@ -10,10 +10,7 @@ export default {
       );
     }
 
-    const apiKey =
-      env.CMC_API_KEY ||
-      env.cmc_api_key ||
-      env["cmc-api-key"];
+    const apiKey = "ccb8f8cd-6d3e-40c5-8a77-c9a928d3aa94";
 
     if (!apiKey) {
       return new Response(
