@@ -10,14 +10,7 @@ export default {
 
     // Get values from query params (supports multiple)
     const values = url.searchParams.getAll("values");
-    if (values.length === 0) {
-      return new Response("Missing values", { status: 400 });
-    }
-
-    // Build request body
-    const body = JSON.stringify({
-      values: values,
-    });
+    
 
     // Forward request
     const response = await fetch(
@@ -28,7 +21,7 @@ export default {
           "Content-Type": "application/json",
           "X-Api-Key": apiKey,
         },
-        body,
+        values: `[${values}]`
       }
     );
 
