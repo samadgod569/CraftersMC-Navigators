@@ -3,6 +3,7 @@ export default {
     const url = new URL(request.url);
 
     const itemId = url.searchParams.get("itemId");
+    const apiKey = url.searchParams.get("api");
     if (!itemId) {
       return new Response(
         JSON.stringify({ error: "Missing itemId" }),
@@ -10,7 +11,7 @@ export default {
       );
     }
 
-    const apiKey = "ccb8f8cd-6d3e-40c5-8a77-c9a928d3aa94";
+    
 
     if (!apiKey) {
       return new Response(
