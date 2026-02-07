@@ -3,37 +3,47 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    // -------------------------
-    // /api/ai → OpenRouter AI
-    // -------------------------
+    // =====================
+    // /api/ai?q=QUESTION
+    // =====================
     if (pathname === "/api/ai") {
       const question = url.searchParams.get("q");
 
       if (!question) {
         return new Response(
-          JSON.stringify({ error: "Missing query param: q" }),
+          JSON.stringify({ error: "Missing q" }),
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
-const router = env.FILES.get("CMC");
-      const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${router}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "CraftersMC Navigators",
-          "X-Title": "CraftersMC Navigators"
-        },
-        body: JSON.stringify({
-          model: "tngtech/deepseek-r1t2-chimera:free",
-          messages: [
-            {
-              role: "user",
-              content: question
-            }
-          ]
-        })
-      });
+
+      // 🔑 Get API key from KV / FILES
+      const apiKey = await env.FILES.get("CMC");
+
+      if (!apiKey) {
+        return new Response(
+          JSON.stringify({ error: "Missing AI API key (FILES: CMC)" }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      const aiRes = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "CraftersMC Navigators",
+            "X-Title": "CraftersMC Navigators"
+          },
+          body: JSON.stringify({
+            model: "tngtech/deepseek-r1t2-chimera:free",
+            messages: [
+              { role: "user", content: question }
+            ]
+          })
+        }
+      );
 
       return new Response(aiRes.body, {
         status: aiRes.status,
@@ -45,9 +55,9 @@ const router = env.FILES.get("CMC");
       });
     }
 
-    // ------------------------------------------------
-    // Everything else → Bazaar API (unchanged behavior)
-    // ------------------------------------------------
+    // =====================
+    // EXISTING BAZAAR LOGIC
+    // =====================
     const itemId = url.searchParams.get("itemId");
     const apiKey = url.searchParams.get("api");
 
@@ -60,7 +70,7 @@ const router = env.FILES.get("CMC");
 
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: "Missing API key in env" }),
+        JSON.stringify({ error: "Missing API key in query (?api=)" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
