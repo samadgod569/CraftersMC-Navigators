@@ -16,17 +16,33 @@ export default {
         );
       }
 
-      // 🔑 Get API key from KV / FILES
-      const apiKey = await env.FILES.get("CMC");
-
-      if (!apiKey) {
+      // ---- SAFELY get API key from KV ----
+      if (!env.FILES) {
         return new Response(
-          JSON.stringify({ error: "Missing AI API key (FILES: CMC)" }),
+          JSON.stringify({ error: "FILES binding missing" }),
           { status: 500, headers: { "Content-Type": "application/json" } }
         );
       }
 
-      const aiRes = await fetch(
+      let apiKey;
+      try {
+        apiKey = await env.FILES.get("CMC");
+      } catch (e) {
+        return new Response(
+          JSON.stringify({ error: "Failed to read FILES KV" }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      if (!apiKey) {
+        return new Response(
+          JSON.stringify({ error: "CMC key not found in FILES" }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      // ---- OpenRouter fetch ----
+      const res = await fetch(
         "https://openrouter.ai/api/v1/chat/completions",
         {
           method: "POST",
@@ -37,16 +53,17 @@ export default {
             "X-Title": "CraftersMC Navigators"
           },
           body: JSON.stringify({
-            model: "tngtech/deepseek-r1t2-chimera:free",
+            model: "openai/gpt-oss-20b:free",
             messages: [
               { role: "user", content: question }
-            ]
+            ],
+            reasoning: { enabled: true }
           })
         }
       );
 
-      return new Response(aiRes.body, {
-        status: aiRes.status,
+      return new Response(res.body, {
+        status: res.status,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
