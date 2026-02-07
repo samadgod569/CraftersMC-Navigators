@@ -1,17 +1,62 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const pathname = url.pathname;
 
+    // -------------------------
+    // /api/ai → OpenRouter AI
+    // -------------------------
+    if (pathname === "/api/ai") {
+      const question = url.searchParams.get("q");
+
+      if (!question) {
+        return new Response(
+          JSON.stringify({ error: "Missing query param: q" }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+const router = env.FILES.get("CMC");
+      const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${router}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "CraftersMC Navigators",
+          "X-Title": "CraftersMC Navigators"
+        },
+        body: JSON.stringify({
+          model: "tngtech/deepseek-r1t2-chimera:free",
+          messages: [
+            {
+              role: "user",
+              content: question
+            }
+          ]
+        })
+      });
+
+      return new Response(aiRes.body, {
+        status: aiRes.status,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "no-store"
+        }
+      });
+    }
+
+    // ------------------------------------------------
+    // Everything else → Bazaar API (unchanged behavior)
+    // ------------------------------------------------
     const itemId = url.searchParams.get("itemId");
     const apiKey = url.searchParams.get("api");
+
     if (!itemId) {
       return new Response(
         JSON.stringify({ error: "Missing itemId" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
-
-    
 
     if (!apiKey) {
       return new Response(
@@ -24,8 +69,8 @@ export default {
       `https://api.craftersmc.net/v1/skyblock/bazaar/${itemId}/details`,
       {
         headers: {
-          "X-API-Key": apiKey,
-        },
+          "X-API-Key": apiKey
+        }
       }
     );
 
@@ -34,8 +79,8 @@ export default {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Cache-Control": "public, max-age=30",
-      },
+        "Cache-Control": "public, max-age=30"
+      }
     });
-  },
+  }
 };
