@@ -76,7 +76,7 @@ export default {
     // EXISTING BAZAAR LOGIC
     // =====================
     const itemId = url.searchParams.get("itemId");
-    const apiKey = url.searchParams.get("api");
+    const apiKey = await env.FILES.get("CMC-API");
 
     if (!itemId) {
       return new Response(
