@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
+  <!-- Code-Mon verification meta -->
+  <meta name="Code-Mon" content="cm_uabfbduxbsbwksjdbdbd">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code-Mon Verification</title>
+
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #020617;
+      padding: 24px;
+      border-radius: 12px;
+      width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>🔐 Code-Mon Verification</h1>
+    <p>Paste the token provided by Code-Mon:</p>
+
+    <input
+      id="tokenInput"
+      placeholder="cm_xxxxxxxxxxxxxxxxx"
+      autocomplete="off"
+    />
+
+    <button onclick="applyToken()">Apply Token</button>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    function applyToken() {
+      const token = document.getElementById("tokenInput").value.trim();
+
+      if (!token) {
+        alert("Token required");
+        return;
+      }
+
+      // Save token so reload doesn't remove it
+      localStorage.setItem("codemon_token", token);
+
+      // Set meta tag for verification
+      document
+        .getElementById("codemon-meta")
+        .setAttribute("content", token);
+
+      document.getElementById("status").textContent =
+        "Token applied. You can now verify ownership.";
+    }
+
+    // Restore token on reload
+    const saved = localStorage.getItem("codemon_token");
+    if (saved) {
+      document.getElementById("tokenInput").value = saved;
+      document
+        .getElementById("codemon-meta")
+        .setAttribute("content", saved);
+      document.getElementById("status").textContent =
+        "Token restored from storage.";
+    }
+  </script>
+
+</body>
+</html>
