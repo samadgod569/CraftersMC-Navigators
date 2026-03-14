@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home — NyxoAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #09090d;
+      --surface:      #0e0e14;
+      --card:         #121218;
+      --card-border:  #1d1d27;
+      --card-hover:   #161620;
+      --text:         #ededf4;
+      --sub:          #8c8ca4;
+      --muted:        #4e4e65;
+      --accent:       #7b8bff;
+      --accent-dim:   rgba(123,139,255,.11);
+      --accent-glow:  rgba(123,139,255,.20);
+      --green:        #4ade80;
+      --green-dim:    rgba(74,222,128,.10);
+      --divider:      rgba(255,255,255,.054);
+      --shadow-xl:    0 32px 80px rgba(0,0,0,.65);
+      --shadow-md:    0 8px 32px rgba(0,0,0,.38);
+      --r:            16px;
+      --r-sm:         10px;
+    }
+
+    html[data-theme="light"] {
+      --bg:           #f4f4fa;
+      --surface:      #fafaff;
+      --card:         #ffffff;
+      --card-border:  #e0e0ec;
+      --card-hover:   #f0f0f9;
+      --text:         #0b0b18;
+      --sub:          #5a5a76;
+      --muted:        #9494ae;
+      --accent:       #4d5ee8;
+      --accent-dim:   rgba(77,94,232,.09);
+      --accent-glow:  rgba(77,94,232,.16);
+      --green:        #16a34a;
+      --green-dim:    rgba(22,163,74,.09);
+      --divider:      rgba(0,0,0,.07);
+      --shadow-xl:    0 32px 80px rgba(0,0,0,.09);
+      --shadow-md:    0 8px 32px rgba(0,0,0,.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Geist', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 10% 5%,  rgba(123,139,255,.05) 0%, transparent 68%),
+        radial-gradient(ellipse 45% 50% at 90% 92%, rgba(100,76,255,.035) 0%, transparent 68%);
+    }
+
+    /* ════════════════════════════════════════
+       TOPBAR
+    ════════════════════════════════════════ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 44px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    html[data-theme="dark"]  .topbar { background: rgba(9,9,13,.85); backdrop-filter: blur(22px) saturate(1.5); }
+    html[data-theme="light"] .topbar { background: rgba(244,244,250,.88); backdrop-filter: blur(22px) saturate(1.5); }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .logo-img {
+      width: 27px;
+      height: 27px;
+      object-fit: contain;
+      border-radius: 7px;
+    }
+
+    .logo-text {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      color: var(--text);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    /* ── Perk pills ── */
+    .perks {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 10px;
+    }
+
+    .perk {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px 5px 9px;
+      border-radius: 40px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      white-space: nowrap;
+      cursor: default;
+      transition: border-color .16s, background .16s;
+    }
+
+    .perk:hover { border-color: var(--accent); background: var(--accent-dim); }
+
+    .perk-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--green-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .perk-icon svg {
+      width: 10px;
+      height: 10px;
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .perk-text {
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--sub);
+      letter-spacing: .005em;
+    }
+
+    .perk-text strong {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: .74rem;
+      color: var(--text);
+    }
+
+    /* ── Theme btn ── */
+    .theme-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .16s, border-color .16s, color .16s;
+    }
+
+    .theme-btn:hover { background: var(--card); border-color: var(--accent); color: var(--text); }
+    .theme-btn svg   { width: 17px; height: 17px; }
+
+    /* ── Avatar ── */
+    .avatar-wrap { position: relative; }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--card-border);
+      background: var(--card);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--accent);
+      transition: border-color .16s, box-shadow .16s;
+    }
+
+    .avatar-btn:hover  { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+    .avatar-btn img    { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Dropdown ── */
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 210px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(-10px) scale(.96);
+      transform-origin: top right;
+      pointer-events: none;
+      visibility: hidden;
+      transition:
+        opacity   .24s cubic-bezier(.16,1,.3,1),
+        transform .24s cubic-bezier(.16,1,.3,1),
+        visibility 0s   linear .24s;
+    }
+
+    .dropdown.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+      visibility: visible;
+      transition:
+        opacity   .24s cubic-bezier(.16,1,.3,1),
+        transform .24s cubic-bezier(.16,1,.3,1),
+        visibility 0s   linear 0s;
+    }
+
+    .dropdown.open .d-item { animation: dSlide .28s cubic-bezier(.16,1,.3,1) both; }
+    .dropdown.open .d-item:nth-child(1) { animation-delay: .04s; }
+    .dropdown.open .d-item:nth-child(2) { animation-delay: .09s; }
+    .dropdown.open .d-item:nth-child(3) { animation-delay: .14s; }
+
+    @keyframes dSlide {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .d-head {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .d-head-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .d-head-role { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+    .d-list { padding: 5px 0; }
+
+    .d-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 16px;
+      font-size: .855rem;
+      color: var(--sub);
+      cursor: pointer;
+      transition: background .13s, color .13s;
+    }
+
+    .d-item:hover { background: var(--accent-dim); color: var(--accent); }
+
+    .d-item svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .d-item.danger { color: #e86060; }
+    .d-item.danger:hover { background: rgba(232,96,96,.09); color: #e86060; }
+
+    .d-sep { height: 1px; background: var(--divider); margin: 3px 0; }
+
+    /* ════════════════════════════════════════
+       MAIN
+    ════════════════════════════════════════ */
+    .main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      max-width: 1020px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 64px 36px 80px;
+    }
+
+    .eyebrow {
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeUp .48s .06s ease forwards;
+    }
+
+    .page-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.1rem, 4.5vw, 3.1rem);
+      letter-spacing: -.045em;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeUp .48s .13s ease forwards;
+    }
+
+    .page-title .hi { color: var(--accent); }
+
+    .page-sub {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.72;
+      max-width: 380px;
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp .48s .20s ease forwards;
+    }
+
+    /* ── Cards ── */
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(295px, 1fr));
+      gap: 18px;
+      margin-bottom: 72px;
+    }
+
+    .nav-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp .5s ease forwards;
+      transition: border-color .22s, transform .22s, box-shadow .22s;
+    }
+
+    .nav-card:nth-child(1) { animation-delay: .28s; }
+    .nav-card:nth-child(2) { animation-delay: .38s; }
+
+    .nav-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md), 0 0 40px var(--accent-glow);
+    }
+
+    /* Card image */
+    .c-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 8.5;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .c-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+
+    .nav-card:hover .c-thumb img { transform: scale(1.05); }
+
+    .c-thumb-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, var(--card) 0%, transparent 58%);
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    html[data-theme="light"] .c-thumb-fade { opacity: .3; }
+
+    /* Card body */
+    .c-body {
+      padding: 22px 24px 26px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .c-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .c-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--accent);
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .c-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -.025em;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+
+    .c-desc {
+      font-size: .855rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .c-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 18px;
+      font-size: .76rem;
+      font-weight: 500;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .c-cta svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform .18s;
+    }
+
+    .nav-card:hover .c-cta svg { transform: translateX(4px); }
+
+    /* ── Ticker ── */
+    .ticker-label {
+      font-size: .69rem;
+      font-weight: 500;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp .48s .52s ease forwards;
+    }
+
+    .ticker-outer {
+      position: relative;
+      overflow: hidden;
+      border-top:    1px solid var(--divider);
+      border-bottom: 1px solid var(--divider);
+      padding: 18px 0;
+      opacity: 0;
+      animation: fadeUp .48s .58s ease forwards;
+    }
+
+    .ticker-outer::before,
+    .ticker-outer::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    html[data-theme="dark"]  .ticker-outer::before { left:  0; background: linear-gradient(90deg,  #09090d, transparent); }
+    html[data-theme="dark"]  .ticker-outer::after  { right: 0; background: linear-gradient(-90deg, #09090d, transparent); }
+    html[data-theme="light"] .ticker-outer::before { left:  0; background: linear-gradient(90deg,  #f4f4fa, transparent); }
+    html[data-theme="light"] .ticker-outer::after  { right: 0; background: linear-gradient(-90deg, #f4f4fa, transparent); }
+
+    .ticker-track {
+      display: flex;
+      gap: 10px;
+      width: max-content;
+      animation: scroll 40s linear infinite;
+    }
+
+    .ticker-track:hover { animation-play-state: paused; }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 16px;
+      border-radius: 40px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      white-space: nowrap;
+      cursor: default;
+      transition: border-color .16s, background .16s;
+    }
+
+    .chip:hover { border-color: var(--accent); background: var(--accent-dim); }
+
+    .chip-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .chip-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .81rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      color: var(--text);
+    }
+
+    .chip-by {
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--divider);
+    }
+
+    .footer-top {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 48px 36px 36px;
+      display: grid;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .footer-brand-col .f-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand-col .f-logo img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .footer-brand-col .f-logo span {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -.025em;
+      color: var(--text);
+    }
+
+    .footer-brand-col p {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 230px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 14px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: .82rem;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color .14s;
+    }
+
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--divider);
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-bottom span {
+      font-size: .76rem;
+      color: var(--muted);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-bottom-links a {
+      font-size: .76rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .14s;
+    }
+
+    .footer-bottom-links a:hover { color: var(--text); }
+
+    /* ════════════════════════════════════════
+       ANIMATIONS
+    ════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .perks { display: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar    { padding: 0 20px; }
+      .main      { padding: 44px 18px 60px; }
+      .footer-top { padding: 36px 20px 28px; grid-template-columns: 1fr; gap: 28px; }
+      .footer-bottom { padding: 16px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════
+       TOPBAR
+  ═══════════════════════════ -->
+  <header class="topbar">
+
+    <a class="logo" href="#">
+      <img class="logo-img" src="img/icon.png" alt="NyxoAI" onerror="this.style.display='none'">
+      <span class="logo-text">NyxoAI</span>
+    </a>
+
+    <div class="nav-right">
+
+      <!-- Perk pills -->
+      <div class="perks">
+        <div class="perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="perk-text"><strong>Free</strong> 500 tokens</span>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="perk-text">No rate limit</span>
+        </div>
+        <div class="perk">
+          <div class="perk-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="perk-text">Powerful models</span>
+        </div>
+      </div>
+
+      <!-- Theme toggle -->
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+          <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+
+      <!-- Avatar + dropdown -->
+      <div class="avatar-wrap">
+        <button class="avatar-btn" id="avatarBtn" onclick="toggleDrop(event)" title="Account"></button>
+
+        <div class="dropdown" id="dropdown">
+          <div class="d-head">
+            <div class="d-head-name" id="dropName">User</div>
+            <div class="d-head-role">NyxoAI account</div>
+          </div>
+          <div class="d-list">
+            <div class="d-item" onclick="goSettings()">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              Settings
+            </div>
+            <div class="d-sep"></div>
+            <div class="d-item danger" onclick="doLogout()">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════
+       MAIN
+  ═══════════════════════════ -->
+  <main class="main">
+
+    <p class="eyebrow">Dashboard</p>
+    <h1 class="page-title">Welcome back, <span class="hi" id="greetName">there</span>.</h1>
+    <p class="page-sub">Pick up where you left off or discover what NyxoAI has ready for you today.</p>
+
+    <!-- Cards -->
+    <div class="cards-row">
+
+      <!-- Explore Models -->
+      <a class="nav-card" href="models.html">
+        <div class="c-thumb">
+          <img src="img/model.png" alt="Explore Models">
+          <div class="c-thumb-fade"></div>
+        </div>
+        <div class="c-body">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <div class="c-title">Explore Models</div>
+          <div class="c-desc">Browse the full NyxoAI model catalogue. Compare capabilities, context windows, and pricing at a glance.</div>
+          <div class="c-cta">
+            Open catalogue
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </div>
+      </a>
+
+      <!-- API Key & Billing -->
+      <a class="nav-card" href="billing.html">
+        <div class="c-thumb">
+          <img src="img/api-key.png" alt="API Key and Billing">
+          <div class="c-thumb-fade"></div>
+        </div>
+        <div class="c-body">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <div class="c-title">API Key &amp; Billing</div>
+          <div class="c-desc">Manage your API keys, review usage, update payment details, and access your full billing history.</div>
+          <div class="c-cta">
+            Manage account
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Ticker -->
+    <p class="ticker-label">Top models available now</p>
+    <div class="ticker-outer">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════
+       FOOTER
+  ═══════════════════════════ -->
+  <footer>
+    <div class="footer-top">
+
+      <div class="footer-brand-col">
+        <a class="f-logo" href="#">
+          <img src="img/icon.png" alt="NyxoAI" onerror="this.style.display='none'">
+          <span>NyxoAI</span>
+        </a>
+        <p>Powerful AI models, one unified API. Built for developers who move fast.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#">Models</a>
+        <a href="#">Pricing</a>
+        <a href="#">API Reference</a>
+        <a href="#">Changelog</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="#">Documentation</a>
+        <a href="#">Guides</a>
+        <a href="#">Status</a>
+        <a href="#">Support</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span id="fYear"></span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════
+       SCRIPT
+  ═══════════════════════════ -->
+  <script>
+    /* ── Theme (runs before paint) ── */
+    (function () {
+      const t = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      applyIcons(t);
+    })();
+
+    function applyIcons(t) {
+      document.getElementById('iconMoon').style.display = t === 'dark'  ? '' : 'none';
+      document.getElementById('iconSun').style.display  = t === 'light' ? '' : 'none';
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      applyIcons(next);
+    }
+
+    /* ── Username ── */
+    const username = (localStorage.getItem('username') || '').trim();
+    document.getElementById('greetName').textContent = username || 'there';
+    document.getElementById('dropName').textContent  = username || 'User';
+
+    /* ── Avatar ── */
+    (function () {
+      const btn  = document.getElementById('avatarBtn');
+      const b64  = (localStorage.getItem('base64') || '').trim();
+      const init = (username || 'U').charAt(0).toUpperCase();
+
+      if (b64 && b64.startsWith('data:image')) {
+        const img   = document.createElement('img');
+        img.src     = b64;
+        img.alt     = username;
+        img.onerror = () => { btn.innerHTML = ''; btn.textContent = init; };
+        btn.appendChild(img);
+      } else {
+        btn.textContent = init;
+      }
+    })();
+
+    /* ── Dropdown ── */
+    function toggleDrop(e) {
+      e.stopPropagation();
+      document.getElementById('dropdown').classList.toggle('open');
+    }
+
+    document.addEventListener('click', () => {
+      document.getElementById('dropdown').classList.remove('open');
+    });
+
+    document.getElementById('dropdown').addEventListener('click', e => e.stopPropagation());
+
+    function goSettings() { window.location.href = 'settings.html'; }
+
+    function doLogout() {
+      ['username', 'password', 'base64'].forEach(k => localStorage.removeItem(k));
+      window.location.href = 'login.html';
+    }
+
+    /* ── Ticker — only GPT, Claude, Gemini, DeepSeek ── */
+    const MODELS = [
+      { name: 'GPT-5.4',           by: 'OpenAI',    icon: 'img/gpt.png'      },
+      { name: 'Claude Opus 4.6',   by: 'Anthropic', icon: 'img/claude.png'   },
+      { name: 'Gemini 2.5 Pro',    by: 'Google',    icon: 'img/gemini.png'   },
+      { name: 'DeepSeek R2',       by: 'DeepSeek',  icon: 'img/deepseek.png' },
+      { name: 'GPT-4o',            by: 'OpenAI',    icon: 'img/gpt.png'      },
+      { name: 'Claude Sonnet 4.6', by: 'Anthropic', icon: 'img/claude.png'   },
+      { name: 'Gemini Flash 2.0',  by: 'Google',    icon: 'img/gemini.png'   },
+      { name: 'DeepSeek V3',       by: 'DeepSeek',  icon: 'img/deepseek.png' },
+      { name: 'GPT-4.5',           by: 'OpenAI',    icon: 'img/gpt.png'      },
+      { name: 'Claude Haiku 4.5',  by: 'Anthropic', icon: 'img/claude.png'   },
+      { name: 'Gemini 2.0 Pro',    by: 'Google',    icon: 'img/gemini.png'   },
+      { name: 'DeepSeek Chat',     by: 'DeepSeek',  icon: 'img/deepseek.png' },
+    ];
+
+    (function buildTicker() {
+      const track = document.getElementById('tickerTrack');
+      const all   = [...MODELS, ...MODELS]; /* duplicate for seamless loop */
+      all.forEach(m => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.innerHTML =
+          `<img class="chip-icon" src="${m.icon}" alt="${m.by}">` +
+          `<span class="chip-name">${m.name}</span>` +
+          `<span class="chip-by">${m.by}</span>`;
+        track.appendChild(chip);
+      });
+    })();
+
+    /* ── Footer year ── */
+    document.getElementById('fYear').textContent =
+      `© ${new Date().getFullYear()} NyxoAI. All rights reserved.`;
+  </script>
+</body>
+</html>
