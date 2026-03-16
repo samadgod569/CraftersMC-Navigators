@@ -1,0 +1,732 @@
+{
+  "gpt-4o": {
+    "name": "GPT-4o",
+    "param": 2000000000000,
+    "key": "openai/gpt-4o",
+    "description": "OpenAI's flagship omnimodal model capable of reasoning across text, audio, image, and video in real time. Sets new benchmarks for intelligence and conversational fluency with near-instant response times.",
+    "img": "img/gpt.png",
+    "category": ["multimodal", "text-to-text", "image-to-text", "reasoning", "code"],
+    "tags": ["OpenAI", "Flagship", "Omnimodal", "Real-time", "Audio Understanding", "Vision", "Large Language Model"],
+    "usage": []
+  },
+  "gpt-4o-mini": {
+    "name": "GPT-4o Mini",
+    "param": 8000000000,
+    "key": "openai/gpt-4o-mini",
+    "description": "Cost-efficient small model from OpenAI with multimodal capabilities. Ideal for high-volume applications requiring fast, quality responses across text and vision tasks.",
+    "img": "img/gpt.png",
+    "category": ["multimodal", "text-to-text", "image-to-text"],
+    "tags": ["OpenAI", "Lightweight", "Fast", "Vision", "Cost-effective"],
+    "usage": []
+  },
+  "gpt-4-turbo": {
+    "name": "GPT-4 Turbo",
+    "param": 1760000000000,
+    "key": "openai/gpt-4-turbo-preview",
+    "description": "OpenAI's most advanced model optimized for speed and cost-effectiveness while maintaining high reasoning capabilities. Excels at complex tasks, creative writing, and nuanced understanding across all domains.",
+    "img": "img/gpt.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["OpenAI", "Large Language Model", "Creative Writing", "Complex Reasoning", "Instruction Following"],
+    "usage": []
+  },
+  "gpt-4": {
+    "name": "GPT-4",
+    "param": 1700000000000,
+    "key": "openai/gpt-4",
+    "description": "OpenAI's powerful large language model with broad general knowledge and advanced reasoning abilities. Perfect for complex problem-solving, content creation, and detailed analysis.",
+    "img": "img/gpt.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["OpenAI", "Large Language Model", "Problem Solving", "Content Creation", "Analysis"],
+    "usage": []
+  },
+  "gpt-3.5-turbo": {
+    "name": "GPT-3.5 Turbo",
+    "param": 175000000000,
+    "key": "openai/gpt-3.5-turbo",
+    "description": "Fast and efficient model from OpenAI, ideal for conversational applications, content generation, and tasks requiring quick responses with high quality.",
+    "img": "img/gpt.png",
+    "category": ["text-to-text", "code"],
+    "tags": ["OpenAI", "Lightweight", "Conversational", "Fast", "Content Generation"],
+    "usage": []
+  },
+  "o1-preview": {
+    "name": "o1-preview",
+    "param": 300000000000,
+    "key": "openai/o1-preview",
+    "description": "OpenAI's reasoning-focused model designed for complex scientific, mathematical, and coding problems. Uses internal chain-of-thought reasoning before responding for enhanced accuracy.",
+    "img": "img/gpt.png",
+    "category": ["reasoning", "code", "text-to-text"],
+    "tags": ["OpenAI", "Reasoning Specialist", "Chain-of-Thought", "Mathematics", "Scientific"],
+    "usage": []
+  },
+  "o1-mini": {
+    "name": "o1-mini",
+    "param": 70000000000,
+    "key": "openai/o1-mini",
+    "description": "Fast and efficient reasoning model from OpenAI, optimized for coding and STEM tasks. Delivers strong performance on complex problems at lower cost.",
+    "img": "img/gpt.png",
+    "category": ["reasoning", "code"],
+    "tags": ["OpenAI", "Reasoning", "Code Specialist", "STEM", "Efficient"],
+    "usage": []
+  },
+  "claude-3-opus": {
+    "name": "Claude 3 Opus",
+    "param": 2000000000000,
+    "key": "anthropic/claude-3-opus",
+    "description": "Anthropic's most intelligent model, setting new industry benchmarks across reasoning, math, and coding. Demonstrates near-human levels of comprehension and fluency on complex tasks.",
+    "img": "img/claude.png",
+    "category": ["text-to-text", "reasoning", "code"],
+    "tags": ["Anthropic", "Flagship", "Large Language Model", "Deep Reasoning", "Mathematics", "Analysis"],
+    "usage": []
+  },
+  "claude-3-sonnet": {
+    "name": "Claude 3 Sonnet",
+    "param": 700000000000,
+    "key": "anthropic/claude-3-sonnet",
+    "description": "Balanced model from Anthropic offering strong reasoning capabilities with improved speed and efficiency. Ideal for enterprise workloads requiring both intelligence and rapid response.",
+    "img": "img/claude.png",
+    "category": ["text-to-text", "reasoning"],
+    "tags": ["Anthropic", "Balanced", "Enterprise", "Efficient", "Reasoning"],
+    "usage": []
+  },
+  "claude-3-haiku": {
+    "name": "Claude 3 Haiku",
+    "param": 200000000000,
+    "key": "anthropic/claude-3-haiku",
+    "description": "Fastest and most compact model in the Claude 3 family, designed for near-instant responsiveness and high-throughput applications requiring quality intelligence.",
+    "img": "img/claude.png",
+    "category": ["text-to-text"],
+    "tags": ["Anthropic", "Fast", "Lightweight", "High-throughput", "Responsive"],
+    "usage": []
+  },
+  "claude-3.5-sonnet": {
+    "name": "Claude 3.5 Sonnet",
+    "param": 800000000000,
+    "key": "anthropic/claude-3-5-sonnet-20240620",
+    "description": "Anthropic's latest balanced model with enhanced intelligence, improved coding capabilities, and deeper reasoning. Outperforms larger models on graduate-level reasoning and coding benchmarks.",
+    "img": "img/claude.png",
+    "category": ["text-to-text", "reasoning", "code"],
+    "tags": ["Anthropic", "Latest", "Code Specialist", "Graduate-level Reasoning", "Intelligent"],
+    "usage": []
+  },
+  "gemini-1.5-pro": {
+    "name": "Gemini 1.5 Pro",
+    "param": 1500000000000,
+    "key": "google/gemini-1.5-pro",
+    "description": "Google's most capable multimodal model with a breakthrough million-token context window. Processes and understands vast amounts of information across text, images, audio, and video seamlessly.",
+    "img": "img/gemini.png",
+    "category": ["multimodal", "text-to-text", "image-to-text", "reasoning"],
+    "tags": ["Google", "Flagship", "Multimodal", "Long Context", "Video Understanding", "Audio", "Large Language Model"],
+    "usage": []
+  },
+  "gemini-1.5-flash": {
+    "name": "Gemini 1.5 Flash",
+    "param": 300000000000,
+    "key": "google/gemini-1.5-flash",
+    "description": "Fast and efficient multimodal model from Google, optimized for high-frequency tasks at scale. Delivers quality results with minimal latency across text, image, and video inputs.",
+    "img": "img/gemini.png",
+    "category": ["multimodal", "text-to-text", "image-to-text"],
+    "tags": ["Google", "Fast", "Multimodal", "Efficient", "Vision", "High-frequency"],
+    "usage": []
+  },
+  "gemini-1.0-pro": {
+    "name": "Gemini 1.0 Pro",
+    "param": 600000000000,
+    "key": "google/gemini-pro",
+    "description": "Google's powerful language model with strong reasoning, coding, and creative capabilities. Designed for complex tasks requiring deep understanding and quality generation.",
+    "img": "img/gemini.png",
+    "category": ["text-to-text", "reasoning", "code"],
+    "tags": ["Google", "Language Model", "Reasoning", "Creative", "Coding"],
+    "usage": []
+  },
+  "gemma-2-27b": {
+    "name": "Gemma 2 27B",
+    "param": 27000000000,
+    "key": "google/gemma-2-27b-it",
+    "description": "Google's open-source instruction-tuned model with state-of-the-art performance for its size. Excels at reasoning, coding, and following complex instructions efficiently.",
+    "img": "img/gemini.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Google", "Open Source", "Instruction-tuned", "Efficient", "Reasoning"],
+    "usage": []
+  },
+  "gemma-2-9b": {
+    "name": "Gemma 2 9B",
+    "param": 9000000000,
+    "key": "google/gemma-2-9b-it",
+    "description": "Compact open-source model from Google with impressive capabilities for its size. Perfect for deployment in resource-constrained environments while maintaining strong performance.",
+    "img": "img/gemini.png",
+    "category": ["text-to-text"],
+    "tags": ["Google", "Open Source", "Lightweight", "Efficient", "Instruction-tuned"],
+    "usage": []
+  },
+  "llama-3.1-405b": {
+    "name": "Llama 3.1 405B",
+    "param": 405000000000,
+    "key": "meta-llama/Meta-Llama-3.1-405B-Instruct",
+    "description": "Meta's largest and most capable open-source model, rivaling leading closed-source models. Features enhanced multilingual support, improved reasoning, and state-of-the-art tool use.",
+    "img": "img/llama.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Meta", "Open Source", "Flagship", "Multilingual", "Tool Use", "Large Language Model"],
+    "usage": []
+  },
+  "llama-3.1-70b": {
+    "name": "Llama 3.1 70B",
+    "param": 70000000000,
+    "key": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+    "description": "Meta's powerful open-source model with enhanced reasoning, coding, and multilingual capabilities. Ideal for enterprise applications requiring high performance with open accessibility.",
+    "img": "img/llama.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Meta", "Open Source", "Large Language Model", "Multilingual", "Reasoning", "Enterprise"],
+    "usage": []
+  },
+  "llama-3.1-8b": {
+    "name": "Llama 3.1 8B",
+    "param": 8000000000,
+    "key": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "description": "Efficient open-source model from Meta, updated with enhanced capabilities. Delivers strong performance for its size, making it ideal for edge deployment and high-throughput applications.",
+    "img": "img/llama.png",
+    "category": ["text-to-text"],
+    "tags": ["Meta", "Open Source", "Lightweight", "Efficient", "Edge-ready"],
+    "usage": []
+  },
+  "llama-3-70b": {
+    "name": "Llama 3 70B",
+    "param": 70000000000,
+    "key": "meta-llama/Meta-Llama-3-70B-Instruct",
+    "description": "Meta's powerful open-source model featuring enhanced reasoning, coding, and instruction-following capabilities. Outperforms many closed-source models on industry benchmarks.",
+    "img": "img/llama.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Meta", "Open Source", "Large Language Model", "Instruction Following", "Reasoning"],
+    "usage": []
+  },
+  "llama-3-8b": {
+    "name": "Llama 3 8B",
+    "param": 8000000000,
+    "key": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "description": "Compact yet powerful open-source model from Meta, ideal for deployment in resource-constrained environments while maintaining strong performance on diverse tasks.",
+    "img": "img/llama.png",
+    "category": ["text-to-text"],
+    "tags": ["Meta", "Open Source", "Lightweight", "Efficient", "Deployable"],
+    "usage": []
+  },
+  "mistral-large": {
+    "name": "Mistral Large",
+    "param": 123000000000,
+    "key": "mistralai/mistral-large",
+    "description": "Mistral AI's flagship model with state-of-the-art reasoning, multilingual capabilities, and native function calling. Excels at complex enterprise-grade tasks.",
+    "img": "img/mistral.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Mistral", "Flagship", "Large Language Model", "Multilingual", "Function Calling", "Enterprise"],
+    "usage": []
+  },
+  "mistral-small": {
+    "name": "Mistral Small",
+    "param": 22000000000,
+    "key": "mistralai/mistral-small",
+    "description": "Efficient model from Mistral optimized for low-latency applications. Delivers strong performance on a wide range of tasks with fast response times.",
+    "img": "img/mistral.png",
+    "category": ["text-to-text"],
+    "tags": ["Mistral", "Efficient", "Low-latency", "Fast", "Lightweight"],
+    "usage": []
+  },
+  "mixtral-8x22b": {
+    "name": "Mixtral 8x22B",
+    "param": 141000000000,
+    "key": "mistralai/Mixtral-8x22B-Instruct-v0.1",
+    "description": "Large mixture-of-experts model from Mistral with enhanced capabilities and broader knowledge. Leverages 22B active parameters from 141B total for efficient high-quality inference.",
+    "img": "img/mistral.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Mistral", "MoE", "Large Language Model", "Efficient", "Broad Knowledge"],
+    "usage": []
+  },
+  "mixtral-8x7b": {
+    "name": "Mixtral 8x7B",
+    "param": 47000000000,
+    "key": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    "description": "Groundbreaking sparse mixture-of-experts model from Mistral, delivering high performance with efficient inference. Matches or exceeds larger models on many benchmarks.",
+    "img": "img/mistral.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Mistral", "MoE", "Efficient", "High-performance", "Sparse"],
+    "usage": []
+  },
+  "codestral": {
+    "name": "Codestral",
+    "param": 22000000000,
+    "key": "mistralai/codestral",
+    "description": "Mistral's specialized code generation model trained on over 80 programming languages. Excels at code completion, generation, testing, and filling-in-the-middle tasks with exceptional accuracy.",
+    "img": "img/mistral.png",
+    "category": ["code", "text-to-text"],
+    "tags": ["Mistral", "Code Specialist", "80+ Languages", "Code Completion", "Fill-in-middle", "Programming"],
+    "usage": []
+  },
+  "command-r-plus": {
+    "name": "Command R+",
+    "param": 104000000000,
+    "key": "cohere/command-r-plus",
+    "description": "Cohere's most advanced RAG-optimized model with strong multilingual support and enterprise-grade retrieval capabilities. Perfect for knowledge-intensive applications and conversational AI.",
+    "img": "img/cohere.png",
+    "category": ["text-to-text", "reasoning"],
+    "tags": ["Cohere", "RAG", "Multilingual", "Enterprise", "Retrieval", "Conversational"],
+    "usage": []
+  },
+  "command-r": {
+    "name": "Command R",
+    "param": 35000000000,
+    "key": "cohere/command-r",
+    "description": "Cohere's scalable RAG-optimized model designed for production workloads. Balances strong performance with efficiency for retrieval-augmented generation and enterprise applications.",
+    "img": "img/cohere.png",
+    "category": ["text-to-text"],
+    "tags": ["Cohere", "RAG", "Efficient", "Production", "Retrieval"],
+    "usage": []
+  },
+  "deepseek-v2": {
+    "name": "DeepSeek-V2",
+    "param": 236000000000,
+    "key": "deepseek-ai/DeepSeek-V2",
+    "description": "Powerful Mixture-of-Experts model from DeepSeek with exceptional reasoning and coding abilities. Trained on high-quality multilingual data for superior performance.",
+    "img": "img/deepseek.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["DeepSeek", "MoE", "Large Language Model", "Reasoning", "Multilingual"],
+    "usage": []
+  },
+  "deepseek-v2.5": {
+    "name": "DeepSeek-V2.5",
+    "param": 236000000000,
+    "key": "deepseek-ai/DeepSeek-V2.5",
+    "description": "Updated version of DeepSeek's flagship model with enhanced general capabilities, stronger coding performance, and improved alignment. Combines the best of DeepSeek-Coder and DeepSeek-V2.",
+    "img": "img/deepseek.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["DeepSeek", "MoE", "Latest", "Code Specialist", "Reasoning", "Aligned"],
+    "usage": []
+  },
+  "deepseek-coder-v2": {
+    "name": "DeepSeek-Coder-V2",
+    "param": 236000000000,
+    "key": "deepseek-ai/DeepSeek-Coder-V2-Instruct",
+    "description": "Specialized code generation model from DeepSeek, excelling at programming tasks, debugging, and software development across multiple languages. Outperforms many general-purpose models on coding benchmarks.",
+    "img": "img/deepseek.png",
+    "category": ["code", "text-to-text"],
+    "tags": ["DeepSeek", "Code Specialist", "MoE", "Programming", "Debugging", "Software Development"],
+    "usage": []
+  },
+  "deepseek-v3": {
+    "name": "DeepSeek-V3",
+    "param": 671000000000,
+    "key": "deepseek-ai/DeepSeek-V3",
+    "description": "DeepSeek's latest and most powerful MoE model with 671B total parameters and 37B active. Achieves state-of-the-art performance among open-source models with efficient inference and strong multilingual capabilities.",
+    "img": "img/deepseek.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["DeepSeek", "MoE", "Flagship", "Latest", "State-of-the-art", "Multilingual", "Large Language Model"],
+    "usage": []
+  },
+  "qwen2.5-72b": {
+    "name": "Qwen2.5 72B",
+    "param": 72000000000,
+    "key": "Qwen/Qwen2.5-72B-Instruct",
+    "description": "Alibaba's advanced multilingual model with strong performance across reasoning, coding, and mathematics. Supports extensive context length and multiple languages with deep instruction following.",
+    "img": "img/qwen.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Qwen", "Multilingual", "Large Language Model", "Reasoning", "Mathematics", "Long Context"],
+    "usage": []
+  },
+  "qwen2.5-32b": {
+    "name": "Qwen2.5 32B",
+    "param": 32000000000,
+    "key": "Qwen/Qwen2.5-32B-Instruct",
+    "description": "Balanced model from Alibaba offering strong performance with efficient resource usage. Excels at multilingual tasks, reasoning, and instruction following across diverse applications.",
+    "img": "img/qwen.png",
+    "category": ["text-to-text", "reasoning"],
+    "tags": ["Qwen", "Multilingual", "Balanced", "Efficient", "Reasoning"],
+    "usage": []
+  },
+  "qwen2.5-14b": {
+    "name": "Qwen2.5 14B",
+    "param": 14000000000,
+    "key": "Qwen/Qwen2.5-14B-Instruct",
+    "description": "Efficient multilingual model from Alibaba optimized for deployment with strong performance-to-size ratio. Ideal for applications requiring quality responses with lower compute requirements.",
+    "img": "img/qwen.png",
+    "category": ["text-to-text"],
+    "tags": ["Qwen", "Multilingual", "Efficient", "Lightweight", "Deployable"],
+    "usage": []
+  },
+  "qwen2.5-7b": {
+    "name": "Qwen2.5 7B",
+    "param": 7000000000,
+    "key": "Qwen/Qwen2.5-7B-Instruct",
+    "description": "Compact yet capable multilingual model from Alibaba, perfect for edge deployment and high-throughput scenarios. Delivers impressive performance for its size across diverse tasks.",
+    "img": "img/qwen.png",
+    "category": ["text-to-text"],
+    "tags": ["Qwen", "Multilingual", "Lightweight", "Edge-ready", "Efficient", "Compact"],
+    "usage": []
+  },
+  "qwen2.5-coder-32b": {
+    "name": "Qwen2.5 Coder 32B",
+    "param": 32000000000,
+    "key": "Qwen/Qwen2.5-Coder-32B-Instruct",
+    "description": "Specialized code generation model from Alibaba with state-of-the-art performance on programming tasks. Trained on massive code corpora for exceptional code completion, generation, and debugging.",
+    "img": "img/qwen.png",
+    "category": ["code", "text-to-text"],
+    "tags": ["Qwen", "Code Specialist", "Programming", "Code Completion", "Debugging", "Software Development"],
+    "usage": []
+  },
+  "qwen2.5-coder-7b": {
+    "name": "Qwen2.5 Coder 7B",
+    "param": 7000000000,
+    "key": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "description": "Efficient code-specialized model from Alibaba for lightweight deployment. Provides strong coding capabilities in a compact package, ideal for edge and high-volume applications.",
+    "img": "img/qwen.png",
+    "category": ["code", "text-to-text"],
+    "tags": ["Qwen", "Code Specialist", "Lightweight", "Edge-ready", "Programming", "Efficient"],
+    "usage": []
+  },
+  "phi-3-medium": {
+    "name": "Phi-3 Medium",
+    "param": 14000000000,
+    "key": "microsoft/Phi-3-medium-4k-instruct",
+    "description": "Microsoft's capable medium-sized model with strong performance on reasoning, coding, and math. Trained on high-quality data to deliver results comparable to much larger models.",
+    "img": "img/microsoft.png",
+    "category": ["text-to-text", "code", "reasoning"],
+    "tags": ["Microsoft", "Small Language Model", "Reasoning", "Mathematics", "Code", "Efficient"],
+    "usage": []
+  },
+  "phi-3-mini": {
+    "name": "Phi-3 Mini",
+    "param": 3800000000,
+    "key": "microsoft/Phi-3-mini-4k-instruct",
+    "description": "Microsoft's highly capable small language model that punches far above its weight class. Trained on high-quality data to deliver performance comparable to models 10x its size.",
+    "img": "img/microsoft.png",
+    "category": ["text-to-text"],
+    "tags": ["Microsoft", "Small Language Model", "Efficient", "Lightweight", "High-quality Training"],
+    "usage": []
+  },
+  "phi-3-vision": {
+    "name": "Phi-3 Vision",
+    "param": 4200000000,
+    "key": "microsoft/Phi-3-vision-128k-instruct",
+    "description": "Microsoft's small multimodal model with strong image understanding and reasoning capabilities. Processes images and text together for document analysis, visual Q&A, and more.",
+    "img": "img/microsoft.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["Microsoft", "Vision-Language", "Multimodal", "Small Language Model", "Document Analysis", "Visual Q&A"],
+    "usage": []
+  },
+  "yi-large": {
+    "name": "Yi Large",
+    "param": 34000000000,
+    "key": "01-ai/Yi-34B-Chat",
+    "description": "Powerful bilingual model (English/Chinese) from 01.AI with strong reasoning and general capabilities. Excels at complex tasks across both languages with high-quality outputs.",
+    "img": "img/yi.png",
+    "category": ["text-to-text", "reasoning"],
+    "tags": ["Yi", "Bilingual", "Chinese", "English", "Large Language Model", "Reasoning"],
+    "usage": []
+  },
+  "yi-1.5-9b": {
+    "name": "Yi 1.5 9B",
+    "param": 9000000000,
+    "key": "01-ai/Yi-1.5-9B-Chat",
+    "description": "Improved compact bilingual model from 01.AI with enhanced performance and efficiency. Ideal for applications requiring both English and Chinese capabilities in a lightweight package.",
+    "img": "img/yi.png",
+    "category": ["text-to-text"],
+    "tags": ["Yi", "Bilingual", "Chinese", "English", "Lightweight", "Efficient"],
+    "usage": []
+  },
+  "stable-diffusion-3": {
+    "name": "Stable Diffusion 3",
+    "param": 8000000000,
+    "key": "stabilityai/stable-diffusion-3-medium",
+    "description": "Stability AI's latest text-to-image model with enhanced prompt adherence, typography, and image quality. Generates stunning visuals from natural language with improved composition.",
+    "img": "img/stability.png",
+    "category": ["text-to-image"],
+    "tags": ["Stability AI", "Image Generation", "Diffusion", "Text-to-Image", "Prompt Adherence", "Typography"],
+    "usage": []
+  },
+  "stable-diffusion-xl": {
+    "name": "Stable Diffusion XL",
+    "param": 2600000000,
+    "key": "stabilityai/stable-diffusion-xl-base-1.0",
+    "description": "Leading text-to-image generation model producing high-quality, photorealistic images from natural language descriptions. Excels at creative and artistic applications.",
+    "img": "img/stability.png",
+    "category": ["text-to-image"],
+    "tags": ["Stability AI", "Image Generation", "Diffusion", "Photorealistic", "Creative", "Artistic"],
+    "usage": []
+  },
+  "playground-v2.5": {
+    "name": "Playground v2.5",
+    "param": 2600000000,
+    "key": "playgroundai/playground-v2.5-1024px-aesthetic",
+    "description": "Specialized text-to-image model optimized for aesthetic quality and visual appeal. Produces stunning, artistically pleasing images with vibrant colors and balanced compositions.",
+    "img": "img/playground.png",
+    "category": ["text-to-image"],
+    "tags": ["Playground AI", "Image Generation", "Aesthetic", "Artistic", "High-quality", "Diffusion"],
+    "usage": []
+  },
+  "dreamlike-photoreal": {
+    "name": "Dreamlike Photoreal 2.0",
+    "param": 2000000000,
+    "key": "dreamlike-art/dreamlike-photoreal-2.0",
+    "description": "Specialized text-to-image model focused on generating stunning photorealistic images with exceptional detail, lighting, and composition. Perfect for professional visual content creation.",
+    "img": "img/dreamlike.png",
+    "category": ["text-to-image"],
+    "tags": ["Dreamlike", "Photorealistic", "Image Generation", "Detail-oriented", "Professional", "Diffusion"],
+    "usage": []
+  },
+  "sdxl-turbo": {
+    "name": "SDXL Turbo",
+    "param": 2600000000,
+    "key": "stabilityai/sdxl-turbo",
+    "description": "Real-time text-to-image model capable of generating high-quality images in a single step. Enables instantaneous image creation for interactive and iterative applications.",
+    "img": "img/stability.png",
+    "category": ["text-to-image"],
+    "tags": ["Stability AI", "Image Generation", "Real-time", "Fast", "Single-step", "Diffusion", "Turbo"],
+    "usage": []
+  },
+  "llava-1.6-34b": {
+    "name": "LLaVA 1.6 34B",
+    "param": 34000000000,
+    "key": "liuhaotian/llava-v1.6-34b",
+    "description": "Advanced multimodal model combining vision and language understanding. Can analyze images, answer questions about visual content, and engage in detailed conversations about what it sees.",
+    "img": "img/llava.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["LLaVA", "Vision-Language", "Multimodal", "Image Understanding", "Visual Q&A", "Large Language Model"],
+    "usage": []
+  },
+  "llava-1.6-13b": {
+    "name": "LLaVA 1.6 13B",
+    "param": 13000000000,
+    "key": "liuhaotian/llava-v1.6-13b",
+    "description": "Balanced vision-language model from the LLaVA family. Provides strong image understanding and conversational capabilities in an efficient package.",
+    "img": "img/llava.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["LLaVA", "Vision-Language", "Multimodal", "Image Understanding", "Balanced", "Efficient"],
+    "usage": []
+  },
+  "llava-1.6-7b": {
+    "name": "LLaVA 1.6 7B",
+    "param": 7000000000,
+    "key": "liuhaotian/llava-v1.6-7b",
+    "description": "Efficient vision-language model for lightweight multimodal applications. Perfect for edge deployment with strong image understanding and conversational abilities.",
+    "img": "img/llava.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["LLaVA", "Vision-Language", "Multimodal", "Lightweight", "Edge-ready", "Efficient"],
+    "usage": []
+  },
+  "bakllava": {
+    "name": "BakLLaVA",
+    "param": 7000000000,
+    "key": "llava-hf/bakLlava-v1-hf",
+    "description": "Multimodal model combining Mistral 7B with vision capabilities. Excels at understanding images and engaging in detailed conversations about visual content.",
+    "img": "img/llava.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["LLaVA", "Vision-Language", "Mistral-based", "Multimodal", "Image Understanding", "Conversational"],
+    "usage": []
+  },
+  "cogvlm2": {
+    "name": "CogVLM2",
+    "param": 19000000000,
+    "key": "THUDM/cogvlm2-llama3-chat-19B",
+    "description": "Advanced multimodal model with strong visual understanding and reasoning. Capable of detailed image analysis, optical character recognition, and complex visual question answering.",
+    "img": "img/cogvlm.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["THUDM", "Vision-Language", "Multimodal", "OCR", "Visual Reasoning", "Image Understanding"],
+    "usage": []
+  },
+  "idefics2": {
+    "name": "Idefics2",
+    "param": 8000000000,
+    "key": "HuggingFaceM4/idefics2-8b",
+    "description": "Hugging Face's multimodal model with strong document understanding and visual reasoning. Excels at interpreting charts, diagrams, and mixed text-image content.",
+    "img": "img/huggingface.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["Hugging Face", "Vision-Language", "Multimodal", "Document Understanding", "Charts", "Diagrams"],
+    "usage": []
+  },
+  "florence-2": {
+    "name": "Florence-2",
+    "param": 700000000,
+    "key": "microsoft/Florence-2-large",
+    "description": "Microsoft's vision foundation model handling multiple vision tasks from captioning to detection. Unifies image understanding capabilities in a single efficient model.",
+    "img": "img/microsoft.png",
+    "category": ["image-to-text", "multimodal"],
+    "tags": ["Microsoft", "Vision Foundation", "Captioning", "Object Detection", "Image Understanding", "Multitask"],
+    "usage": []
+  },
+  "qwen2-vl-72b": {
+    "name": "Qwen2 VL 72B",
+    "param": 72000000000,
+    "key": "Qwen/Qwen2-VL-72B-Instruct",
+    "description": "Alibaba's powerful vision-language model with state-of-the-art image and video understanding. Excels at detailed visual analysis, OCR, and multimodal reasoning at scale.",
+    "img": "img/qwen.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["Qwen", "Vision-Language", "Multimodal", "Video Understanding", "OCR", "Visual Reasoning", "Large Language Model"],
+    "usage": []
+  },
+  "qwen2-vl-7b": {
+    "name": "Qwen2 VL 7B",
+    "param": 7000000000,
+    "key": "Qwen/Qwen2-VL-7B-Instruct",
+    "description": "Efficient vision-language model from Alibaba for lightweight multimodal applications. Provides strong image and video understanding in a compact, deployable package.",
+    "img": "img/qwen.png",
+    "category": ["multimodal", "image-to-text"],
+    "tags": ["Qwen", "Vision-Language", "Multimodal", "Lightweight", "Video Understanding", "Efficient"],
+    "usage": []
+  },
+  "whisper-large-v3": {
+    "name": "Whisper Large v3",
+    "param": 1550000000,
+    "key": "openai/whisper-large-v3",
+    "description": "State-of-the-art automatic speech recognition model from OpenAI, supporting multilingual transcription and translation with remarkable accuracy across diverse audio conditions.",
+    "img": "img/openai.png",
+    "category": ["audio-to-text"],
+    "tags": ["OpenAI", "Speech Recognition", "Multilingual", "Transcription", "Translation", "Audio Understanding"],
+    "usage": []
+  },
+  "whisper-medium": {
+    "name": "Whisper Medium",
+    "param": 769000000,
+    "key": "openai/whisper-medium",
+    "description": "Balanced speech recognition model from OpenAI offering strong performance with lower resource requirements. Ideal for production deployments needing quality transcription.",
+    "img": "img/openai.png",
+    "category": ["audio-to-text"],
+    "tags": ["OpenAI", "Speech Recognition", "Multilingual", "Balanced", "Efficient", "Transcription"],
+    "usage": []
+  },
+  "whisper-small": {
+    "name": "Whisper Small",
+    "param": 244000000,
+    "key": "openai/whisper-small",
+    "description": "Efficient speech recognition model for fast, lightweight transcription. Perfect for real-time applications and resource-constrained environments.",
+    "img": "img/openai.png",
+    "category": ["audio-to-text"],
+    "tags": ["OpenAI", "Speech Recognition", "Lightweight", "Fast", "Real-time", "Efficient"],
+    "usage": []
+  },
+  "musicgen": {
+    "name": "MusicGen",
+    "param": 3300000000,
+    "key": "facebook/musicgen-large",
+    "description": "Meta's music generation model capable of creating high-quality melodies and compositions from text descriptions. Supports melody conditioning and stereo generation.",
+    "img": "img/facebook.png",
+    "category": ["text-to-audio"],
+    "tags": ["Meta", "Music Generation", "Text-to-Audio", "Creative", "Composition", "Melody"],
+    "usage": []
+  },
+  "bark": {
+    "name": "Bark",
+    "param": 1200000000,
+    "key": "suno/bark",
+    "description": "Suno's text-to-speech model generating highly expressive, natural-sounding speech with emotions, non-verbal communications, and even music. Supports multiple languages.",
+    "img": "img/suno.png",
+    "category": ["text-to-speech", "text-to-audio"],
+    "tags": ["Suno", "Text-to-Speech", "Expressive", "Emotional Speech", "Multilingual", "Audio Generation"],
+    "usage": []
+  },
+  "jina-embeddings-v3": {
+    "name": "Jina Embeddings v3",
+    "param": 570000000,
+    "key": "jinaai/jina-embeddings-v3",
+    "description": "High-performance text embedding model supporting 89 languages with state-of-the-art retrieval performance. Excels at semantic search, clustering, and classification tasks.",
+    "img": "img/jina.png",
+    "category": ["text-embeddings", "feature-extraction"],
+    "tags": ["Jina", "Embeddings", "Multilingual", "Semantic Search", "Retrieval", "Vector"],
+    "usage": []
+  },
+  "nomic-embed-text": {
+    "name": "Nomic Embed Text",
+    "param": 137000000,
+    "key": "nomic-ai/nomic-embed-text-v1.5",
+    "description": "Powerful open-source text embedding model with strong performance on retrieval and classification. Features 8192 context length and Matryoshka representation learning.",
+    "img": "img/nomic.png",
+    "category": ["text-embeddings", "feature-extraction"],
+    "tags": ["Nomic", "Embeddings", "Open Source", "Long Context", "Retrieval", "Matryoshka"],
+    "usage": []
+  },
+  "nomic-embed-vision": {
+    "name": "Nomic Embed Vision",
+    "param": 137000000,
+    "key": "nomic-ai/nomic-embed-vision-v1.5",
+    "description": "Vision embedding model producing high-quality image representations. Enables semantic image search, clustering, and multimodal retrieval tasks.",
+    "img": "img/nomic.png",
+    "category": ["image-embeddings", "feature-extraction"],
+    "tags": ["Nomic", "Vision Embeddings", "Image Search", "Multimodal", "Retrieval", "Vector"],
+    "usage": []
+  },
+  "gte-large": {
+    "name": "GTE Large",
+    "param": 434000000,
+    "key": "Alibaba-NLP/gte-large-en-v1.5",
+    "description": "Alibaba's general text embedding model with strong performance on retrieval and semantic tasks. Features 8192 context length for long document understanding.",
+    "img": "img/alibaba.png",
+    "category": ["text-embeddings", "feature-extraction"],
+    "tags": ["Alibaba", "Embeddings", "Long Context", "Retrieval", "Semantic Search", "Vector"],
+    "usage": []
+  },
+  "clip-vit-large": {
+    "name": "CLIP ViT-Large",
+    "param": 428000000,
+    "key": "openai/clip-vit-large-patch14",
+    "description": "OpenAI's vision-language model for zero-shot classification and multimodal retrieval. Aligns images and text in a shared embedding space for cross-modal understanding.",
+    "img": "img/openai.png",
+    "category": ["multimodal", "image-embeddings", "zero-shot-classification"],
+    "tags": ["OpenAI", "CLIP", "Vision-Language", "Zero-shot", "Multimodal Embeddings", "Retrieval"],
+    "usage": []
+  },
+  "siglip": {
+    "name": "SigLIP",
+    "param": 307000000,
+    "key": "google/siglip-base-patch16-224",
+    "description": "Google's vision-language model with sigmoid loss optimization for efficient multimodal learning. Excels at zero-shot classification and image-text alignment tasks.",
+    "img": "img/google.png",
+    "category": ["multimodal", "image-embeddings", "zero-shot-classification"],
+    "tags": ["Google", "SigLIP", "Vision-Language", "Zero-shot", "Multimodal Embeddings", "Efficient"],
+    "usage": []
+  },
+  "owlvit": {
+    "name": "OWLvIT",
+    "param": 151000000,
+    "key": "google/owlvit-base-patch32",
+    "description": "Open-vocabulary object detection model capable of detecting objects based on free-form text queries. Enables flexible detection without fixed category labels.",
+    "img": "img/google.png",
+    "category": ["object-detection", "zero-shot-object-detection"],
+    "tags": ["Google", "Object Detection", "Open-vocabulary", "Zero-shot", "Vision", "Text-guided"],
+    "usage": []
+  },
+  "grounding-dino": {
+    "name": "Grounding DINO",
+    "param": 172000000,
+    "key": "IDEA-Research/grounding-dino-base",
+    "description": "Advanced open-set object detector combining vision and language for detecting arbitrary objects from text descriptions. Excels at referring expression comprehension.",
+    "img": "img/idea.png",
+    "category": ["object-detection", "zero-shot-object-detection"],
+    "tags": ["IDEA", "Object Detection", "Open-vocabulary", "Referring Expressions", "Vision-Language", "Zero-shot"],
+    "usage": []
+  },
+  "sam2": {
+    "name": "SAM 2",
+    "param": 224000000,
+    "key": "facebook/sam2-hiera-large",
+    "description": "Meta's Segment Anything Model 2 for precise image and video segmentation. Supports interactive prompting with points, boxes, and masks for fine-grained object separation.",
+    "img": "img/facebook.png",
+    "category": ["image-segmentation", "mask-generation"],
+    "tags": ["Meta", "SAM", "Segmentation", "Mask Generation", "Interactive", "Video Segmentation", "Vision"],
+    "usage": []
+  },
+  "depth-anything": {
+    "name": "Depth Anything",
+    "param": 355000000,
+    "key": "LiheYoung/depth-anything-large-hf",
+    "description": "Monocular depth estimation model producing high-quality depth maps from single images. Excels at capturing fine details and handling diverse scenes.",
+    "img": "img/depth.png",
+    "category": ["depth-estimation"],
+    "tags": ["Depth Anything", "Depth Estimation", "Monocular", "Vision", "3D Understanding", "Scene Understanding"],
+    "usage": []
+  },
+  "dpt-large": {
+    "name": "DPT Large",
+    "param": 344000000,
+    "key": "Intel/dpt-large",
+    "description": "Intel's dense prediction transformer for monocular depth estimation. Provides robust depth predictions with strong generalization across diverse datasets.",
+    "img": "img/intel.png",
+    "category": ["depth-estimation"],
+    "tags": ["Intel", "Depth Estimation", "DPT", "Transformer", "Vision", "3D"],
+    "usage": []
+  }
+}
