@@ -587,10 +587,10 @@ Content-Type: application/json
         <table>
           <thead><tr><th>What is counted</th><th>Cap</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td><code>message</code></td><td>20,000 chars</td><td>The main user prompt.</td></tr>
-            <tr><td><code>memory</code></td><td>20,000 chars</td><td>Injected conversation history.</td></tr>
-            <tr><td><code>skills</code></td><td>10,000 chars</td><td>Custom instruction block.</td></tr>
-            <tr><td>Crawled URL content</td><td>50,000 chars per URL</td><td>Fetched at runtime.</td></tr>
+            <tr><td><code>message</code></td><td>below 128,000 chars</td><td>The main user prompt.</td></tr>
+            <tr><td><code>memory</code></td><td>below 128,000 chars</td><td>Injected conversation history.</td></tr>
+            <tr><td><code>skills</code></td><td>below 128,000 chars</td><td>Custom instruction block.</td></tr>
+            <tr><td>Crawled URL content</td><td>below 128,000 chars per URL</td><td>Fetched at runtime.</td></tr>
             <tr><td>Model output</td><td>Up to remaining balance</td><td>Actual response text deducted after reply.</td></tr>
           </tbody>
         </table>
