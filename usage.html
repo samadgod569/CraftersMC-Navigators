@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference — NyxoAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #09090d;
+      --surface:     #0e0e14;
+      --card:        #121218;
+      --card-border: #1d1d27;
+      --card-hover:  #161620;
+      --text:        #ededf4;
+      --sub:         #8c8ca4;
+      --muted:       #4e4e65;
+      --accent:      #7b8bff;
+      --accent-dim:  rgba(123,139,255,.11);
+      --accent-glow: rgba(123,139,255,.18);
+      --green:       #4ade80;
+      --green-dim:   rgba(74,222,128,.10);
+      --orange:      #fb923c;
+      --orange-dim:  rgba(251,146,60,.10);
+      --red:         #f87171;
+      --red-dim:     rgba(248,113,113,.10);
+      --divider:     rgba(255,255,255,.054);
+      --shadow-xl:   0 32px 80px rgba(0,0,0,.65);
+      --shadow-md:   0 8px 32px rgba(0,0,0,.38);
+      --r:           14px;
+      --r-sm:        9px;
+      --r-xs:        6px;
+    }
+
+    html[data-theme="light"] {
+      --bg:          #f4f4fa;
+      --surface:     #fafaff;
+      --card:        #ffffff;
+      --card-border: #e0e0ec;
+      --card-hover:  #f0f0f9;
+      --text:        #0b0b18;
+      --sub:         #5a5a76;
+      --muted:       #9494ae;
+      --accent:      #4d5ee8;
+      --accent-dim:  rgba(77,94,232,.09);
+      --accent-glow: rgba(77,94,232,.15);
+      --green:       #16a34a;
+      --green-dim:   rgba(22,163,74,.09);
+      --orange:      #ea7009;
+      --orange-dim:  rgba(234,112,9,.09);
+      --red:         #dc2626;
+      --red-dim:     rgba(220,38,38,.09);
+      --divider:     rgba(0,0,0,.07);
+      --shadow-xl:   0 32px 80px rgba(0,0,0,.09);
+      --shadow-md:   0 8px 32px rgba(0,0,0,.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Geist', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 10% 5%, rgba(123,139,255,.045) 0%, transparent 68%),
+        radial-gradient(ellipse 45% 50% at 90% 92%, rgba(100,76,255,.03) 0%, transparent 68%);
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--divider);
+    }
+    html[data-theme="dark"]  .topbar { background: rgba(9,9,13,.88); backdrop-filter: blur(22px) saturate(1.5); }
+    html[data-theme="light"] .topbar { background: rgba(244,244,250,.9); backdrop-filter: blur(22px) saturate(1.5); }
+
+    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; flex-shrink: 0; }
+    .logo-img { width: 26px; height: 26px; object-fit: contain; border-radius: 7px; }
+    .logo-text { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.08rem; font-weight: 700; letter-spacing: -.03em; color: var(--text); }
+
+    .topbar-right { display: flex; align-items: center; gap: 7px; }
+
+    .buy-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 15px;
+      background: var(--accent); border: none; border-radius: var(--r-sm);
+      color: #fff; font-family: 'Geist', sans-serif;
+      font-size: .8rem; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+      transition: opacity .16s; white-space: nowrap;
+    }
+    .buy-btn:hover { opacity: .88; }
+    .buy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .theme-btn {
+      width: 34px; height: 34px; border-radius: var(--r-sm);
+      background: transparent; border: 1px solid var(--card-border);
+      color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .16s, border-color .16s, color .16s;
+    }
+    .theme-btn:hover { background: var(--card); border-color: var(--accent); color: var(--text); }
+    .theme-btn svg { width: 16px; height: 16px; }
+
+    .avatar-wrap { position: relative; }
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--card-border); background: var(--card);
+      cursor: pointer; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .84rem; font-weight: 700; color: var(--accent);
+      transition: border-color .16s, box-shadow .16s;
+    }
+    .avatar-btn:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+    .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+    .dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; width: 208px;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: var(--r); box-shadow: var(--shadow-xl);
+      overflow: hidden; z-index: 300;
+      opacity: 0; transform: translateY(-10px) scale(.96);
+      transform-origin: top right; pointer-events: none; visibility: hidden;
+      transition: opacity .24s cubic-bezier(.16,1,.3,1), transform .24s cubic-bezier(.16,1,.3,1), visibility 0s linear .24s;
+    }
+    .dropdown.open {
+      opacity: 1; transform: translateY(0) scale(1);
+      pointer-events: all; visibility: visible;
+      transition: opacity .24s cubic-bezier(.16,1,.3,1), transform .24s cubic-bezier(.16,1,.3,1), visibility 0s linear 0s;
+    }
+    .d-head { padding: 13px 15px 11px; border-bottom: 1px solid var(--divider); }
+    .d-head-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: .88rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .d-head-role { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+    .d-list { padding: 5px 0; }
+    .d-item { display: flex; align-items: center; gap: 10px; padding: 9px 15px; font-size: .84rem; color: var(--sub); cursor: pointer; transition: background .13s, color .13s; }
+    .d-item:hover { background: var(--accent-dim); color: var(--accent); }
+    .d-item svg { width: 14px; height: 14px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .d-item.danger { color: #e86060; }
+    .d-item.danger:hover { background: rgba(232,96,96,.09); color: #e86060; }
+    .d-sep { height: 1px; background: var(--divider); margin: 3px 0; }
+
+    /* ── Layout ── */
+    .layout { position: relative; z-index: 1; display: flex; flex: 1; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 228px; flex-shrink: 0;
+      border-right: 1px solid var(--divider);
+      padding: 24px 0;
+      position: sticky; top: 62px;
+      height: calc(100vh - 62px);
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
+
+    .sidebar-label {
+      font-size: .66rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); padding: 8px 20px 6px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 20px; cursor: pointer;
+      font-size: .835rem; color: var(--sub);
+      border-left: 2px solid transparent;
+      text-decoration: none;
+      transition: background .13s, color .13s, border-color .13s;
+    }
+    .sidebar-item:hover { background: var(--accent-dim); color: var(--text); }
+    .sidebar-item.active { background: var(--accent-dim); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+    .sidebar-item svg { width: 14px; height: 14px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-divider { height: 1px; background: var(--divider); margin: 10px 20px; }
+
+    /* ── Content area ── */
+    .content { flex: 1; min-width: 0; padding: 40px 52px 80px; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 60px; scroll-margin-top: 82px; }
+
+    .section-eyebrow {
+      font-size: .66rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.55rem; font-weight: 800; letter-spacing: -.035em;
+      color: var(--text); margin-bottom: 10px;
+    }
+    .section-sub {
+      font-size: .875rem; color: var(--sub); line-height: 1.72;
+      max-width: 680px; margin-bottom: 24px;
+    }
+    h3.block-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.02rem; font-weight: 700; letter-spacing: -.02em;
+      color: var(--text); margin: 32px 0 12px;
+    }
+
+    /* ── Endpoint bar ── */
+    .endpoint-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: var(--r-sm); padding: 12px 16px;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .method-badge {
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+      padding: 3px 9px; border-radius: 5px;
+      background: var(--green-dim); color: var(--green);
+      border: 1px solid rgba(74,222,128,.22); flex-shrink: 0;
+    }
+    .endpoint-url {
+      font-family: 'Geist', monospace; font-size: .825rem;
+      color: var(--text); flex: 1; word-break: break-all;
+    }
+
+    /* ── Code block ── */
+    .code-wrap {
+      background: var(--surface); border: 1px solid var(--card-border);
+      border-radius: var(--r); overflow: hidden; margin-bottom: 22px;
+    }
+    .code-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px 8px 16px;
+      border-bottom: 1px solid var(--divider);
+    }
+    .code-lang {
+      font-size: .67rem; font-weight: 600; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .copy-btn-sm {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: var(--r-xs);
+      background: transparent; border: 1px solid var(--card-border);
+      color: var(--muted); font-family: 'Geist', sans-serif;
+      font-size: .71rem; cursor: pointer;
+      transition: background .13s, border-color .13s, color .13s; flex-shrink: 0;
+    }
+    .copy-btn-sm:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .copy-btn-sm.copied { background: var(--green-dim); border-color: rgba(74,222,128,.3); color: var(--green); }
+    .copy-btn-sm svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    pre {
+      padding: 18px 20px; overflow-x: auto;
+      font-family: 'Geist', 'SF Mono', monospace;
+      font-size: .79rem; line-height: 1.76; color: var(--text);
+    }
+    pre::-webkit-scrollbar { height: 4px; }
+    pre::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 3px; }
+
+    .tok-k   { color: var(--accent); }
+    .tok-s   { color: #8ec98e; }
+    html[data-theme="light"] .tok-s { color: #276727; }
+    .tok-n   { color: #f0c27f; }
+    html[data-theme="light"] .tok-n { color: #b45309; }
+    .tok-c   { color: var(--muted); font-style: italic; }
+    .tok-num { color: var(--orange); }
+
+    /* ── Param table ── */
+    .table-wrap { border: 1px solid var(--card-border); border-radius: var(--r); overflow: hidden; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--divider); background: var(--surface); }
+    th { font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 14px; text-align: left; }
+    td { padding: 12px 14px; font-size: .825rem; vertical-align: top; border-bottom: 1px solid var(--divider); color: var(--sub); line-height: 1.6; }
+    tr:last-child td { border-bottom: none; }
+
+    .pname { font-family: 'Geist', monospace; font-size: .775rem; color: var(--text); font-weight: 500; }
+    .ptype { font-family: 'Geist', monospace; font-size: .7rem; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+    .pt-str  { background: var(--green-dim);    color: var(--green);   border: 1px solid rgba(74,222,128,.2); }
+    .pt-num  { background: var(--orange-dim);   color: var(--orange);  border: 1px solid rgba(251,146,60,.2); }
+    .pt-arr  { background: var(--accent-dim);   color: var(--accent);  border: 1px solid rgba(123,139,255,.2); }
+    .pt-null { background: rgba(168,85,247,.1); color: #c084fc;         border: 1px solid rgba(168,85,247,.2); }
+    .badge-req { font-size: .62rem; font-weight: 600; letter-spacing: .05em; padding: 2px 6px; border-radius: 4px; background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
+    .badge-opt { font-size: .62rem; font-weight: 600; letter-spacing: .05em; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted); border: 1px solid var(--card-border); }
+
+    /* ── Info box ── */
+    .info-box {
+      display: flex; gap: 12px; padding: 13px 16px;
+      border-radius: var(--r-sm); margin-bottom: 20px;
+      font-size: .825rem; line-height: 1.68;
+    }
+    .info-box svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .info-box.blue   { background: var(--accent-dim); border: 1px solid rgba(123,139,255,.18); color: var(--sub); }
+    .info-box.blue   svg { stroke: var(--accent); }
+    .info-box.green  { background: var(--green-dim);  border: 1px solid rgba(74,222,128,.18);  color: var(--sub); }
+    .info-box.green  svg { stroke: var(--green); }
+    .info-box.orange { background: var(--orange-dim); border: 1px solid rgba(251,146,60,.18);  color: var(--sub); }
+    .info-box.orange svg { stroke: var(--orange); }
+
+    /* ── Feature grid ── */
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: var(--r); padding: 18px;
+      transition: border-color .18s, background .18s;
+    }
+    .feature-card:hover { border-color: var(--accent); background: var(--card-hover); }
+    .fc-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-dim); border: 1px solid rgba(123,139,255,.18); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .fc-icon svg { width: 15px; height: 15px; stroke: var(--accent); fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .fc-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: .92rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+    .fc-desc  { font-size: .79rem; color: var(--muted); line-height: 1.62; }
+
+    /* ── Think mode pills ── */
+    .think-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .think-pill { display: flex; flex-direction: column; padding: 12px 16px; border-radius: var(--r-sm); border: 1px solid var(--card-border); background: var(--card); min-width: 140px; }
+    .think-pill .tl { font-family: 'Geist', monospace; font-size: .78rem; font-weight: 600; margin-bottom: 4px; }
+    .think-pill .td { font-size: .73rem; color: var(--muted); }
+    .think-pill.low  { border-color: rgba(74,222,128,.25); }
+    .think-pill.low  .tl { color: var(--green); }
+    .think-pill.med  { border-color: rgba(251,146,60,.25); }
+    .think-pill.med  .tl { color: var(--orange); }
+    .think-pill.high { border-color: rgba(248,113,113,.25); }
+    .think-pill.high .tl { color: var(--red); }
+
+    /* ── inline code ── */
+    code { font-family: 'Geist', monospace; font-size: .78rem; background: var(--surface); border: 1px solid var(--card-border); padding: 1px 6px; border-radius: 4px; color: var(--accent); }
+
+    /* ── divider ── */
+    .divider { height: 1px; background: var(--divider); margin: 50px 0; }
+
+    /* ── Error table ── */
+    .s200 { font-family: 'Geist', monospace; font-size: .7rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(74,222,128,.2); }
+    .s400 { font-family: 'Geist', monospace; font-size: .7rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(251,146,60,.2); }
+    .s500 { font-family: 'Geist', monospace; font-size: .7rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(248,113,113,.2); }
+    .err-code { font-family: 'Geist', monospace; font-size: .77rem; color: var(--text); font-weight: 500; }
+
+    /* ── footer ── */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--divider); }
+    .footer-top { max-width: 1020px; margin: 0 auto; padding: 40px 32px 28px; display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 32px; }
+    .footer-brand-col .f-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; margin-bottom: 10px; }
+    .footer-brand-col .f-logo img { width: 22px; height: 22px; object-fit: contain; border-radius: 5px; }
+    .footer-brand-col .f-logo span { font-family: 'Bricolage Grotesque', sans-serif; font-size: .95rem; font-weight: 700; letter-spacing: -.025em; color: var(--text); }
+    .footer-brand-col p { font-size: .78rem; color: var(--muted); line-height: 1.7; max-width: 200px; }
+    .footer-col h4 { font-family: 'Bricolage Grotesque', sans-serif; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--sub); margin-bottom: 10px; }
+    .footer-col a { display: block; font-size: .78rem; color: var(--muted); text-decoration: none; margin-bottom: 8px; transition: color .14s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom { border-top: 1px solid var(--divider); max-width: 1020px; margin: 0 auto; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom span { font-size: .72rem; color: var(--muted); }
+    .footer-bottom-links { display: flex; gap: 16px; }
+    .footer-bottom-links a { font-size: .72rem; color: var(--muted); text-decoration: none; transition: color .14s; }
+    .footer-bottom-links a:hover { color: var(--text); }
+
+    /* ── toast ── */
+    .toast { position: fixed; bottom: 24px; right: 24px; z-index: 500; display: flex; align-items: center; gap: 9px; padding: 11px 16px; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--r-sm); box-shadow: var(--shadow-xl); font-size: .83rem; color: var(--text); opacity: 0; transform: translateY(10px); transition: opacity .2s, transform .2s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+    .toast-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .topbar { padding: 0 16px; }
+      .content { padding: 22px 18px 60px; }
+      .footer-top { padding: 28px 16px 20px; grid-template-columns: 1fr; gap: 20px; }
+      .footer-bottom { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="index.html">
+    <img class="logo-img" src="img/icon.png" alt="NyxoAI" onerror="this.style.display='none'">
+    <span class="logo-text">NyxoAI</span>
+  </a>
+  <div class="topbar-right">
+    <a class="buy-btn" href="payout.html">
+      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Buy Tokens
+    </a>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="iconMoon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+    <div class="avatar-wrap">
+      <button class="avatar-btn" id="avatarBtn" onclick="toggleDrop(event)"></button>
+      <div class="dropdown" id="dropdown">
+        <div class="d-head">
+          <div class="d-head-name" id="dropName">User</div>
+          <div class="d-head-role">NyxoAI account</div>
+        </div>
+        <div class="d-list">
+          <div class="d-item" onclick="window.location.href='settings.html'">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+          </div>
+          <div class="d-sep"></div>
+          <div class="d-item danger" onclick="doLogout()">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-label">Getting Started</div>
+    <a class="sidebar-item active" href="#overview">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Overview
+    </a>
+    <a class="sidebar-item" href="#auth">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Authentication
+    </a>
+    <a class="sidebar-item" href="#tokens">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Token System
+    </a>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Endpoint</div>
+    <a class="sidebar-item" href="#endpoint">
+      <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      POST /api/v1/assistant
+    </a>
+    <a class="sidebar-item" href="#params">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Parameters
+    </a>
+    <a class="sidebar-item" href="#response">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Response
+    </a>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Customization</div>
+    <a class="sidebar-item" href="#memory">
+      <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      Memory
+    </a>
+    <a class="sidebar-item" href="#skills">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Skills
+    </a>
+    <a class="sidebar-item" href="#think">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Thinking Mode
+    </a>
+    <a class="sidebar-item" href="#crawling">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Web Crawling
+    </a>
+    <a class="sidebar-item" href="#compare">
+      <svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      Compare Models
+    </a>
+    <a class="sidebar-item" href="#temperature">
+      <svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+      Temperature
+    </a>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Reference</div>
+    <a class="sidebar-item" href="#examples">
+      <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      Code Examples
+    </a>
+    <a class="sidebar-item" href="#errors">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Error Codes
+    </a>
+  </aside>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <section class="section" id="overview">
+      <div class="section-eyebrow">API Reference</div>
+      <div class="section-title">NyxoAI Assistant API</div>
+      <div class="section-sub">
+        The NyxoAI Assistant API gives you programmatic access to every model in the NyxoAI catalogue.
+        Send a message, pick a model, and get a response — with optional memory injection, skill prompts,
+        live web crawling, side-by-side model comparison, and granular thinking control.
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="fc-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <div class="fc-title">Persistent Memory</div>
+          <div class="fc-desc">Inject conversation history so the model remembers prior context across requests.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="fc-title">Skill Injection</div>
+          <div class="fc-desc">Supply domain knowledge or custom instructions to shape how the model behaves.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div class="fc-title">Web Crawling</div>
+          <div class="fc-desc">Pass URLs and the API fetches their content at runtime, grounding answers in live data.</div>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon"><svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+          <div class="fc-title">Model Comparison</div>
+          <div class="fc-desc">Run the same prompt through two models simultaneously and receive both responses.</div>
+        </div>
+      </div>
+
+      <div class="info-box blue">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>Base URL for all API requests: <code>https://nyxoai.vortexa.cloud</code></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- AUTH -->
+    <section class="section" id="auth">
+      <div class="section-eyebrow">Authentication</div>
+      <div class="section-title">API Keys</div>
+      <div class="section-sub">
+        Every request to <code>/api/v1/assistant</code> is authenticated via your <code>username</code> and
+        an <code>apiKey</code> in the request body. Keys always start with <code>nyxo_</code> and are tied
+        to your account. Generate and manage them from your settings page.
+      </div>
+
+      <div class="info-box orange">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>Never expose your API key in public repositories or client-side code. Treat it like a password.</div>
+      </div>
+
+      <h3 class="block-title">Creating an API key</h3>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">HTTP</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-create-key')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-create-key"><span class="tok-k">POST</span> https://nyxoai.vortexa.cloud/end/create-api-key
+Content-Type: application/json
+
+{
+  <span class="tok-s">"username"</span>: <span class="tok-n">"your_username"</span>,
+  <span class="tok-s">"password"</span>: <span class="tok-n">"your_password"</span>,
+  <span class="tok-s">"name"</span>:     <span class="tok-n">"my-app-key"</span>
+}</pre>
+      </div>
+      <p style="font-size:.83rem;color:var(--sub);line-height:1.72;">
+        The response is <code>{ "success": true, "name": "my-app-key", "apiKey": "nyxo_..." }</code>.
+        Save this key immediately — it is only shown once.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TOKENS -->
+    <section class="section" id="tokens">
+      <div class="section-eyebrow">Token System</div>
+      <div class="section-title">How tokens work</div>
+      <div class="section-sub">
+        NyxoAI uses a token-based billing system. New accounts start with <strong style="color:var(--text)">500 tokens</strong>.
+        Each request deducts tokens based on the byte-length of your inputs plus the model's output.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>What is counted</th><th>Cap</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>message</code></td><td>20,000 chars</td><td>The main user prompt.</td></tr>
+            <tr><td><code>memory</code></td><td>20,000 chars</td><td>Injected conversation history.</td></tr>
+            <tr><td><code>skills</code></td><td>10,000 chars</td><td>Custom instruction block.</td></tr>
+            <tr><td>Crawled URL content</td><td>50,000 chars per URL</td><td>Fetched at runtime.</td></tr>
+            <tr><td>Model output</td><td>Up to remaining balance</td><td>Actual response text deducted after reply.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box green">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>Check your remaining token balance at any time via <code>GET /end/me</code> with a valid JWT, or from your account dashboard.</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ENDPOINT -->
+    <section class="section" id="endpoint">
+      <div class="section-eyebrow">Endpoint</div>
+      <div class="section-title">POST /api/v1/assistant</div>
+      <div class="section-sub">
+        The core inference endpoint. Send a prompt, choose a model, and optionally layer in
+        memory, skills, crawled URLs, a compare model, thinking intensity, and temperature.
+      </div>
+
+      <div class="endpoint-bar">
+        <span class="method-badge">POST</span>
+        <span class="endpoint-url">https://nyxoai.vortexa.cloud/api/v1/assistant</span>
+        <button class="copy-btn-sm" onclick="copyText(this,'https://nyxoai.vortexa.cloud/api/v1/assistant')">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy URL
+        </button>
+      </div>
+
+      <div class="info-box blue">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>All requests must use JSON. Always set the <code>Content-Type: application/json</code> header.</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PARAMS -->
+    <section class="section" id="params">
+      <div class="section-eyebrow">Parameters</div>
+      <div class="section-title">Request body fields</div>
+      <div class="section-sub">All fields are sent as a flat JSON object. Required fields must always be present.</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="pname">username</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-req">required</span></td>
+              <td>Your NyxoAI account username.</td>
+            </tr>
+            <tr>
+              <td><span class="pname">apiKey</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-req">required</span></td>
+              <td>A valid API key for this account. Must start with <code>nyxo_</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="pname">message</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-req">required</span></td>
+              <td>The user's prompt or question. Max 20,000 characters.</td>
+            </tr>
+            <tr>
+              <td><span class="pname">modelKey</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-req">required</span></td>
+              <td>The key of the model to use. Retrieve valid keys from <code>GET /end/get-model-data</code> or the Models page.</td>
+            </tr>
+            <tr>
+              <td><span class="pname">memory</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>Conversation history or persistent context injected before the prompt. Max 20,000 chars. Default: <code>""</code></td>
+            </tr>
+            <tr>
+              <td><span class="pname">skills</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>Custom instructions, persona, or domain knowledge. Injected as a skill block. Max 10,000 chars. Default: <code>""</code></td>
+            </tr>
+            <tr>
+              <td><span class="pname">think</span></td>
+              <td><span class="ptype pt-str">string</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>Thinking intensity. One of <code>"LOW"</code>, <code>"MEDIUM"</code>, or <code>"HIGH"</code>. Default: <code>"LOW"</code></td>
+            </tr>
+            <tr>
+              <td><span class="pname">crawling</span></td>
+              <td><span class="ptype pt-arr">string[]</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>Array of URLs to fetch at runtime. Content is appended to the prompt context. Each URL capped at 50,000 chars. Default: <code>[]</code></td>
+            </tr>
+            <tr>
+              <td><span class="pname">compare</span></td>
+              <td><span class="ptype pt-null">string | null</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>A second model key to run the same prompt through simultaneously. Both responses are returned. Default: <code>null</code></td>
+            </tr>
+            <tr>
+              <td><span class="pname">temperature</span></td>
+              <td><span class="ptype pt-num">number</span></td>
+              <td><span class="badge-opt">optional</span></td>
+              <td>Sampling temperature. Range <code>0.0</code> (deterministic) to <code>1.0</code> (creative). Default: <code>0.5</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- RESPONSE -->
+    <section class="section" id="response">
+      <div class="section-eyebrow">Response</div>
+      <div class="section-title">Response format</div>
+      <div class="section-sub">
+        A successful response is a JSON object whose keys are the model key(s) you requested
+        and whose values are the model's text output.
+      </div>
+
+      <h3 class="block-title">Single model</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-resp-1')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-resp-1">{
+  <span class="tok-s">"meta-llama/llama-3-8b"</span>: <span class="tok-n">"The sky appears blue because of Rayleigh scattering..."</span>
+}</pre>
+      </div>
+
+      <h3 class="block-title">With compare model</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-resp-2')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-resp-2">{
+  <span class="tok-s">"meta-llama/llama-3-8b"</span>:  <span class="tok-n">"The sky appears blue because of Rayleigh scattering..."</span>,
+  <span class="tok-s">"mistralai/mistral-7b"</span>:   <span class="tok-n">"Sunlight contains all wavelengths of visible light..."</span>
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- MEMORY -->
+    <section class="section" id="memory">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Memory</div>
+      <div class="section-sub">
+        The <code>memory</code> field lets you inject previous conversation turns or any persistent facts
+        so the model can continue a stateful conversation. Because the API is stateless, your application
+        stores and passes this context on every request.
+      </div>
+
+      <div class="info-box blue">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>Memory counts toward your token usage. Keep it trimmed by storing only the most recent exchanges or a condensed summary of the conversation.</div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON — Continuing a conversation</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-memory')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-memory">{
+  <span class="tok-s">"username"</span>: <span class="tok-n">"alice"</span>,
+  <span class="tok-s">"apiKey"</span>:   <span class="tok-n">"nyxo_abc123..."</span>,
+  <span class="tok-s">"modelKey"</span>: <span class="tok-n">"meta-llama/llama-3-8b"</span>,
+  <span class="tok-s">"message"</span>:  <span class="tok-n">"What should I make for dinner?"</span>,
+  <span class="tok-s">"memory"</span>:   <span class="tok-n">"User: I am vegetarian and allergic to nuts.\nAssistant: Got it, I will keep that in mind."</span>
+}</pre>
+      </div>
+
+      <p style="font-size:.83rem;color:var(--sub);line-height:1.72;max-width:660px;">
+        Format memory as a plain-text log with a consistent separator like <code>User:</code> / <code>Assistant:</code>
+        so the model can distinguish turns. You can also store facts, preferences, or any background context here.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SKILLS -->
+    <section class="section" id="skills">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Skills</div>
+      <div class="section-sub">
+        The <code>skills</code> field injects a block of custom instructions before the user's message.
+        Use it to define a persona, restrict behavior, supply domain knowledge, or enforce a specific output format.
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON — Customer support persona</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-skills-1')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-skills-1">{
+  <span class="tok-s">"skills"</span>: <span class="tok-n">"You are a helpful customer support agent for Acme Store. Always be polite and concise. If you do not know the answer, say so and offer to escalate. Never discuss competitors."</span>
+}</pre>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON — Enforce JSON output schema</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-skills-2')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-skills-2">{
+  <span class="tok-s">"skills"</span>: <span class="tok-n">"Always respond with a valid JSON object. Schema: { \"summary\": string, \"sentiment\": \"positive\" | \"neutral\" | \"negative\", \"keywords\": string[] }. No prose, no markdown fences — only raw JSON."</span>
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- THINKING MODE -->
+    <section class="section" id="think">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Thinking Mode</div>
+      <div class="section-sub">
+        The <code>think</code> parameter controls how deeply the model reasons before responding.
+        Higher thinking modes produce more thorough, step-by-step reasoning but consume more tokens.
+      </div>
+
+      <div class="think-grid">
+        <div class="think-pill low">
+          <span class="tl">LOW</span>
+          <span class="td">Fast, direct answers. Best for simple Q&amp;A and chat.</span>
+        </div>
+        <div class="think-pill med">
+          <span class="tl">MEDIUM</span>
+          <span class="td">Balanced depth. Good for summaries and analysis tasks.</span>
+        </div>
+        <div class="think-pill high">
+          <span class="tl">HIGH</span>
+          <span class="td">Deep chain-of-thought. Best for complex reasoning and planning.</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-think')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-think">{
+  <span class="tok-s">"think"</span>:   <span class="tok-n">"HIGH"</span>,
+  <span class="tok-s">"message"</span>: <span class="tok-n">"Explain the trade-offs between microservices and a monolith architecture."</span>
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CRAWLING -->
+    <section class="section" id="crawling">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Web Crawling</div>
+      <div class="section-sub">
+        Pass an array of URLs in the <code>crawling</code> field. The server fetches each URL at request time
+        (8-second timeout per URL) and appends the page content to the prompt, grounding the model's answers
+        in live data you specify.
+      </div>
+
+      <div class="info-box orange">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>Each crawled page counts toward your token usage. URLs that fail (timeouts, 404s) are silently skipped. Only public, unauthenticated pages can be fetched.</div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON — Summarize a live article</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-crawl')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-crawl">{
+  <span class="tok-s">"username"</span>: <span class="tok-n">"alice"</span>,
+  <span class="tok-s">"apiKey"</span>:   <span class="tok-n">"nyxo_abc123..."</span>,
+  <span class="tok-s">"modelKey"</span>: <span class="tok-n">"meta-llama/llama-3-8b"</span>,
+  <span class="tok-s">"message"</span>:  <span class="tok-n">"Summarize the key points of this article."</span>,
+  <span class="tok-s">"crawling"</span>: [<span class="tok-n">"https://example.com/some-article"</span>]
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- COMPARE -->
+    <section class="section" id="compare">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Compare Models</div>
+      <div class="section-sub">
+        Set <code>compare</code> to a second model key to run your prompt through two models at the same time.
+        The response object contains an entry for each model key, making it easy to diff outputs side-by-side in your UI.
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-compare')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-compare">{
+  <span class="tok-s">"username"</span>: <span class="tok-n">"alice"</span>,
+  <span class="tok-s">"apiKey"</span>:   <span class="tok-n">"nyxo_abc123..."</span>,
+  <span class="tok-s">"modelKey"</span>: <span class="tok-n">"meta-llama/llama-3-8b"</span>,
+  <span class="tok-s">"compare"</span>:  <span class="tok-n">"mistralai/mistral-7b"</span>,
+  <span class="tok-s">"message"</span>:  <span class="tok-n">"Write a haiku about the ocean."</span>
+}</pre>
+      </div>
+
+      <p style="font-size:.83rem;color:var(--sub);line-height:1.72;max-width:660px;">
+        Input tokens are counted once, not twice. The compare model's output is tracked separately for
+        usage stats but does not double the input deduction from your balance.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TEMPERATURE -->
+    <section class="section" id="temperature">
+      <div class="section-eyebrow">Customization</div>
+      <div class="section-title">Temperature</div>
+      <div class="section-sub">
+        <code>temperature</code> controls the randomness of the model's output. Lower values produce consistent,
+        factual responses; higher values produce more creative and varied output.
+      </div>
+
+      <div class="think-grid">
+        <div class="think-pill low">
+          <span class="tl">0.0 – 0.3</span>
+          <span class="td">Precise and consistent. Best for data extraction and factual Q&amp;A.</span>
+        </div>
+        <div class="think-pill med">
+          <span class="tl">0.4 – 0.7</span>
+          <span class="td">Balanced default. Works well for general-purpose tasks.</span>
+        </div>
+        <div class="think-pill high">
+          <span class="tl">0.8 – 1.0</span>
+          <span class="td">Creative and varied. Great for brainstorming and writing.</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JSON — Creative mode</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-temp')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-temp">{
+  <span class="tok-s">"temperature"</span>: <span class="tok-num">0.9</span>,
+  <span class="tok-s">"message"</span>:     <span class="tok-n">"Give me 5 unique product names for a coffee brand."</span>
+}</pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- EXAMPLES -->
+    <section class="section" id="examples">
+      <div class="section-eyebrow">Code Examples</div>
+      <div class="section-title">Full examples</div>
+      <div class="section-sub">Ready-to-run snippets for the most common use cases.</div>
+
+      <h3 class="block-title">Minimal request — JavaScript (fetch)</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JavaScript</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-js-min')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-js-min"><span class="tok-k">const</span> response = <span class="tok-k">await</span> fetch(<span class="tok-s">"https://nyxoai.vortexa.cloud/api/v1/assistant"</span>, {
+  method:  <span class="tok-s">"POST"</span>,
+  headers: { <span class="tok-s">"Content-Type"</span>: <span class="tok-s">"application/json"</span> },
+  body: JSON.stringify({
+    username: <span class="tok-s">"alice"</span>,
+    apiKey:   <span class="tok-s">"nyxo_abc123..."</span>,
+    modelKey: <span class="tok-s">"meta-llama/llama-3-8b"</span>,
+    message:  <span class="tok-s">"What is the capital of France?"</span>
+  })
+});
+
+<span class="tok-k">const</span> data = <span class="tok-k">await</span> response.json();
+console.log(data[<span class="tok-s">"meta-llama/llama-3-8b"</span>]); <span class="tok-c">// "The capital of France is Paris."</span></pre>
+      </div>
+
+      <h3 class="block-title">Full-featured request — JavaScript</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JavaScript</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-js-full')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-js-full"><span class="tok-k">const</span> response = <span class="tok-k">await</span> fetch(<span class="tok-s">"https://nyxoai.vortexa.cloud/api/v1/assistant"</span>, {
+  method:  <span class="tok-s">"POST"</span>,
+  headers: { <span class="tok-s">"Content-Type"</span>: <span class="tok-s">"application/json"</span> },
+  body: JSON.stringify({
+    username:    <span class="tok-s">"alice"</span>,
+    apiKey:      <span class="tok-s">"nyxo_abc123..."</span>,
+    modelKey:    <span class="tok-s">"meta-llama/llama-3-8b"</span>,
+    compare:     <span class="tok-s">"mistralai/mistral-7b"</span>,     <span class="tok-c">// run both models</span>
+    message:     <span class="tok-s">"Explain neural networks simply."</span>,
+    memory:      <span class="tok-s">"User: I am a high school student.\nAssistant: Got it!"</span>,
+    skills:      <span class="tok-s">"Use simple language. Avoid jargon. Keep answers under 100 words."</span>,
+    think:       <span class="tok-s">"MEDIUM"</span>,
+    crawling:    [<span class="tok-s">"https://en.wikipedia.org/wiki/Neural_network"</span>],
+    temperature: <span class="tok-num">0.6</span>
+  })
+});
+
+<span class="tok-k">const</span> data = <span class="tok-k">await</span> response.json();
+console.log(<span class="tok-s">"Llama:"</span>,   data[<span class="tok-s">"meta-llama/llama-3-8b"</span>]);
+console.log(<span class="tok-s">"Mistral:"</span>, data[<span class="tok-s">"mistralai/mistral-7b"</span>]);</pre>
+      </div>
+
+      <h3 class="block-title">Minimal request — Python</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">Python</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-py')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-py"><span class="tok-k">import</span> requests
+
+payload = {
+    <span class="tok-s">"username"</span>:    <span class="tok-n">"alice"</span>,
+    <span class="tok-s">"apiKey"</span>:      <span class="tok-n">"nyxo_abc123..."</span>,
+    <span class="tok-s">"modelKey"</span>:    <span class="tok-n">"meta-llama/llama-3-8b"</span>,
+    <span class="tok-s">"message"</span>:     <span class="tok-n">"What is quantum entanglement?"</span>,
+    <span class="tok-s">"think"</span>:       <span class="tok-n">"HIGH"</span>,
+    <span class="tok-s">"temperature"</span>: <span class="tok-num">0.4</span>
+}
+
+resp = requests.post(
+    <span class="tok-n">"https://nyxoai.vortexa.cloud/api/v1/assistant"</span>,
+    json=payload
+)
+
+data = resp.json()
+print(data[<span class="tok-n">"meta-llama/llama-3-8b"</span>])</pre>
+      </div>
+
+      <h3 class="block-title">Stateful chat loop — JavaScript</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">JavaScript</span>
+          <button class="copy-btn-sm" onclick="copyBlock(this,'blk-chat')">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy
+          </button>
+        </div>
+        <pre id="blk-chat"><span class="tok-k">let</span> memory = <span class="tok-s">""</span>;
+
+<span class="tok-k">async function</span> chat(userMessage) {
+  <span class="tok-k">const</span> res = <span class="tok-k">await</span> fetch(<span class="tok-s">"https://nyxoai.vortexa.cloud/api/v1/assistant"</span>, {
+    method:  <span class="tok-s">"POST"</span>,
+    headers: { <span class="tok-s">"Content-Type"</span>: <span class="tok-s">"application/json"</span> },
+    body: JSON.stringify({
+      username: <span class="tok-s">"alice"</span>,
+      apiKey:   <span class="tok-s">"nyxo_abc123..."</span>,
+      modelKey: <span class="tok-s">"meta-llama/llama-3-8b"</span>,
+      message:  userMessage,
+      memory:   memory       <span class="tok-c">// pass accumulated history each turn</span>
+    })
+  });
+
+  <span class="tok-k">const</span> data  = <span class="tok-k">await</span> res.json();
+  <span class="tok-k">const</span> reply = data[<span class="tok-s">"meta-llama/llama-3-8b"</span>];
+
+  <span class="tok-c">// Append this turn so the next call has full context</span>
+  memory += <span class="tok-s">`User: ${userMessage}\nAssistant: ${reply}\n`</span>;
+  <span class="tok-k">return</span> reply;
+}
+
+<span class="tok-k">await</span> chat(<span class="tok-s">"My name is Bob."</span>);
+<span class="tok-k">await</span> chat(<span class="tok-s">"What is my name?"</span>);  <span class="tok-c">// => "Your name is Bob."</span></pre>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ERRORS -->
+    <section class="section" id="errors">
+      <div class="section-eyebrow">Reference</div>
+      <div class="section-title">Error codes</div>
+      <div class="section-sub">All error responses follow the shape <code>{ "error": "error_code" }</code>.</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>HTTP Status</th><th>Error Code</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="s200">200</span></td>
+              <td><span class="err-code">—</span></td>
+              <td>Success. Response body contains model output keyed by model name.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">400</span></td>
+              <td><span class="err-code">nyxoAI_missing_fields</span></td>
+              <td>One or more required fields (<code>username</code>, <code>apiKey</code>, <code>message</code>, <code>modelKey</code>) are missing.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">400</span></td>
+              <td><span class="err-code">nyxoAI_not_enough_tokens</span></td>
+              <td>Your balance is too low to cover the estimated input cost. Top up your tokens to continue.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">400</span></td>
+              <td><span class="err-code">nyxoAI_invalid_model</span></td>
+              <td>The <code>modelKey</code> does not exist in the model catalogue.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">400</span></td>
+              <td><span class="err-code">nyxoAI_invalid_compare_model</span></td>
+              <td>The <code>compare</code> model key does not exist.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">401</span></td>
+              <td><span class="err-code">nyxoAI_invalid_user</span></td>
+              <td>No account found matching the provided <code>username</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="s400">403</span></td>
+              <td><span class="err-code">nyxoAI_invalid_api_key</span></td>
+              <td>The <code>apiKey</code> is not associated with this account or has been revoked.</td>
+            </tr>
+            <tr>
+              <td><span class="s500">500</span></td>
+              <td><span class="err-code">nyxoAI_server_error</span></td>
+              <td>Unexpected server-side error. Retry with exponential back-off.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand-col">
+      <a class="f-logo" href="index.html">
+        <img src="img/icon.png" alt="NyxoAI" onerror="this.style.display='none'">
+        <span>NyxoAI</span>
+      </a>
+      <p>Powerful AI models, one unified API.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="models.html">Models</a>
+      <a href="payout.html">Pricing</a>
+      <a href="api-docs.html">API Reference</a>
+      <a href="#">Changelog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="api-docs.html">Documentation</a>
+      <a href="#">Guides</a>
+      <a href="#">Status</a>
+      <a href="#">Support</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span id="fYear"></span>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>
+  <span id="toastMsg">Copied</span>
+</div>
+
+<script>
+  /* ── THEME ── */
+  (function () {
+    const t = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    applyIcons(t);
+  })();
+  function applyIcons(t) {
+    document.getElementById('iconMoon').style.display = t === 'dark'  ? '' : 'none';
+    document.getElementById('iconSun').style.display  = t === 'light' ? '' : 'none';
+  }
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    applyIcons(next);
+  }
+
+  /* ── USER ── */
+  const username = (localStorage.getItem('username') || '').trim();
+  document.getElementById('dropName').textContent = username || 'User';
+  (function () {
+    const btn  = document.getElementById('avatarBtn');
+    const b64  = (localStorage.getItem('base64') || '').trim();
+    const init = (username || 'U').charAt(0).toUpperCase();
+    if (b64 && b64.startsWith('data:image')) {
+      const img = document.createElement('img');
+      img.src = b64;
+      img.onerror = () => { btn.innerHTML = ''; btn.textContent = init; };
+      btn.appendChild(img);
+    } else {
+      btn.textContent = init;
+    }
+  })();
+
+  function toggleDrop(e) { e.stopPropagation(); document.getElementById('dropdown').classList.toggle('open'); }
+  document.addEventListener('click', () => document.getElementById('dropdown').classList.remove('open'));
+  document.getElementById('dropdown').addEventListener('click', e => e.stopPropagation());
+  function doLogout() {
+    ['username','password','base64'].forEach(k => localStorage.removeItem(k));
+    window.location.href = 'login.html';
+  }
+
+  /* ── COPY ── */
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    clearTimeout(toastTimer);
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+  function copyBlock(btn, id) {
+    const text = (document.getElementById(id) || {}).innerText || '';
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Copied';
+      showToast('Code copied to clipboard');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy';
+      }, 1800);
+    }).catch(() => {});
+  }
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Copied';
+      showToast('URL copied');
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy URL';
+      }, 1800);
+    }).catch(() => {});
+  }
+
+  /* ── ACTIVE SIDEBAR ON SCROLL ── */
+  const sections     = document.querySelectorAll('.section[id]');
+  const sidebarLinks = document.querySelectorAll('.sidebar-item');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        sidebarLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  sections.forEach(s => io.observe(s));
+
+  /* ── FOOTER YEAR ── */
+  document.getElementById('fYear').textContent = `\u00a9 ${new Date().getFullYear()} NyxoAI. All rights reserved.`;
+</script>
+</body>
+</html>
