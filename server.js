@@ -539,11 +539,11 @@ app.post("/api/v1/assistant", async (req, res) => {
           );
           return response.data;
         } catch (err) {
-          console.error("Bytez API Error:", err.response?.data || err.message);
+          console.error("NyxoAI API Error:", err.response?.data || err.message);
           lastError = err;
         }
       }
-      throw lastError || new Error("All Bytez API keys failed");
+      throw lastError || new Error("The model you are trying to access might not exists.");
     };
 
     // ✅ Call main model
@@ -554,9 +554,20 @@ app.post("/api/v1/assistant", async (req, res) => {
     );
 
     if (!mainResponse) throw new Error("Model returned empty response");
+let mainTokens = extractTokens(mainResponse);
 
-    const mainTokens = extractTokens(mainResponse);
+if (!mainTokens || mainTokens === 0) {
+  const outputText =
+    mainResponse?.choices?.[0]?.message?.content ||
+    mainResponse?.choices?.[0]?.text ||
+    "";
 
+  const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
+  const outputChars = Buffer.byteLength(outputText, "utf-8");
+
+  mainTokens = inputChars + outputChars + 18;
+}
+    
     let remainingTokens = user.tokens - mainTokens;
     if (remainingTokens < 0) remainingTokens = 0;
     user.tokens = remainingTokens;
@@ -575,7 +586,19 @@ app.post("/api/v1/assistant", async (req, res) => {
         { messages: [{ role: "user", content: finalPrompt }], temperature },
         remainingTokens - 18
       );
-      const compareTokens = extractTokens(compareResponse);
+      let compareTokens = extractTokens(compareResponse);
+
+if (!compareTokens || compareTokens === 0) {
+  const outputText =
+    compareResponse?.choices?.[0]?.message?.content ||
+    compareResponse?.choices?.[0]?.text ||
+    "";
+
+  const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
+  const outputChars = Buffer.byteLength(outputText, "utf-8");
+
+  compareTokens = inputChars + outputChars + 18;
+}
 
       remainingTokens -= compareTokens;
       if (remainingTokens < 0) remainingTokens = 0;
