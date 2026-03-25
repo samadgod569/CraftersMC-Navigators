@@ -1,0 +1,1578 @@
+{
+  "o3-pro": {
+    "name": "O3 Pro",
+    "param": 2000000000000,
+    "key": "openai/o3-pro",
+    "description": "OpenAI's O3 Pro is the highest-tier reasoning model in the O-series lineup, engineered for elite-level problem solving across science, mathematics, law, and multi-step logic. It leverages advanced chain-of-thought reasoning that allows it to deliberate longer before responding, yielding significantly higher accuracy on hard benchmarks. O3 Pro is particularly well-suited for research assistance, complex code analysis, and expert-level question answering where accuracy matters more than response speed. Its estimated 2-trillion-parameter scale makes it one of the most capable models available for professional and research-grade workloads.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Pro",
+      "Reasoning",
+      "Chain-of-Thought",
+      "Research",
+      "Expert-Level",
+      "Complex Reasoning"
+    ],
+    "usage": []
+  },
+  "gpt-5.2-pro": {
+    "name": "GPT-5.2 Pro",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.2-pro",
+    "description": "GPT-5.2 Pro is a flagship text-generation model from OpenAI, representing an incremental advancement over GPT-5 with improved instruction-following, stronger factual grounding, and enhanced multi-turn dialogue coherence. Designed for professional and enterprise use cases, it excels at long-form content generation, document summarization, and nuanced conversational tasks. With an estimated 2 trillion parameters, it sits at the frontier of language model capability. GPT-5.2 Pro is ideal for developers and businesses requiring reliable, high-quality outputs at scale.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Pro",
+      "Enterprise",
+      "Instruction Following",
+      "Long Context",
+      "Text Generation"
+    ],
+    "usage": []
+  },
+  "gemini-3.1-pro-preview": {
+    "name": "Gemini 3.1 Pro Preview",
+    "param": 2000000000000,
+    "key": "google/gemini-3.1-pro-preview",
+    "description": "Gemini 3.1 Pro Preview is Google's next-generation flagship language model, offering a sneak peek at cutting-edge multimodal reasoning and instruction-following capabilities. As a preview release, it is optimized for developers and researchers who want to experiment with the latest advancements ahead of general availability. The model demonstrates strong performance on coding, scientific reasoning, and complex analytical tasks. Its 2-trillion-parameter architecture reflects Google's investment in building frontier models that rival the best in the industry.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Pro",
+      "Preview",
+      "Multimodal",
+      "Reasoning",
+      "Frontier Model",
+      "Research"
+    ],
+    "usage": []
+  },
+  "claude-sonnet-4-6": {
+    "name": "Claude Sonnet 4.6",
+    "param": 200000000000,
+    "key": "anthropic/claude-sonnet-4-6",
+    "description": "Claude Sonnet 4.6 is Anthropic's balanced workhorse model, combining strong reasoning and writing quality with fast response times and cost efficiency. It is built on Anthropic's Constitutional AI framework, ensuring helpful, harmless, and honest outputs across a wide range of tasks. Sonnet 4.6 excels at content creation, code generation, summarization, and nuanced dialogue, making it well-suited for production deployments that demand both quality and throughput. With 200 billion parameters, it occupies the sweet spot between Anthropic's lightweight Haiku and powerful Opus tiers.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Constitutional AI",
+      "Balanced",
+      "Code Generation",
+      "Content Creation",
+      "Production Ready",
+      "Fast"
+    ],
+    "usage": []
+  },
+  "gemini-3.1-flash-image-preview": {
+    "name": "Gemini 3.1 Flash Image Preview",
+    "param": 1000000000,
+    "key": "google/gemini-3.1-flash-image-preview",
+    "description": "Gemini 3.1 Flash Image Preview is Google's fast, lightweight image generation model, built for rapid creative workflows and real-time image synthesis applications. As a preview model, it showcases Gemini 3.1's multimodal capabilities with a focus on speed and accessibility over maximum detail. The model is well-suited for prototyping visual content, generating concept art, and building interactive applications where generation latency is critical. Its 1-billion-parameter footprint makes it highly deployable in resource-constrained environments.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "Google",
+      "Image Generation",
+      "Generative Art",
+      "Fast",
+      "Lightweight",
+      "Preview",
+      "Multimodal",
+      "Creative"
+    ],
+    "usage": []
+  },
+  "gpt-5.3-codex": {
+    "name": "GPT-5.3 Codex",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.3-codex",
+    "description": "GPT-5.3 Codex is OpenAI's specialized code generation model, combining the language understanding of GPT-5.3 with deep programming knowledge spanning 50+ languages including Python, JavaScript, TypeScript, Rust, Go, and more. It excels at writing, reviewing, debugging, and explaining code, as well as generating complete application boilerplate and translating between languages. With 2 trillion parameters, GPT-5.3 Codex sets a new standard for AI-assisted software development. It is ideal for IDEs, CI/CD pipelines, developer productivity tools, and automated code review systems.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text",
+      "code"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Code Generation",
+      "Developer",
+      "Programming",
+      "Debugging",
+      "Software Engineering",
+      "Multi-Language"
+    ],
+    "usage": []
+  },
+  "gpt-5.4": {
+    "name": "GPT-5.4",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.4",
+    "description": "GPT-5.4 is the latest iteration in OpenAI's GPT-5 series, delivering refined language understanding, improved factuality, and enhanced instruction adherence over its predecessors. Trained on an expansive and diverse corpus, it handles a broad spectrum of tasks including creative writing, data analysis, translation, and Q&A with high fidelity. Its 2-trillion-parameter architecture enables nuanced reasoning over long contexts, making it suitable for enterprise document processing, legal analysis, and research assistance. GPT-5.4 represents OpenAI's commitment to continuous improvement in both safety and capability.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Instruction Following",
+      "Factual Accuracy",
+      "Long Context",
+      "Enterprise",
+      "Text Generation",
+      "Analysis"
+    ],
+    "usage": []
+  },
+  "gpt-5.4-pro": {
+    "name": "GPT-5.4 Pro",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.4-pro",
+    "description": "GPT-5.4 Pro is the premium tier of OpenAI's GPT-5.4, fine-tuned for demanding professional use cases that require deeper reasoning, richer context handling, and higher output quality. It is optimized for tasks such as complex document analysis, multi-step reasoning chains, expert-level writing, and advanced coding challenges. With the full 2-trillion-parameter capacity, GPT-5.4 Pro delivers industry-leading benchmark performance and is the go-to choice for power users and enterprise teams requiring the absolute best in language model capability. It pairs well with agentic pipelines and tool-use workflows.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Pro",
+      "Advanced Reasoning",
+      "Enterprise",
+      "Agentic",
+      "Tool Use",
+      "High Performance"
+    ],
+    "usage": []
+  },
+  "gpt-5.3-chat-latest": {
+    "name": "GPT-5.3 Chat",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.3-chat-latest",
+    "description": "GPT-5.3 Chat is OpenAI's dialogue-optimized variant of GPT-5.3, fine-tuned specifically for natural, coherent, and engaging multi-turn conversations. It maintains strong context awareness across long chat sessions and excels at persona-driven interactions, customer support automation, and conversational AI applications. The model is regularly updated to reflect the latest safety and alignment improvements, making the 'latest' tag important for production chatbot deployments. With 2 trillion parameters, it delivers unmatched conversational fluency while remaining responsive and scalable.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Conversational AI",
+      "Chat",
+      "Dialogue",
+      "Customer Support",
+      "Multi-Turn",
+      "Fine-Tuned"
+    ],
+    "usage": []
+  },
+  "gpt-image-1.5": {
+    "name": "GPT Image 1.5",
+    "param": 2700000000,
+    "key": "openai/gpt-image-1.5",
+    "description": "GPT Image 1.5 is an incremental improvement of OpenAI's image generation series, offering higher fidelity outputs, better prompt adherence, and improved compositional accuracy over its predecessor. It supports a wide range of artistic styles, photorealistic rendering, and abstract concept visualization, making it versatile for both creative and commercial use cases. With 2.7 billion parameters, it strikes a strong balance between generation quality and inference speed. GPT Image 1.5 is well-suited for marketing asset creation, UI mockups, book illustration, and product visualization.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "OpenAI",
+      "Image Generation",
+      "Generative Art",
+      "Photorealistic",
+      "Creative",
+      "Prompt Adherence",
+      "Commercial Use",
+      "High Fidelity"
+    ],
+    "usage": []
+  },
+  "gpt-image-1": {
+    "name": "GPT Image 1",
+    "param": 2700000000,
+    "key": "openai/gpt-image-1",
+    "description": "GPT Image 1 is OpenAI's foundational text-to-image model, capable of generating diverse and visually compelling images from natural language descriptions. It supports a broad range of styles from photorealistic to painterly and abstract, and handles complex scene compositions with strong spatial reasoning. GPT Image 1 laid the groundwork for OpenAI's image generation capabilities and remains a reliable choice for high-quality creative applications. At 2.7 billion parameters, it delivers professional-grade outputs suitable for design, advertising, and content creation pipelines.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "OpenAI",
+      "Image Generation",
+      "Generative Art",
+      "Photorealistic",
+      "Creative",
+      "Scene Composition",
+      "Design",
+      "Text-to-Image"
+    ],
+    "usage": []
+  },
+  "gpt-image-1-mini": {
+    "name": "GPT Image 1 Mini",
+    "param": 900000000,
+    "key": "openai/gpt-image-1-mini",
+    "description": "GPT Image 1 Mini is a compact, efficient variant of OpenAI's GPT Image 1 model, designed for high-throughput image generation at reduced computational cost. It maintains solid visual quality and prompt responsiveness while sacrificing some of the fine detail and compositional complexity of the full model. With 900 million parameters, it is ideal for applications requiring rapid image generation at scale, such as social media content pipelines, real-time preview tools, and mobile-first creative apps. Its lightweight profile makes it easy to integrate into cost-sensitive production environments.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "OpenAI",
+      "Image Generation",
+      "Generative Art",
+      "Lightweight",
+      "Fast",
+      "High Throughput",
+      "Mobile Friendly",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "gemini-2.5-flash-image": {
+    "name": "Gemini 2.5 Flash Image",
+    "param": 1000000000,
+    "key": "google/gemini-2.5-flash-image",
+    "description": "Gemini 2.5 Flash Image is Google's fast and efficient text-to-image model built on the Gemini 2.5 multimodal architecture, optimized for quick image synthesis without compromising on visual quality. It is purpose-built for real-time applications such as interactive design tools, instant content previews, and dynamic visual content pipelines. The model benefits from Google's DeepMind-derived image understanding to produce coherent, contextually accurate images from complex prompts. At 1 billion parameters, it is accessible and deployable in both cloud and edge environments.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "Google",
+      "Image Generation",
+      "Generative Art",
+      "Fast",
+      "Lightweight",
+      "Real-Time",
+      "Multimodal",
+      "Text-to-Image"
+    ],
+    "usage": []
+  },
+  "gemini-3-pro-image-preview": {
+    "name": "Gemini 3 Pro Image Preview",
+    "param": 1000000000,
+    "key": "google/gemini-3-pro-image-preview",
+    "description": "Gemini 3 Pro Image Preview is Google's high-capability preview model for professional-grade image generation, showcasing the next level of visual synthesis quality powered by the Gemini 3 architecture. It targets creative professionals and enterprise applications that demand precise prompt adherence, compositional depth, and rich stylistic range. As a preview model, it invites developers to test and provide feedback before the stable release. Its 1-billion-parameter design is optimized for quality-per-compute efficiency while still delivering Pro-tier visual outputs.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "Google",
+      "Image Generation",
+      "Generative Art",
+      "Pro",
+      "Preview",
+      "Creative Professional",
+      "High Quality",
+      "Compositional Accuracy"
+    ],
+    "usage": []
+  },
+  "claude-opus-4-6": {
+    "name": "Claude Opus 4.6",
+    "param": 20000000000,
+    "key": "anthropic/claude-opus-4-6",
+    "description": "Claude Opus 4.6 is Anthropic's most powerful model in the 4.6 series, engineered for tasks requiring deep reasoning, extended analytical thinking, and high-quality long-form writing. Built on Constitutional AI principles, it reliably handles sensitive and complex topics with nuance and care, making it a trusted choice for legal, medical, and research-grade applications. Opus 4.6 excels at synthesizing large documents, constructing structured arguments, and generating production-quality code for complex software systems. At 20 billion parameters, it delivers Opus-tier quality while maintaining practical inference performance.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Pro",
+      "Constitutional AI",
+      "Deep Reasoning",
+      "Long-Form Writing",
+      "Research",
+      "Enterprise"
+    ],
+    "usage": []
+  },
+  "gpt-4o": {
+    "name": "GPT-4o",
+    "param": 100000000000,
+    "key": "openai/gpt-4o",
+    "description": "GPT-4o is OpenAI's flagship omnimodal model, capable of processing and generating text, images, audio, and video in real time within a single unified architecture. It achieves near-human response times and sets state-of-the-art benchmarks for intelligence across vision, language, and coding tasks. GPT-4o's natively multimodal design — unlike earlier models that stitched modalities together — enables fluid, context-rich interactions across formats without quality degradation. With an estimated 100 billion parameters, it is the gold standard for building advanced AI applications requiring true cross-modal understanding.",
+    "img": "img/gpt.png",
+    "category": [
+      "multimodal",
+      "text-to-text",
+      "image-to-text",
+      "reasoning",
+      "code"
+    ],
+    "tags": [
+      "OpenAI",
+      "Multimodal",
+      "Vision",
+      "Large Language Model",
+      "Real-Time",
+      "Image Understanding",
+      "Code Generation",
+      "Chain-of-Thought",
+      "Omnimodal",
+      "Developer"
+    ],
+    "usage": []
+  },
+  "vc-3.1-generate-preview": {
+    "name": "Veo 3.1 Generate Preview",
+    "param": 100000000000,
+    "key": "google/vc-3.1-generate-preview",
+    "description": "Veo 3.1 Generate Preview is Google DeepMind's latest text-to-video generation model, offering cinematic-quality video synthesis from natural language prompts at preview stage. It builds on the Veo architecture with improved temporal coherence, motion realism, and scene-level composition accuracy. Designed for filmmakers, content creators, and media production studios, it can generate short video clips with detailed lighting, physics, and camera movement control. As a preview release, it is available for early testers to evaluate cutting-edge generative video capabilities ahead of general availability.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-video"
+    ],
+    "tags": [
+      "Google",
+      "Video Generation",
+      "Generative Video",
+      "Preview",
+      "Text-to-Video",
+      "Cinematic",
+      "DeepMind",
+      "Creative"
+    ],
+    "usage": []
+  },
+  "vc-3.1-fast-generate-preview": {
+    "name": "Veo 3.1 Fast Preview",
+    "param": 25000000000,
+    "key": "google/vc-3.1-fast-generate-preview",
+    "description": "Veo 3.1 Fast Preview is the speed-optimized variant of Google's Veo 3.1 video generation model, delivering quick video synthesis for rapid iteration and prototyping workflows. It sacrifices some fine-grained detail for dramatically reduced generation latency, making it ideal for interactive applications, storyboarding tools, and real-time creative pipelines. The model maintains strong temporal consistency and scene coherence at fast generation speeds, setting it apart from earlier fast-generation approaches. Its preview status reflects active development and invites community feedback on performance and output quality.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-video"
+    ],
+    "tags": [
+      "Google",
+      "Video Generation",
+      "Generative Video",
+      "Fast",
+      "Preview",
+      "Real-Time",
+      "Prototyping",
+      "Text-to-Video"
+    ],
+    "usage": []
+  },
+  "vc-3.0-faster-generate-001": {
+    "name": "Veo 3.0 Faster Generate",
+    "param": 12000000000,
+    "key": "google/vc-3.0-faster-generate-001",
+    "description": "Veo 3.0 Faster Generate is Google's accelerated video generation model that prioritizes throughput and low latency over maximum visual fidelity. It is optimized for applications that need to generate multiple video clips quickly, such as social media content automation, advertising A/B testing pipelines, and interactive video games. Despite its speed focus, the model preserves reasonable motion coherence and scene composition, outperforming many competing fast-generation systems. It serves as the production-grade fast tier for Google's Veo video generation family.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-video"
+    ],
+    "tags": [
+      "Google",
+      "Video Generation",
+      "Generative Video",
+      "Fast",
+      "High Throughput",
+      "Production Ready",
+      "Text-to-Video",
+      "Automation"
+    ],
+    "usage": []
+  },
+  "vc-2.0-generate-001": {
+    "name": "Veo 2.0 Generate",
+    "param": 50000000000,
+    "key": "google/vc-2.0-generate-001",
+    "description": "Veo 2.0 Generate is Google DeepMind's second-generation text-to-video model, featuring substantially improved motion quality, prompt fidelity, and temporal consistency over its predecessor. It can produce realistic video sequences with nuanced camera movements, lifelike object dynamics, and natural scene transitions. Veo 2.0 is designed for professional content creation, including short film production, advertising, education, and social media, and supports fine-grained control over visual style and narrative framing. It represents Google's commitment to bringing cinematic-quality AI video generation to a broad developer audience.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-video"
+    ],
+    "tags": [
+      "Google",
+      "Video Generation",
+      "Generative Video",
+      "DeepMind",
+      "Realistic Motion",
+      "Text-to-Video",
+      "Content Creation",
+      "Cinematic"
+    ],
+    "usage": []
+  },
+  "vc-3.0-generate-001": {
+    "name": "Veo 3.0 Generate",
+    "param": 50000000000,
+    "key": "google/vc-3.0-generate-001",
+    "description": "Veo 3.0 Generate is Google DeepMind's third-generation video synthesis model, delivering state-of-the-art realism in text-to-video generation with exceptional scene understanding and physical plausibility. It introduces advanced multi-scene narrative support, richer environmental detail, and improved audio-visual alignment for a more immersive generated video experience. Veo 3.0 is targeted at professional media production, advertising agencies, and game development studios seeking high-quality generative video at scale. Its production-grade stability and output quality make it the flagship offering in the Veo family.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-video"
+    ],
+    "tags": [
+      "Google",
+      "Video Generation",
+      "Generative Video",
+      "DeepMind",
+      "Flagship",
+      "Realistic Motion",
+      "Text-to-Video",
+      "Professional Media"
+    ],
+    "usage": []
+  },
+  "gemini-3-flash-preview": {
+    "name": "Gemini 3 Flash Preview",
+    "param": 2000000000000,
+    "key": "google/gemini-3-flash-preview",
+    "description": "Gemini 3 Flash Preview is Google's ultra-fast, lightweight text generation model built on the Gemini 3 architecture, designed for applications that prioritize speed and responsiveness above all else. It provides impressive instruction-following and language comprehension capabilities in a compact form factor, making it suitable for real-time chatbots, mobile applications, and low-latency API integrations. As a preview model, it demonstrates the latest optimizations in Gemini's efficient inference path ahead of stable release. Developers can leverage it for cost-effective prototyping and high-volume use cases where inference budget is a key concern.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Fast",
+      "Lightweight",
+      "Preview",
+      "Real-Time",
+      "Low Latency",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "gpt-5.2": {
+    "name": "GPT-5.2",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.2",
+    "description": "GPT-5.2 is OpenAI's base text generation model in the GPT-5.2 line, offering a strong balance of reasoning capability, factual accuracy, and conversational fluency. It builds on GPT-5's foundation with targeted improvements in multi-hop reasoning, instruction adherence, and context retention across longer conversations. With 2 trillion parameters, GPT-5.2 is well-positioned for a wide range of professional tasks including summarization, question answering, content drafting, and data extraction. It serves as the foundation model from which the Pro variant derives its extended capabilities.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Instruction Following",
+      "Reasoning",
+      "Long Context",
+      "Text Generation",
+      "Summarization"
+    ],
+    "usage": []
+  },
+  "dall-e-3": {
+    "name": "DALL-E 3",
+    "param": 1000000000,
+    "key": "openai/dall-e-3",
+    "description": "DALL-E 3 is OpenAI's flagship text-to-image generation model, renowned for its exceptional ability to translate complex, detailed prompts into visually coherent and aesthetically rich images. Unlike earlier versions, DALL-E 3 is deeply integrated with ChatGPT for iterative prompt refinement, allowing users to describe, critique, and adjust images through natural conversation. It supports a wide variety of artistic styles — from photorealism to oil painting, sketch art, and 3D rendering — while respecting nuanced compositional requests. DALL-E 3 sets the benchmark for prompt fidelity and creative versatility in the image generation space.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "OpenAI",
+      "Image Generation",
+      "Generative Art",
+      "Photorealistic",
+      "Prompt Fidelity",
+      "Creative",
+      "Text-to-Image",
+      "Artistic Styles"
+    ],
+    "usage": []
+  },
+  "text-embedding-ada-002": {
+    "name": "Text Embedding Ada 002",
+    "param": 800000000,
+    "key": "openai/text-embedding-ada-002",
+    "description": "Text Embedding Ada 002 is OpenAI's widely-adopted second-generation embedding model, producing high-quality 1536-dimensional vector representations of text for use in semantic search, recommendation systems, clustering, and classification tasks. It replaced the older Ada, Davinci, Curie, and Babbage embedding series with a single, unified, cost-effective model that outperforms all of them. Ada 002 is particularly popular in RAG (Retrieval-Augmented Generation) architectures, where it indexes and retrieves relevant document chunks for LLMs. Its balance of embedding quality, speed, and affordability has made it the default choice for many production vector search pipelines.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "OpenAI",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "RAG",
+      "Text Retrieval",
+      "Classification",
+      "Recommendation"
+    ],
+    "usage": []
+  },
+  "text-embedding-3-small": {
+    "name": "Text Embedding 3 Small",
+    "param": 300000000,
+    "key": "openai/text-embedding-3-small",
+    "description": "Text Embedding 3 Small is OpenAI's compact third-generation embedding model, offering strong semantic representation quality at a fraction of the size and cost of its larger sibling. It produces 1536-dimensional embeddings (expandable to custom sizes) and demonstrates significant quality improvements over Ada 002 on multilingual benchmarks, especially for cross-lingual retrieval tasks. Its lightweight footprint makes it ideal for high-throughput embedding pipelines, real-time search applications, and projects with tight latency or budget constraints. Text Embedding 3 Small is the recommended entry-level choice for new embedding applications on OpenAI's platform.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "OpenAI",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "Lightweight",
+      "Multilingual",
+      "RAG",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "text-embedding-3-large": {
+    "name": "Text Embedding 3 Large",
+    "param": 1200000000,
+    "key": "openai/text-embedding-3-large",
+    "description": "Text Embedding 3 Large is OpenAI's highest-capability third-generation embedding model, producing rich 3072-dimensional vector representations for the most demanding semantic understanding and retrieval tasks. It achieves state-of-the-art performance on multilingual MTEB benchmarks and is the preferred choice when embedding quality is the top priority, such as for enterprise knowledge bases, legal document retrieval, and scientific literature search. Its larger dimensionality enables more fine-grained similarity distinctions, resulting in more accurate retrieval and clustering outcomes. Text Embedding 3 Large is the gold standard for production-grade RAG and semantic search systems.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "OpenAI",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "Pro",
+      "Multilingual",
+      "High Accuracy",
+      "Enterprise RAG"
+    ],
+    "usage": []
+  },
+  "gemini-2.5-flash": {
+    "name": "Gemini 2.5 Flash",
+    "param": 250000000000,
+    "key": "google/gemini-2.5-flash",
+    "description": "Gemini 2.5 Flash is Google's best-in-class fast language model, delivering a remarkable combination of speed, quality, and cost-efficiency that outperforms many competing models at the same latency tier. It features a 1-million-token context window, native multimodal capabilities (text, image, audio, video), and strong performance on reasoning and coding benchmarks despite its lightweight design. Gemini 2.5 Flash is a go-to model for developers building real-time applications, high-volume APIs, or latency-sensitive AI products. It is widely regarded as one of the most capable small-to-mid-size models available for production use.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Fast",
+      "Lightweight",
+      "Long Context",
+      "Multimodal",
+      "Reasoning",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "gemini-2.5-flash-lite": {
+    "name": "Gemini 2.5 Flash Lite",
+    "param": 30000000000,
+    "key": "google/gemini-2.5-flash-lite",
+    "description": "Gemini 2.5 Flash Lite is Google's most lightweight and cost-optimized language model, designed for the highest possible inference throughput at minimal compute cost. It is ideal for use cases that require extremely fast responses at massive scale, such as autocomplete systems, content classification, chat pre-screening, and edge device deployments. Despite its minimal footprint, it maintains coherent language understanding and reasonable instruction-following quality. Flash Lite is the best choice for teams building cost-sensitive pipelines where volume is the primary concern and maximum accuracy can be traded for speed and affordability.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Fast",
+      "Lightweight",
+      "Edge",
+      "High Throughput",
+      "Cost Efficient",
+      "Classification"
+    ],
+    "usage": []
+  },
+  "gpt-5-nano": {
+    "name": "GPT-5 Nano",
+    "param": 30000000000,
+    "key": "openai/gpt-5-nano",
+    "description": "GPT-5 Nano is OpenAI's ultra-compact language model, purpose-built for on-device inference, edge computing, and scenarios where model size must be minimized while retaining useful language capabilities. It is optimized for simple Q&A, short text generation, intent classification, and lightweight conversational tasks that don't require the full reasoning depth of larger models. GPT-5 Nano is ideal for mobile apps, IoT devices, browser extensions, and real-time assistants that must operate within strict memory and compute budgets. Its small footprint enables private, on-premises AI deployments without cloud infrastructure dependency.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Lightweight",
+      "Edge",
+      "On-Device",
+      "Mobile",
+      "Fast",
+      "Intent Classification"
+    ],
+    "usage": []
+  },
+  "gpt-5": {
+    "name": "GPT-5",
+    "param": 27000000000,
+    "key": "openai/gpt-5",
+    "description": "GPT-5 is OpenAI's landmark fifth-generation language model, representing a major leap in capability, alignment, and multimodal understanding over GPT-4. It demonstrates significantly improved reasoning, factual accuracy, and instruction-following across a vast range of domains including science, law, coding, creative writing, and mathematics. GPT-5 was trained with advanced RLHF and Constitutional AI-inspired techniques to reduce hallucination and improve safety. As the foundation of the GPT-5 series, it serves both as a powerful standalone model and the base from which specialized variants like GPT-5 Nano, Mini, and Pro are derived.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Reasoning",
+      "Multimodal",
+      "Instruction Following",
+      "Flagship",
+      "RLHF",
+      "Safety Aligned"
+    ],
+    "usage": []
+  },
+  "gpt-5-mini": {
+    "name": "GPT-5 Mini",
+    "param": 250000000000,
+    "key": "openai/gpt-5-mini",
+    "description": "GPT-5 Mini is OpenAI's mid-tier compact model in the GPT-5 family, striking an excellent balance between the power of GPT-5 and the speed and cost of GPT-5 Nano. It is well-suited for a wide range of everyday tasks including email drafting, document summarization, code assistance, and conversational AI applications that require solid language quality without the overhead of the full GPT-5. GPT-5 Mini inherits core reasoning improvements from GPT-5 while being optimized for lower-latency, higher-throughput deployments. It is a natural upgrade path for developers currently using GPT-3.5 Turbo or GPT-4 Mini.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Lightweight",
+      "Balanced",
+      "Fast",
+      "Cost Efficient",
+      "Conversational AI",
+      "Summarization"
+    ],
+    "usage": []
+  },
+  "text-embedding-004": {
+    "name": "Text Embedding 004",
+    "param": 8000000000,
+    "key": "openai/text-embedding-004",
+    "description": "Text Embedding 004 is OpenAI's latest-generation text embedding model, offering improved multilingual semantic understanding and higher-quality vector representations compared to previous embedding releases. It is optimized for modern RAG pipelines, cross-lingual document retrieval, and fine-grained text similarity tasks. The model supports flexible output dimensionality, enabling developers to tune the trade-off between embedding richness and storage cost. Text Embedding 004 is recommended for new projects requiring best-in-class embedding quality across both English and international language contexts.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "OpenAI",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "Multilingual",
+      "RAG",
+      "Text Retrieval",
+      "Flexible Dimensions"
+    ],
+    "usage": []
+  },
+  "gemini-embedding-001": {
+    "name": "Gemini Embedding 001",
+    "param": 12000000000,
+    "key": "google/gemini-embedding-001",
+    "description": "Gemini Embedding 001 is Google's dedicated text embedding model built on the Gemini architecture, generating high-quality vector representations for semantic search, document retrieval, and classification tasks. It leverages Gemini's deep language understanding to produce embeddings that capture nuanced semantic relationships across long contexts, including multilingual content. The model is lightweight enough for high-throughput embedding workflows while maintaining competitive quality on standard retrieval benchmarks. Gemini Embedding 001 integrates naturally with Google's Vertex AI ecosystem and Vector Search infrastructure.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "Google",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "Lightweight",
+      "Multilingual",
+      "RAG",
+      "Vertex AI"
+    ],
+    "usage": []
+  },
+  "gpt-6.1": {
+    "name": "GPT-6.1",
+    "param": 27000000000,
+    "key": "openai/gpt-6.1",
+    "description": "GPT-6.1 is OpenAI's sixth-generation language model, marking a new frontier in AI reasoning, language understanding, and multi-step problem solving. It demonstrates transformative improvements in scientific reasoning, mathematical proof generation, advanced coding, and cross-domain synthesis tasks that were previously intractable for LLMs. GPT-6.1 is designed for the most demanding professional and research use cases, including autonomous research assistance, complex systems design, and high-stakes decision support. Its unprecedented scale and training improvements represent OpenAI's vision for what truly general-purpose AI can accomplish.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Next Generation",
+      "Advanced Reasoning",
+      "Research",
+      "Frontier Model",
+      "Scientific AI",
+      "High Performance"
+    ],
+    "usage": []
+  },
+  "gpt-4-mini": {
+    "name": "GPT-4 Mini",
+    "param": 150000000,
+    "key": "openai/gpt-4-mini",
+    "description": "GPT-4 Mini is OpenAI's compact and cost-optimized version of GPT-4, offering strong language understanding and instruction-following capabilities at significantly reduced inference cost and latency. It is purpose-built for high-volume applications where the full power of GPT-4 is not always necessary, such as customer support bots, content moderation, lightweight summarization, and data classification pipelines. GPT-4 Mini was designed to make advanced AI accessible to a wider range of developers and businesses without large compute budgets. It serves as an affordable stepping stone between GPT-3.5 Turbo and full GPT-4.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Lightweight",
+      "Cost Efficient",
+      "Fast",
+      "Customer Support",
+      "Content Moderation",
+      "High Volume"
+    ],
+    "usage": []
+  },
+  "gpt-4.1": {
+    "name": "GPT-4.1",
+    "param": 900000000,
+    "key": "openai/gpt-4.1",
+    "description": "GPT-4.1 is an incremental enhancement of OpenAI's GPT-4 model, delivering improved instruction adherence, better handling of complex multi-turn conversations, and reduced hallucination rates. It introduces targeted refinements to factual consistency and nuanced reasoning that make it more reliable for professional applications like legal document review, technical writing, and structured data extraction. GPT-4.1 maintains the broad capability profile of GPT-4 while addressing specific pain points reported by enterprise users. It is fully compatible with GPT-4's API interface, allowing seamless drop-in upgrades for existing applications.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Instruction Following",
+      "Factual Accuracy",
+      "Enterprise",
+      "Legal",
+      "Technical Writing",
+      "Multi-Turn"
+    ],
+    "usage": []
+  },
+  "gpt-4.1-mini": {
+    "name": "GPT-4.1 Mini",
+    "param": 150000000,
+    "key": "openai/gpt-4.1-mini",
+    "description": "GPT-4.1 Mini is OpenAI's lightweight evolution of GPT-4 Mini, incorporating the same capability improvements of GPT-4.1 into a more compact and cost-efficient package. It offers better instruction following and reduced hallucination compared to the original GPT-4 Mini while maintaining fast inference speeds suitable for real-time applications. GPT-4.1 Mini is ideal for teams already using GPT-4 Mini who want a straightforward quality upgrade with minimal integration changes. It strikes a practical balance for high-frequency tasks like summarization, classification, and customer-facing chatbot interactions.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Lightweight",
+      "Cost Efficient",
+      "Fast",
+      "Improved Accuracy",
+      "Chatbot",
+      "Classification"
+    ],
+    "usage": []
+  },
+  "gpt-4": {
+    "name": "GPT-4",
+    "param": 50000000,
+    "key": "openai/gpt-4",
+    "description": "GPT-4 is OpenAI's landmark fourth-generation language model, widely regarded as a pivotal moment in the history of AI for its dramatic leap in reasoning, instruction-following, and creative ability over GPT-3.5. It supports both text and image inputs, enabling multimodal understanding of complex visual documents, charts, and screenshots. GPT-4 consistently outperforms prior models on professional benchmarks including the bar exam, medical licensing tests, and advanced coding competitions. Though superseded by newer versions, GPT-4 remains a robust, well-understood production model trusted by millions of developers and enterprises worldwide.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Multimodal",
+      "Vision",
+      "Reasoning",
+      "Instruction Following",
+      "Benchmark Leader",
+      "Enterprise"
+    ],
+    "usage": []
+  },
+  "gpt-3.5-turbo": {
+    "name": "GPT-3.5 Turbo",
+    "param": 175000000,
+    "key": "openai/gpt-3.5-turbo",
+    "description": "GPT-3.5 Turbo is OpenAI's high-speed, cost-effective conversational AI model that revolutionized accessible AI by powering the original ChatGPT at scale. It delivers fast, coherent responses for a broad range of tasks including customer support, content generation, summarization, and code assistance at a fraction of the cost of GPT-4. GPT-3.5 Turbo is optimized for low-latency conversational applications and remains one of the most widely deployed language models globally due to its excellent price-to-performance ratio. It is the foundational model for developers building high-volume, budget-conscious AI products.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Turbo",
+      "Fast",
+      "Cost Efficient",
+      "Conversational AI",
+      "ChatGPT",
+      "High Volume"
+    ],
+    "usage": []
+  },
+  "gpt-3.5-turbo-1106": {
+    "name": "GPT-3.5 Turbo 1106",
+    "param": 175000000,
+    "key": "openai/gpt-3.5-turbo-1106",
+    "description": "GPT-3.5 Turbo 1106 is the November 2023 snapshot of OpenAI's GPT-3.5 Turbo, featuring improved instruction adherence, significantly better JSON mode reliability, and enhanced function calling capabilities compared to earlier Turbo releases. The 1106 version introduced parallel function calling, allowing models to execute multiple tool calls simultaneously in a single response, greatly improving agentic workflow efficiency. It supports a 16K context window and is a popular choice for developers building structured output pipelines, tool-augmented agents, and reliable API integrations. This version remains pinned for consistency in production environments.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Turbo",
+      "Function Calling",
+      "Agentic",
+      "JSON Mode",
+      "16K Context",
+      "Tool Use"
+    ],
+    "usage": []
+  },
+  "gpt-3.5-turbo-16k": {
+    "name": "GPT-3.5 Turbo 16k",
+    "param": 175000000,
+    "key": "openai/gpt-3.5-turbo-16k",
+    "description": "GPT-3.5 Turbo 16k is the extended-context variant of OpenAI's GPT-3.5 Turbo, offering four times the default context window at 16,384 tokens for handling longer documents, codebases, and multi-turn conversation histories. It enables developers to process entire research papers, legal contracts, or extended chat sessions in a single API call without complex chunking strategies. Despite the larger context, it maintains the speed and cost advantages of the base Turbo model, making it ideal for document-heavy applications that need both performance and affordability. GPT-3.5 Turbo 16k was a key stepping stone before the mainstream adoption of 128K+ context models.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Turbo",
+      "Long Context",
+      "16K",
+      "Document Processing",
+      "Fast",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "o1": {
+    "name": "O1",
+    "param": 150000000,
+    "key": "openai/o1",
+    "description": "O1 is OpenAI's first reasoning-focused model, representing a paradigm shift from pure language prediction to extended internal deliberation before generating responses. It uses a chain-of-thought 'thinking' process that is invisible to the user but dramatically improves accuracy on complex mathematical proofs, competitive programming problems, and multi-step scientific reasoning tasks. O1 achieved groundbreaking results on PhD-level STEM benchmarks and competitive coding competitions, surpassing human expert performance in many domains. It is the foundational model of OpenAI's O-series reasoning line and introduced the concept of 'thinking time' as a lever for improving model accuracy.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Reasoning",
+      "Chain-of-Thought",
+      "STEM",
+      "Mathematics",
+      "Competitive Programming",
+      "Extended Thinking"
+    ],
+    "usage": []
+  },
+  "o3": {
+    "name": "O3",
+    "param": 250000000,
+    "key": "openai/o3",
+    "description": "O3 is OpenAI's third-generation reasoning model in the O-series, delivering state-of-the-art performance on the most challenging intellectual benchmarks including ARC-AGI, frontier mathematics, and advanced code generation competitions. It dramatically outperforms O1 and O2 through improved search algorithms, longer reasoning chains, and more efficient use of compute during the thinking phase. O3 is designed for AI researchers, competitive programmers, advanced scientists, and anyone tackling problems that sit at the edge of human intellectual capability. It represents a major step toward AI systems that can engage in genuine scientific discovery and complex problem solving.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Advanced Reasoning",
+      "ARC-AGI",
+      "Mathematics",
+      "Science",
+      "Chain-of-Thought",
+      "Frontier AI"
+    ],
+    "usage": []
+  },
+  "tts-1": {
+    "name": "TTS-1",
+    "param": 125000000,
+    "key": "openai/tts-1",
+    "description": "TTS-1 is OpenAI's first-generation text-to-speech synthesis model, producing natural-sounding audio from written text across six built-in voices: Alloy, Echo, Fable, Onyx, Nova, and Shimmer. It offers fast, low-latency audio generation suitable for real-time speech synthesis in voice assistants, podcast tools, accessibility applications, and interactive storytelling platforms. TTS-1 supports multiple languages and provides a simple streaming API for generating audio at scale. While optimized for speed over maximum audio fidelity, it delivers clear, intelligible speech that significantly outperforms traditional TTS systems for most everyday use cases.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-audio"
+    ],
+    "tags": [
+      "OpenAI",
+      "Audio Generation",
+      "Text-to-Speech",
+      "Voice Synthesis",
+      "Real-Time",
+      "Accessibility",
+      "Multilingual",
+      "Streaming"
+    ],
+    "usage": []
+  },
+  "whisper-1": {
+    "name": "Whisper 1",
+    "param": 155000000,
+    "key": "openai/whisper-1",
+    "description": "Whisper 1 is OpenAI's powerful automatic speech recognition (ASR) model, capable of transcribing audio in 99 languages with high accuracy and robustness to diverse accents, background noise, and audio quality variations. Trained on 680,000 hours of multilingual web audio, it achieves near-human transcription accuracy across a wide range of real-world conditions. Whisper 1 also supports audio translation directly to English, making it useful for multilingual content localization workflows. It is widely used in podcast transcription tools, meeting note-takers, accessibility features, and voice-to-text applications.",
+    "img": "img/gpt.png",
+    "category": [
+      "audio-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Speech Recognition",
+      "Transcription",
+      "Multilingual",
+      "ASR",
+      "Audio Processing",
+      "Translation",
+      "Accessibility"
+    ],
+    "usage": []
+  },
+  "anthropic/claude-3-haiku": {
+    "name": "Claude Haiku 3",
+    "param": 20000000000,
+    "key": "anthropic/claude-3-haiku-20240307",
+    "description": "Claude 3 Haiku is Anthropic's fastest and most compact model in the Claude 3 family, engineered for near-instant response times in high-throughput applications. Despite its small footprint, it delivers surprisingly capable natural language understanding, making it excellent for tasks like customer support chatbots, content moderation, real-time summarization, and lightweight coding assistance. Built with Anthropic's Constitutional AI framework, Haiku maintains strong safety properties while operating at speeds competitive with the fastest models in its class. It is the ideal entry point for developers who need Anthropic's safety-focused AI at scale and low cost.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Fast",
+      "Lightweight",
+      "Constitutional AI",
+      "Customer Support",
+      "Real-Time",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "anthropic/claude-opus-4-1": {
+    "name": "Claude Opus 4.1",
+    "param": 1000000000000,
+    "key": "anthropic/claude-opus-4-1",
+    "description": "Claude Opus 4.1 is Anthropic's advanced reasoning and writing model, offering exceptional depth of analysis, nuanced comprehension, and high-quality long-form generation across a wide range of disciplines. It represents a significant step in Anthropic's Opus series with improvements in multi-step reasoning, code generation quality, and instruction adherence for complex, open-ended tasks. Built on Constitutional AI, it handles sensitive topics with carefully calibrated nuance and is trusted for research-grade document synthesis, strategic analysis, and creative writing at professional quality. Opus 4.1 is the preferred choice for teams that require the best possible output quality from Anthropic's lineup.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Pro",
+      "Constitutional AI",
+      "Deep Reasoning",
+      "Long-Form",
+      "Research",
+      "Advanced Writing"
+    ],
+    "usage": []
+  },
+  "anthropic/claude-opus-4-5": {
+    "name": "Claude Opus 4.5",
+    "param": 1000000000000,
+    "key": "anthropic/claude-opus-4-5",
+    "description": "Claude Opus 4.5 is a refined iteration of Anthropic's premium Opus model series, incorporating targeted improvements in reasoning consistency, output reliability, and factual grounding compared to Opus 4.1. It excels at complex document understanding, multi-document synthesis, technical writing, and tasks requiring sustained analytical depth across very long contexts. Built with Anthropic's latest Constitutional AI techniques, it produces outputs that are not only high-quality but also carefully calibrated for safety, making it trusted in regulated industries like healthcare, law, and finance. Opus 4.5 is the flagship model for Anthropic's enterprise offerings requiring maximum capability.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Pro",
+      "Constitutional AI",
+      "Long Context",
+      "Enterprise",
+      "Deep Analysis",
+      "Regulated Industries"
+    ],
+    "usage": [
+      "2026-03-23[*]1"
+    ]
+  },
+  "anthropic/claude-sonnet-4-5": {
+    "name": "Claude Sonnet 4.5",
+    "param": 200000000000,
+    "key": "anthropic/claude-sonnet-4-5",
+    "description": "Claude Sonnet 4.5 is Anthropic's balanced performance model in the Claude 4.5 generation, delivering strong language quality and reasoning capabilities at practical inference speeds and costs. It improves on Sonnet 4 with better handling of complex instructions, higher coding accuracy, and improved context retention across multi-turn conversations. Sonnet 4.5 is well-suited for production applications including AI assistants, document Q&A, code review tools, and content generation pipelines that demand consistent quality without the overhead of Opus-tier models. It is Anthropic's recommendation for developers balancing capability and cost in live deployments.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Balanced",
+      "Production Ready",
+      "Code Review",
+      "Multi-Turn",
+      "Instruction Following",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "anthropic/claude-haiku-4-5": {
+    "name": "Claude Haiku 4.5",
+    "param": 20000000000,
+    "key": "anthropic/claude-haiku-4-5",
+    "description": "Claude Haiku 4.5 is Anthropic's latest ultrafast model, combining Haiku-tier speed with meaningful capability improvements from the 4.5 generation. It is engineered for latency-sensitive pipelines where sub-second response times are non-negotiable, such as real-time chat interfaces, mobile AI applications, and streaming content generation. Haiku 4.5 maintains Anthropic's Constitutional AI safety properties, ensuring responsible outputs even in high-speed, high-volume deployments. Its improved language understanding over previous Haiku versions makes it competitive with mid-tier models from other providers while retaining its lightweight inference profile.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Fast",
+      "Lightweight",
+      "Constitutional AI",
+      "Real-Time",
+      "Mobile",
+      "Streaming"
+    ],
+    "usage": [
+      "2026-03-22[*]1"
+    ]
+  },
+  "anthropic/claude-sonnet-4": {
+    "name": "Claude Sonnet 4",
+    "param": 200000000000,
+    "key": "anthropic/claude-sonnet-4-20250514",
+    "description": "Claude Sonnet 4 is Anthropic's foundational mid-tier model in the Claude 4 generation, designed to provide an excellent balance between output quality, reasoning depth, and inference efficiency. It handles a broad range of everyday and professional tasks with high reliability, including technical writing, code generation, customer interaction, and knowledge synthesis from long documents. Sonnet 4 introduced architectural improvements that enable better multi-step reasoning and more faithful adherence to complex instructions compared to Claude 3 Sonnet. It is a widely trusted production model for developers who want Anthropic's quality and safety guarantees at a practical cost.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Balanced",
+      "Production Ready",
+      "Technical Writing",
+      "Code Generation",
+      "Multi-Step Reasoning",
+      "Reliable"
+    ],
+    "usage": [
+      "2026-03-23[*]1"
+    ]
+  },
+  "anthropic/claude-opus-4": {
+    "name": "Claude Opus 4",
+    "param": 1000000000000,
+    "key": "anthropic/claude-opus-4-20250514",
+    "description": "Claude Opus 4 is Anthropic's flagship premium model in the Claude 4 generation, representing the highest level of capability in the Opus tier at that release. It excels in tasks demanding exceptional reasoning, nuanced comprehension, and masterful long-form writing, including scientific paper review, complex code architecture, legal contract analysis, and creative writing at a professional level. Claude Opus 4 is built on Anthropic's most advanced Constitutional AI training to date, delivering outputs that are not only highly capable but also carefully aligned with human values and safety expectations. It is the reference model for benchmarking Anthropic's quality ceiling.",
+    "img": "img/claude.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Anthropic",
+      "Large Language Model",
+      "Pro",
+      "Constitutional AI",
+      "Flagship",
+      "Scientific Reasoning",
+      "Legal Analysis",
+      "Creative Writing"
+    ],
+    "usage": []
+  },
+  "google/gemini-2-5-pro": {
+    "name": "Gemini 2.5 Pro",
+    "param": 1000000000000,
+    "key": "google/gemini-2.5-pro",
+    "description": "Gemini 2.5 Pro is Google's most capable general-purpose language model in the Gemini 2.5 family, combining long-context understanding, native multimodal processing, and state-of-the-art reasoning in a single, unified architecture. It features a 1-million-token context window and can process text, images, audio, video, and code simultaneously, making it uniquely powerful for complex real-world applications. Gemini 2.5 Pro consistently tops leaderboards on coding, mathematics, and reasoning benchmarks and is the backbone of Google's enterprise AI offerings on Vertex AI. It is the go-to model for developers who need maximum capability across both language and multimodal tasks.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Pro",
+      "Multimodal",
+      "Long Context",
+      "1M Tokens",
+      "Reasoning",
+      "Enterprise",
+      "Vertex AI"
+    ],
+    "usage": [
+      "2026-03-22[*]1"
+    ]
+  },
+  "google/gemini-3-pro-preview": {
+    "name": "Gemini 3 Pro Preview",
+    "param": 2000000000000,
+    "key": "google/gemini-3-pro-preview",
+    "description": "Gemini 3 Pro Preview is Google's early-access preview of its next-generation Pro-tier language model, offering developers a first look at the capabilities of the Gemini 3 architecture ahead of its stable release. It showcases advances in instruction following, multi-step reasoning, multimodal understanding, and code generation that set a new standard for what frontier AI models can accomplish. As a preview model, it enables the developer community to evaluate, test, and provide feedback before the final production release. Gemini 3 Pro Preview reflects Google's commitment to an open and iterative model development process.",
+    "img": "img/gemini.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Pro",
+      "Preview",
+      "Next Generation",
+      "Multimodal",
+      "Advanced Reasoning",
+      "Frontier AI"
+    ],
+    "usage": [
+      "2026-03-22[*]3"
+    ]
+  },
+  "deepseek-ai/DeepSeek-R1-Distill": {
+    "name": "DeepSeek R1 Distill",
+    "param": 7000000000,
+    "key": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+    "description": "DeepSeek R1 Distill is a lightweight, distilled version of DeepSeek's R1 reasoning model, designed to deliver powerful chain-of-thought reasoning in a compact and efficient architecture. The distillation process transfers the problem-solving methodology of the full R1 model into a significantly smaller form factor, enabling fast reasoning at reduced compute cost. It excels at mathematics, logical deduction, and step-by-step problem solving, making it a strong choice for educational AI tools, coding assistants, and scientific computing applications. DeepSeek R1 Distill demonstrates that high-quality reasoning can be achieved without billion-scale parameter counts through advanced distillation techniques.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "Reasoning",
+      "Lightweight",
+      "Knowledge Distillation",
+      "Mathematics",
+      "Chain-of-Thought",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "deepseek-ai/deepseek-coder-6.7b-instruct": {
+    "name": "DeepSeek Coder 6.7B",
+    "param": 6700000000,
+    "key": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "description": "DeepSeek Coder 6.7B Instruct is a fine-tuned instruction-following code generation model from DeepSeek, trained on a rich corpus of code and natural language paired with programming tasks. Despite its 6.7 billion parameter size, it delivers competitive code generation quality across popular languages including Python, JavaScript, TypeScript, Java, C++, and Rust. It supports code completion, function generation, bug fixing, documentation writing, and natural-language-to-code translation, making it a versatile tool for developer productivity. DeepSeek Coder 6.7B Instruct is an efficient, self-hostable option for teams that need strong coding AI without proprietary cloud dependencies.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text",
+      "code"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "Code Generation",
+      "Developer",
+      "Instruction Tuned",
+      "Open Source",
+      "Self-Hostable",
+      "Lightweight"
+    ],
+    "usage": [
+      "2026-03-22[*]1"
+    ]
+  },
+  "deepseek-ai/DeepSeek-R1-Distill-Llama": {
+    "name": "DeepSeek R1 Distill Llama",
+    "param": 70000000000,
+    "key": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+    "description": "DeepSeek R1 Distill Llama is a variant of DeepSeek's R1 reasoning distillation that uses Meta's LLaMA architecture as the student model, combining DeepSeek's advanced reasoning methodology with the widely-supported and community-friendly LLaMA foundation. This design choice makes it highly compatible with the open-source AI ecosystem, benefiting from extensive LLaMA tooling, quantization libraries, and deployment frameworks. It delivers strong multi-step reasoning, mathematical problem-solving, and logical inference capabilities in a deployable, open-weight format. DeepSeek R1 Distill Llama is ideal for researchers and developers who want powerful reasoning AI with maximum deployment flexibility.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "Reasoning",
+      "LLaMA Based",
+      "Open Source",
+      "Knowledge Distillation",
+      "Mathematics",
+      "Deployment Friendly"
+    ],
+    "usage": []
+  },
+  "deepseek-ai/deepseek-math-7b-instruct": {
+    "name": "DeepSeek Math 7B Instruct",
+    "param": 7000000000,
+    "key": "deepseek-ai/deepseek-math-7b-instruct",
+    "description": "DeepSeek Math 7B Instruct is a specialized 7-billion-parameter model from DeepSeek, purpose-built and fine-tuned for mathematical reasoning, proof generation, and structured problem solving. It is trained on an extensive dataset of mathematical text, competition problems, and formal proofs, enabling it to tackle everything from high school algebra to graduate-level theorems. Its instruction-tuned format allows natural language problem descriptions to be resolved with detailed, step-by-step mathematical solutions. DeepSeek Math 7B is a top performer among open-weight math models and an excellent resource for education platforms, tutoring systems, and computational research tools.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "Mathematics",
+      "Lightweight",
+      "Instruction Tuned",
+      "Reasoning",
+      "STEM",
+      "Education"
+    ],
+    "usage": []
+  },
+  "deepseek-ai/deepseek-coder-5.7b-base": {
+    "name": "DeepSeek Coder 5.7B",
+    "param": 5700000000,
+    "key": "deepseek-ai/deepseek-coder-5.7bmqa-base",
+    "description": "DeepSeek Coder 5.7B Base is the foundational pre-trained model of DeepSeek's compact code intelligence series, trained from scratch on a high-quality code corpus spanning 87 programming languages. Unlike the instruct variant, the base model is untuned and designed for further fine-tuning, adaptation, or integration into custom coding pipelines. It provides strong code understanding and completion capabilities that serve as an excellent starting point for building specialized developer tools, code search systems, or tailored code generation products. DeepSeek Coder 5.7B Base exemplifies DeepSeek's approach to open, research-grade model releases that empower the developer community.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text",
+      "code"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "Code Generation",
+      "Developer",
+      "Lightweight",
+      "Base Model",
+      "Open Source",
+      "Fine-Tuning Ready"
+    ],
+    "usage": []
+  },
+  "deepseek-ai/deepseek-v3.1": {
+    "name": "DeepSeek V3.1",
+    "param": 671000000000,
+    "key": "tiny-random/deepseek-v3.1",
+    "description": "DeepSeek V3.1 is DeepSeek's latest and most refined flagship language model, built on a sparse Mixture-of-Experts (MoE) architecture that activates only a fraction of its parameters per forward pass, enabling GPT-4-class performance at a fraction of the inference cost. It achieves top-tier results on coding, mathematics, and general knowledge benchmarks while maintaining remarkable cost efficiency, making it one of the most compelling open-weight frontier models available. DeepSeek V3.1 supports a 128K context window and excels at long-document analysis, complex instruction following, and multi-step agentic tasks. It represents DeepSeek's most significant advancement in balancing model capability with practical deployability.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "MoE",
+      "Mixture of Experts",
+      "Flagship",
+      "Long Context",
+      "Cost Efficient",
+      "Open Source"
+    ],
+    "usage": []
+  },
+  "deepseek-ai/deepseek-v3": {
+    "name": "DeepSeek V3",
+    "param": 671000000000,
+    "key": "yujiepan/deepseek-v3-tiny-random",
+    "description": "DeepSeek V3 is DeepSeek's third-generation flagship language model, utilizing a Mixture-of-Experts (MoE) architecture to deliver frontier-level performance with significantly lower active parameter counts per inference step. It demonstrated that Chinese AI labs could produce models competitive with GPT-4 and Claude 3 while keeping training and serving costs dramatically lower, making waves in the global AI community. DeepSeek V3 excels at natural language understanding, code generation, mathematics, and instruction following, supporting a 128K context window for long-document tasks. It is widely used in the open-source community and serves as the foundation for DeepSeek's subsequent V3.1 refinements.",
+    "img": "img/deepseek.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "DeepSeek",
+      "Large Language Model",
+      "MoE",
+      "Mixture of Experts",
+      "Open Source",
+      "Long Context",
+      "Cost Efficient",
+      "Competitive Performance"
+    ],
+    "usage": []
+  },
+  "openai/gpt-oss-120b": {
+    "name": "GPT OSS 120B",
+    "param": 120000000000,
+    "key": "openai/gpt-oss-120b",
+    "description": "GPT OSS 120B is OpenAI's open-source 120-billion-parameter language model, released to give the research and developer community access to a large, capable model without API dependencies or usage restrictions. It delivers strong performance on reasoning, instruction following, and code generation tasks that rival proprietary mid-tier models, while being fully deployable on local infrastructure. GPT OSS 120B enables academic researchers, enterprise data teams, and open-source contributors to build powerful AI applications with complete data privacy and control. Its open-weight nature makes it an important resource for AI safety research, model fine-tuning experiments, and custom deployment scenarios.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Open Source",
+      "Self-Hostable",
+      "Research",
+      "Data Privacy",
+      "Fine-Tuning Ready",
+      "Large Scale"
+    ],
+    "usage": []
+  },
+  "openai/gpt-oss-20b": {
+    "name": "GPT OSS 20B",
+    "param": 20000000000,
+    "key": "openai/gpt-oss-20b",
+    "description": "GPT OSS 20B is OpenAI's open-source 20-billion-parameter model, offering a balanced combination of capability and deployability for teams that need a powerful open-weight model with practical hardware requirements. It delivers solid performance on text generation, summarization, Q&A, and basic coding tasks in a package that can run on high-end consumer or professional-grade GPU hardware. GPT OSS 20B is ideal for privacy-first applications, on-premises enterprise AI, and scenarios where internet connectivity or API cost is a constraint. As an open-weight release, it enables full community-driven fine-tuning, quantization, and adaptation for specialized domain applications.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Open Source",
+      "Lightweight",
+      "Self-Hostable",
+      "Data Privacy",
+      "Fine-Tuning Ready",
+      "On-Premises"
+    ],
+    "usage": []
+  },
+  "openai/whisper-large-v3": {
+    "name": "Whisper Large v3",
+    "param": 1550000000,
+    "key": "openai/whisper-large-v3",
+    "description": "Whisper Large v3 is OpenAI's highest-accuracy automatic speech recognition model, trained on an expanded multilingual audio dataset with improved accuracy across 100+ languages, reduced word error rates, and better handling of accents, technical jargon, and overlapping speech. It produces highly accurate transcriptions even in challenging acoustic environments, making it the gold standard for professional transcription pipelines, media content captioning, and multilingual meeting notes. Whisper Large v3 also supports direct audio translation to English, enabling seamless cross-lingual content workflows. Its open-weight release has made it the most widely used high-accuracy ASR model in the open-source ecosystem.",
+    "img": "img/gpt.png",
+    "category": [
+      "speech-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Speech Recognition",
+      "Transcription",
+      "Multilingual",
+      "High Accuracy",
+      "ASR",
+      "Open Source",
+      "Audio Translation"
+    ],
+    "usage": []
+  },
+  "openai/whisper-large-v3-turbo": {
+    "name": "Whisper Large v3 Turbo",
+    "param": 809000000,
+    "key": "openai/whisper-large-v3-turbo",
+    "description": "Whisper Large v3 Turbo is a speed-optimized variant of Whisper Large v3, providing dramatically faster transcription while retaining most of the accuracy gains of the full v3 model. It uses architectural optimizations and reduced decoder depth to achieve real-time or near-real-time transcription performance, enabling live captioning, real-time meeting transcription, and time-sensitive audio processing pipelines. Despite its speed focus, it significantly outperforms Whisper Medium and Small on accuracy metrics, making it the preferred choice when both speed and quality matter. Whisper Large v3 Turbo is ideal for interactive voice applications, streaming transcription, and production deployments where latency is a key constraint.",
+    "img": "img/gpt.png",
+    "category": [
+      "speech-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Speech Recognition",
+      "Fast",
+      "Transcription",
+      "Real-Time",
+      "Streaming",
+      "ASR",
+      "Low Latency"
+    ],
+    "usage": []
+  },
+  "openai/whisper-small": {
+    "name": "Whisper Small",
+    "param": 244000000,
+    "key": "openai/whisper-small",
+    "description": "Whisper Small is OpenAI's compact automatic speech recognition model, offering fast transcription performance suitable for on-device inference and resource-constrained environments. With approximately 244 million parameters, it maintains reasonable transcription quality across major languages while being lightweight enough to run efficiently on CPU or low-end GPU hardware. Whisper Small is well-suited for mobile voice applications, browser-based transcription tools, IoT devices, and any scenario where model size and inference speed are prioritized over maximum accuracy. It is a popular choice in the open-source community for offline-capable voice note-taking, accessibility tools, and embedded AI applications.",
+    "img": "img/gpt.png",
+    "category": [
+      "speech-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Speech Recognition",
+      "Fast",
+      "Lightweight",
+      "Transcription",
+      "On-Device",
+      "Open Source",
+      "Mobile Friendly"
+    ],
+    "usage": []
+  },
+  "openai/gpt-5.1": {
+    "name": "GPT 5.1",
+    "param": 2000000000000,
+    "key": "openai/gpt-5.1",
+    "description": "GPT-5.1 is an incremental refinement of OpenAI's GPT-5, focusing on improved factual grounding, reduced hallucination, and enhanced alignment with user intent. It incorporates feedback from widespread GPT-5 deployment to address specific edge cases in reasoning, instruction following, and long-context coherence. GPT-5.1 is designed as a drop-in upgrade for existing GPT-5 integrations, providing measurable quality improvements without requiring API or prompt changes. It is a practical choice for enterprise teams that have already standardized on GPT-5 and want the benefits of continuous improvement without migrating to a fundamentally different model.",
+    "img": "img/gpt.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "OpenAI",
+      "Large Language Model",
+      "Improved Accuracy",
+      "Reduced Hallucination",
+      "Instruction Following",
+      "Enterprise",
+      "Drop-In Upgrade"
+    ],
+    "usage": [
+      "2026-03-22[*]1"
+    ]
+  },
+  "google/gemma-3-4b-it": {
+    "name": "Gemma 3 4B IT",
+    "param": 4000000000,
+    "key": "google/gemma-3-4b-it",
+    "description": "Gemma 3 4B IT is Google's instruction-tuned variant of the compact Gemma 3 4B model, fine-tuned to respond helpfully and coherently to natural language instructions across diverse tasks. It inherits the architectural advances of Gemma 3 — including improved tokenization, extended context handling, and stronger multilingual support — and applies them in a format ready for deployment in chatbots, assistants, and task-specific AI tools. Despite its 4-billion-parameter footprint, it delivers competitive quality for instruction-following tasks and is particularly attractive for teams that want a powerful open-weight model they can host privately and customize. Gemma 3 4B IT is fully compatible with standard open-source ML frameworks and inference runtimes.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Lightweight",
+      "Open Source",
+      "Privacy First",
+      "Fine-Tuning Ready",
+      "Self-Hostable"
+    ],
+    "usage": []
+  },
+  "google/gemma-3-1b-it": {
+    "name": "Gemma 3 1B IT",
+    "param": 1000000000,
+    "key": "google/gemma-3-1b-it",
+    "description": "Gemma 3 1B IT is Google's ultra-compact instruction-tuned language model, optimized for on-device and edge deployment scenarios where compute resources are severely limited. With just 1 billion parameters, it is small enough to run on smartphones, microcontrollers, embedded systems, and web browsers via WebAssembly, enabling private and offline AI experiences. Despite its tiny size, Gemma 3 1B IT demonstrates surprisingly capable language understanding and instruction-following, making it practical for use cases like on-device autocomplete, local voice assistants, and IoT AI applications. It represents the frontier of what can be achieved with extreme model compression while maintaining useful natural language capability.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Lightweight",
+      "Edge",
+      "On-Device",
+      "Open Source",
+      "Mobile",
+      "IoT"
+    ],
+    "usage": []
+  },
+  "google/gemma-3-12b-it": {
+    "name": "Gemma 3 12B IT",
+    "param": 12000000000,
+    "key": "google/gemma-3-12b-it",
+    "description": "Gemma 3 12B IT is Google's mid-size instruction-tuned open model, sitting between the compact 4B and larger Gemma variants to offer a practical balance of quality, speed, and hardware accessibility. It delivers strong performance on text generation, coding, reasoning, and question answering tasks while fitting within the memory budget of a single high-end consumer GPU, making it one of the most accessible mid-tier open models available. Gemma 3 12B IT benefits from Google's extensive research in efficient model training, resulting in disproportionately strong performance for its parameter count. It is a popular choice for developers building private, self-hosted AI applications requiring solid all-around capability.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Open Source",
+      "Balanced",
+      "Single GPU",
+      "Self-Hostable",
+      "Fine-Tuning Ready"
+    ],
+    "usage": []
+  },
+  "google/gemma-7b": {
+    "name": "Gemma 7B",
+    "param": 7000000000,
+    "key": "google/gemma-7b",
+    "description": "Gemma 7B is Google's foundational open-weight 7-billion-parameter language model, designed to be a best-in-class base for fine-tuning, research, and deployment in resource-accessible environments. It is built using the same research breakthroughs and technology that power Google's Gemini models, offering strong language comprehension, generation, and reasoning capabilities in an open format. Gemma 7B excels at downstream tasks when fine-tuned on domain-specific data and is widely used in NLP research, custom enterprise AI systems, and educational projects. Its open licensing and Google's technical backing make it one of the most credible and well-supported open-weight models in the 7B class.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Open Source",
+      "Lightweight",
+      "Base Model",
+      "Fine-Tuning Ready",
+      "Research",
+      "Gemini Architecture"
+    ],
+    "usage": []
+  },
+  "google/gemma-2b": {
+    "name": "Gemma 2B",
+    "param": 2000000000,
+    "key": "google/gemma-2b",
+    "description": "Gemma 2B is Google's smallest open-weight language model, featuring 2 billion parameters and designed for maximum accessibility in constrained compute environments including mobile devices, laptops, and embedded systems. It leverages the same architectural principles as larger Gemma and Gemini models, resulting in strong language quality relative to its size. Gemma 2B is ideal for rapid prototyping, educational exploration, on-device AI experiments, and use cases where the full inference stack must run locally with minimal hardware requirements. As a fully open-weight model from Google, it benefits from broad community support and compatibility with popular frameworks like JAX, PyTorch, and TensorFlow.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Open Source",
+      "Lightweight",
+      "On-Device",
+      "Mobile",
+      "Base Model",
+      "Edge Deployment"
+    ],
+    "usage": []
+  },
+  "google/gemma-2-2b": {
+    "name": "Gemma 2 2B",
+    "param": 2000000000,
+    "key": "google/gemma-2-2b",
+    "description": "Gemma 2 2B is Google's second-generation 2-billion-parameter open model, building on the original Gemma 2B with substantial improvements in language quality, instruction following, and safety alignment. The Gemma 2 architecture introduces knowledge distillation from larger models, enabling Gemma 2 2B to punch significantly above its weight class in language comprehension and generation tasks. It maintains the lightweight profile necessary for on-device and edge deployment while delivering noticeably better quality than the original Gemma 2B in benchmarks and real-world usage. Gemma 2 2B is Google's recommended compact model for teams building private, low-latency AI applications that prioritize open-source flexibility.",
+    "img": "img/gemma.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Google",
+      "Large Language Model",
+      "Open Source",
+      "Lightweight",
+      "On-Device",
+      "Knowledge Distillation",
+      "Improved Quality",
+      "Edge Deployment"
+    ],
+    "usage": []
+  }
+}
