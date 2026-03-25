@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NyxoAI — About · Privacy · Terms · Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237b8bff'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #09090d;
+      --surface:      #0e0e14;
+      --card:         #121218;
+      --card-border:  #1d1d27;
+      --card-hover:   #161620;
+      --text:         #ededf4;
+      --sub:          #8c8ca4;
+      --muted:        #4e4e65;
+      --accent:       #7b8bff;
+      --accent-dim:   rgba(123,139,255,.11);
+      --accent-glow:  rgba(123,139,255,.20);
+      --green:        #4ade80;
+      --green-dim:    rgba(74,222,128,.10);
+      --divider:      rgba(255,255,255,.054);
+      --shadow-xl:    0 32px 80px rgba(0,0,0,.65);
+      --shadow-md:    0 8px 32px rgba(0,0,0,.38);
+      --r:            16px;
+      --r-sm:         10px;
+    }
+
+    html[data-theme="light"] {
+      --bg:           #f4f4fa;
+      --surface:      #fafaff;
+      --card:         #ffffff;
+      --card-border:  #e0e0ec;
+      --card-hover:   #f0f0f9;
+      --text:         #0b0b18;
+      --sub:          #5a5a76;
+      --muted:        #9494ae;
+      --accent:       #4d5ee8;
+      --accent-dim:   rgba(77,94,232,.09);
+      --accent-glow:  rgba(77,94,232,.16);
+      --green:        #16a34a;
+      --green-dim:    rgba(22,163,74,.09);
+      --divider:      rgba(0,0,0,.07);
+      --shadow-xl:    0 32px 80px rgba(0,0,0,.09);
+      --shadow-md:    0 8px 32px rgba(0,0,0,.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Geist', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(ellipse 55% 45% at 10% 5%, rgba(123,139,255,.05) 0%, transparent 68%),
+                  radial-gradient(ellipse 45% 50% at 90% 92%, rgba(100,76,255,.035) 0%, transparent 68%);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 44px;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    html[data-theme="dark"]  .topbar { background: rgba(9,9,13,.85); backdrop-filter: blur(22px) saturate(1.5); }
+    html[data-theme="light"] .topbar { background: rgba(244,244,250,.88); backdrop-filter: blur(22px) saturate(1.5); }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .logo-img {
+      width: 27px;
+      height: 27px;
+      object-fit: contain;
+      border-radius: 7px;
+      background: var(--accent-dim);
+    }
+
+    .logo-text {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      color: var(--text);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .perks {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 10px;
+    }
+
+    .perk {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px 5px 9px;
+      border-radius: 40px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      white-space: nowrap;
+      cursor: default;
+      transition: border-color .16s, background .16s;
+    }
+
+    .perk:hover { border-color: var(--accent); background: var(--accent-dim); }
+
+    .perk-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--green-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .perk-icon svg {
+      width: 10px;
+      height: 10px;
+      stroke: var(--green);
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    .perk-text {
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--sub);
+    }
+
+    .perk-text strong {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: .74rem;
+      color: var(--text);
+    }
+
+    .theme-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .16s, border-color .16s, color .16s;
+    }
+
+    .theme-btn:hover { background: var(--card); border-color: var(--accent); color: var(--text); }
+    .theme-btn svg   { width: 17px; height: 17px; }
+
+    .avatar-wrap { position: relative; }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--card-border);
+      background: var(--card);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--accent);
+      transition: border-color .16s, box-shadow .16s;
+    }
+
+    .avatar-btn:hover  { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+    .avatar-btn img    { width: 100%; height: 100%; object-fit: cover; }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 210px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(-10px) scale(.96);
+      transform-origin: top right;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity .24s cubic-bezier(.16,1,.3,1), transform .24s cubic-bezier(.16,1,.3,1), visibility 0s linear .24s;
+    }
+
+    .dropdown.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+      visibility: visible;
+      transition: opacity .24s cubic-bezier(.16,1,.3,1), transform .24s cubic-bezier(.16,1,.3,1), visibility 0s linear 0s;
+    }
+
+    .dropdown.open .d-item { animation: dSlide .28s cubic-bezier(.16,1,.3,1) both; }
+    .dropdown.open .d-item:nth-child(1) { animation-delay: .04s; }
+    .dropdown.open .d-item:nth-child(2) { animation-delay: .09s; }
+    .dropdown.open .d-item:nth-child(3) { animation-delay: .14s; }
+
+    @keyframes dSlide {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .d-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--divider); }
+    .d-head-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: .9rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .d-head-role { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+    .d-list { padding: 5px 0; }
+    .d-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 16px;
+      font-size: .855rem;
+      color: var(--sub);
+      cursor: pointer;
+      transition: background .13s, color .13s;
+    }
+    .d-item:hover { background: var(--accent-dim); color: var(--accent); }
+    .d-item svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .d-item.danger { color: #e86060; }
+    .d-item.danger:hover { background: rgba(232,96,96,.09); color: #e86060; }
+    .d-sep { height: 1px; background: var(--divider); margin: 3px 0; }
+
+    .main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      max-width: 1020px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 36px 80px;
+    }
+
+    .section-nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+      border-bottom: 1px solid var(--divider);
+      padding-bottom: 20px;
+    }
+
+    .section-tab {
+      background: transparent;
+      border: none;
+      padding: 8px 20px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600;
+      font-size: .95rem;
+      border-radius: 40px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all .2s;
+    }
+
+    .section-tab.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .section-tab:hover:not(.active) {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--card-border);
+    }
+
+    .content-panel {
+      display: none;
+      animation: fadeUp .4s ease;
+    }
+
+    .content-panel.active-panel {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-about {
+      margin-bottom: 48px;
+    }
+
+    .hero-about h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: -.04em;
+      margin-bottom: 16px;
+    }
+
+    .hero-about .lead {
+      font-size: 1.05rem;
+      color: var(--sub);
+      line-height: 1.6;
+      border-left: 3px solid var(--accent);
+      padding-left: 20px;
+    }
+
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 48px 0;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .policy-block {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+
+    .policy-block h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .policy-block p, .policy-block li {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .policy-block ul {
+      padding-left: 24px;
+      margin: 16px 0;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .blog-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: transform .2s, border-color .2s;
+    }
+
+    .blog-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+    }
+
+    .blog-img {
+      height: 140px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .blog-content {
+      padding: 22px;
+    }
+
+    .blog-date {
+      font-size: .7rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    .blog-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .blog-excerpt {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .discord-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      width: 100%;
+      background: linear-gradient(120deg, rgba(88,101,242,.13) 0%, rgba(123,139,255,.10) 100%);
+      border: 1px solid rgba(88,101,242,.32);
+      border-radius: var(--r);
+      padding: 22px 28px;
+      margin: 56px 0 40px;
+      flex-wrap: wrap;
+    }
+
+    .discord-banner-text {
+      font-size: .95rem;
+      color: var(--sub);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .discord-banner-text strong {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .discord-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 22px;
+      background: #5865f2;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .875rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background .18s, transform .18s;
+      box-shadow: 0 4px 18px rgba(88,101,242,.35);
+    }
+
+    .discord-btn:hover { background: #4752c4; transform: translateY(-2px); }
+    .discord-btn svg { width: 20px; height: 20px; fill: #fff; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--divider);
+    }
+
+    .footer-top {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 48px 36px 36px;
+      display: grid;
+      grid-template-columns: 1.8fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .footer-brand-col .f-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      margin-bottom: 14px;
+    }
+
+    .footer-brand-col .f-logo img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .footer-brand-col .f-logo span {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .footer-brand-col p {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 230px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 14px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: .82rem;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color .14s;
+    }
+
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--divider);
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-bottom span { font-size: .76rem; color: var(--muted); }
+    .footer-bottom-links { display: flex; gap: 20px; }
+    .footer-bottom-links a { font-size: .76rem; color: var(--muted); text-decoration: none; transition: color .14s; }
+    .footer-bottom-links a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      .perks { display: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .topbar { padding: 0 20px; }
+      .main { padding: 32px 20px 60px; }
+    }
+    @media (max-width: 640px) {
+      .footer-top { grid-template-columns: 1fr; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="logo" href="#">
+      <img class="logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237b8bff'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E" alt="NyxoAI">
+      <span class="logo-text">NyxoAI</span>
+    </a>
+    <div class="nav-right">
+      <div class="perks">
+        <div class="perk"><div class="perk-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="perk-text"><strong>Free</strong> 500 tokens</span></div>
+        <div class="perk"><div class="perk-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="perk-text">No rate limit</span></div>
+        <div class="perk"><div class="perk-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="perk-text">Powerful models</span></div>
+      </div>
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none"><circle cx="12" cy="12" r="5" fill="currentColor"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+      </button>
+      <div class="avatar-wrap">
+        <button class="avatar-btn" id="avatarBtn" onclick="toggleDrop(event)"></button>
+        <div class="dropdown" id="dropdown">
+          <div class="d-head"><div class="d-head-name" id="dropName">User</div><div class="d-head-role">NyxoAI account</div></div>
+          <div class="d-list"><div class="d-item" onclick="goSettings()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div><div class="d-sep"></div><div class="d-item danger" onclick="doLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</div></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="section-nav">
+      <button class="section-tab active" data-tab="about">📖 About Us</button>
+      <button class="section-tab" data-tab="privacy">🔒 Privacy Policy</button>
+      <button class="section-tab" data-tab="terms">⚖️ Terms of Service</button>
+      <button class="section-tab" data-tab="blog">📰 Blog</button>
+    </div>
+
+    <!-- About Us Panel -->
+    <div id="about" class="content-panel active-panel">
+      <div class="hero-about">
+        <h1>Unify AI. <span style="color:var(--accent)">Build smarter.</span></h1>
+        <div class="lead">NyxoAI is the unified API layer that connects you to the world's most powerful models — GPT, Claude, Gemini, DeepSeek — with zero compromise on privacy and speed.</div>
+      </div>
+      <div class="grid-stats">
+        <div class="stat-card"><div class="stat-number">10+</div><div>Leading Models</div></div>
+        <div class="stat-card"><div class="stat-number">500</div><div>Free Tokens</div></div>
+        <div class="stat-card"><div class="stat-number">99.9%</div><div>Uptime SLA</div></div>
+        <div class="stat-card"><div class="stat-number">∞</div><div>No Rate Limit</div></div>
+      </div>
+      <div class="policy-block">
+        <h3>Our mission</h3>
+        <p>We believe AI infrastructure should be transparent, blazing fast, and truly developer-first. NyxoAI was born to eliminate the hassle of juggling multiple API keys, inconsistent billing, and hidden data policies. We give you one key, one dashboard, and access to every frontier model you actually need.</p>
+        <p>Founded by engineers who got tired of vendor lock-in, we built NyxoAI to be the neutral, open core for generative AI. Join thousands of developers who ship faster with Nyxo.</p>
+      </div>
+    </div>
+
+    <!-- Privacy Policy Panel -->
+    <div id="privacy" class="content-panel">
+      <div class="policy-block"><h3>🔐 Your data stays yours</h3><p>At NyxoAI, privacy isn’t an afterthought. We do not log, store, or train on any request payload. All data transmitted is ephemeral and strictly used to serve your inference. We never sell user data or share identifiable information with third parties.</p></div>
+      <div class="policy-block"><h3>📦 What we collect</h3><p>We collect only essential account information (email, billing details) and aggregated usage metrics for system health. No prompts, completions, or API request contents are persisted beyond delivery.</p></div>
+      <div class="policy-block"><h3>🔒 Security & compliance</h3><p>All connections are TLS 1.3 encrypted. API keys are hashed at rest. We comply with GDPR & CCPA — you can request data deletion anytime from your dashboard.</p></div>
+    </div>
+
+    <!-- Terms of Service Panel -->
+    <div id="terms" class="content-panel">
+      <div class="policy-block"><h3>📜 1. Acceptance of Terms</h3><p>By using NyxoAI services, you agree to be bound by these Terms. If you're using on behalf of an organization, you represent authority to bind them.</p></div>
+      <div class="policy-block"><h3>💰 2. Billing & Payments</h3><p>All usage is billed based on token consumption. Free tier includes 500 tokens upon signup. Payments are processed securely; refunds are handled per our fair usage policy.</p></div>
+      <div class="policy-block"><h3>🚫 3. Acceptable Use</h3><p>You may not use NyxoAI for illegal activities, harassment, or to build competing API services. We reserve the right to suspend accounts violating these terms.</p></div>
+      <div class="policy-block"><h3>🛡️ 4. Limitation of Liability</h3><p>NyxoAI provides the service “as is”. We are not liable for any indirect damages arising from use of our API.</p></div>
+    </div>
+
+    <!-- Blog Panel -->
+    <div id="blog" class="content-panel">
+      <div class="blog-grid">
+        <div class="blog-card"><div class="blog-img">🚀</div><div class="blog-content"><div class="blog-date">Mar 12, 2025</div><div class="blog-title">Introducing GPT-5.4 on NyxoAI</div><div class="blog-excerpt">Massive 1M context window, now available with zero latency overhead. Upgrade your agentic workflows.</div></div></div>
+        <div class="blog-card"><div class="blog-img">🔐</div><div class="blog-content"><div class="blog-date">Feb 28, 2025</div><div class="blog-title">Privacy-first AI: Our 2025 audit</div><div class="blog-excerpt">We passed SOC2 Type II with flying colors. Here’s what it means for your data sovereignty.</div></div></div>
+        <div class="blog-card"><div class="blog-img">⚡</div><div class="blog-content"><div class="blog-date">Feb 10, 2025</div><div class="blog-title">No rate limit: why we removed throttles</div><div class="blog-excerpt">Scaling infrastructure to handle massive throughput without sacrificing stability.</div></div></div>
+        <div class="blog-card"><div class="blog-img">🧠</div><div class="blog-content"><div class="blog-date">Jan 22, 2025</div><div class="blog-title">DeepSeek R2 & Claude 4.6 benchmarks</div><div class="blog-excerpt">We compare reasoning, coding and latency across the top 4 models. Spoiler: each has a superpower.</div></div></div>
+        <div class="blog-card"><div class="blog-img">🎁</div><div class="blog-content"><div class="blog-date">Dec 15, 2024</div><div class="blog-title">500 free tokens for every new user</div><div class="blog-excerpt">Start building today with zero commitment — no credit card required. Claim your credits instantly.</div></div></div>
+        <div class="blog-card"><div class="blog-img">📊</div><div class="blog-content"><div class="blog-date">Nov 30, 2024</div><div class="blog-title">Usage analytics dashboard launch</div><div class="blog-excerpt">Track token spend per model, set budgets, and get real-time insights into your API usage.</div></div></div>
+      </div>
+    </div>
+
+    <div class="discord-banner">
+      <div class="discord-banner-text">You have a chance to win <strong>120B</strong> tokens for free. Join our Discord community and claim yours!</div>
+      <a class="discord-btn" href="https://discord.gg/82f7VFguWp" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.175 13.175 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/></svg>Join Discord</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand-col"><a class="f-logo" href="#"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237b8bff'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E" alt="NyxoAI"><span>NyxoAI</span></a><p>Powerful AI models, one unified API. Built for developers who move fast.</p></div>
+      <div class="footer-col"><h4>Product</h4><a href="#">Models</a><a href="#">Pricing</a><a href="#">API Reference</a></div>
+      <div class="footer-col"><h4>Resources</h4><a href="#">Documentation</a><a href="#">Guides</a><a href="#">Status</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="#">About</a><a href="#">Blog</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="footer-bottom"><span id="fYear"></span><div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Cookie Settings</a></div></div>
+  </footer>
+
+  <script>
+    (function(){let t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);applyIcons(t);})();
+    function applyIcons(t){document.getElementById('iconMoon').style.display=t==='dark'?'':'none';document.getElementById('iconSun').style.display=t==='light'?'':'none';}
+    function toggleTheme(){let html=document.documentElement,next=html.getAttribute('data-theme')==='dark'?'light':'dark';html.setAttribute('data-theme',next);localStorage.setItem('theme',next);applyIcons(next);}
+    let username=(localStorage.getItem('username')||'').trim();document.getElementById('dropName').textContent=username||'User';
+    (function(){let btn=document.getElementById('avatarBtn'),b64=(localStorage.getItem('base64')||'').trim(),init=(username||'U').charAt(0).toUpperCase();if(b64&&b64.startsWith('data:image')){let img=document.createElement('img');img.src=b64;img.onerror=()=>{btn.innerHTML='';btn.textContent=init;};btn.appendChild(img);}else{btn.textContent=init;}})();
+    function toggleDrop(e){e.stopPropagation();document.getElementById('dropdown').classList.toggle('open');}
+    document.addEventListener('click',()=>document.getElementById('dropdown').classList.remove('open'));
+    document.getElementById('dropdown').addEventListener('click',e=>e.stopPropagation());
+    function goSettings(){window.location.href='settings.html';}
+    function doLogout(){['username','password','base64'].forEach(k=>localStorage.removeItem(k));window.location.href='login.html';}
+    document.getElementById('fYear').textContent=`© ${new Date().getFullYear()} NyxoAI. All rights reserved.`;
+
+    const tabs=document.querySelectorAll('.section-tab');
+    const panels={about:document.getElementById('about'),privacy:document.getElementById('privacy'),terms:document.getElementById('terms'),blog:document.getElementById('blog')};
+    function activateTab(tabId){
+      Object.keys(panels).forEach(id=>{panels[id].classList.remove('active-panel');});
+      panels[tabId].classList.add('active-panel');
+      tabs.forEach(btn=>{btn.classList.remove('active');if(btn.getAttribute('data-tab')===tabId)btn.classList.add('active');});
+    }
+    tabs.forEach(btn=>{btn.addEventListener('click',()=>{let tab=btn.getAttribute('data-tab');if(tab)activateTab(tab);});});
+    if(window.location.hash){let hash=window.location.hash.slice(1);if(panels[hash])activateTab(hash);}
+  </script>
+</body>
+</html>
