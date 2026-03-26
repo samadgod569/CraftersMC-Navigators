@@ -1,45 +1,6 @@
 {
-  "o3-pro": {
-    "name": "O3 Pro",
-    "param": 2000000000000,
-    "key": "openai/o3-pro",
-    "description": "OpenAI's O3 Pro is the highest-tier reasoning model in the O-series lineup, engineered for elite-level problem solving across science, mathematics, law, and multi-step logic. It leverages advanced chain-of-thought reasoning that allows it to deliberate longer before responding, yielding significantly higher accuracy on hard benchmarks. O3 Pro is particularly well-suited for research assistance, complex code analysis, and expert-level question answering where accuracy matters more than response speed. Its estimated 2-trillion-parameter scale makes it one of the most capable models available for professional and research-grade workloads.",
-    "img": "img/gpt.png",
-    "category": [
-      "text-to-text"
-    ],
-    "tags": [
-      "OpenAI",
-      "Large Language Model",
-      "Pro",
-      "Reasoning",
-      "Chain-of-Thought",
-      "Research",
-      "Expert-Level",
-      "Complex Reasoning"
-    ],
-    "usage": []
-  },
-  "gpt-5.2-pro": {
-    "name": "GPT-5.2 Pro",
-    "param": 2000000000000,
-    "key": "openai/gpt-5.2-pro",
-    "description": "GPT-5.2 Pro is a flagship text-generation model from OpenAI, representing an incremental advancement over GPT-5 with improved instruction-following, stronger factual grounding, and enhanced multi-turn dialogue coherence. Designed for professional and enterprise use cases, it excels at long-form content generation, document summarization, and nuanced conversational tasks. With an estimated 2 trillion parameters, it sits at the frontier of language model capability. GPT-5.2 Pro is ideal for developers and businesses requiring reliable, high-quality outputs at scale.",
-    "img": "img/gpt.png",
-    "category": [
-      "text-to-text"
-    ],
-    "tags": [
-      "OpenAI",
-      "Large Language Model",
-      "Pro",
-      "Enterprise",
-      "Instruction Following",
-      "Long Context",
-      "Text Generation"
-    ],
-    "usage": []
-  },
+
+
   "gemini-3.1-pro-preview": {
     "name": "Gemini 3.1 Pro Preview",
     "param": 2000000000000,
@@ -146,27 +107,7 @@
     ],
     "usage": []
   },
-  "gpt-5.4-pro": {
-    "name": "GPT-5.4 Pro",
-    "param": 2000000000000,
-    "key": "openai/gpt-5.4-pro",
-    "description": "GPT-5.4 Pro is the premium tier of OpenAI's GPT-5.4, fine-tuned for demanding professional use cases that require deeper reasoning, richer context handling, and higher output quality. It is optimized for tasks such as complex document analysis, multi-step reasoning chains, expert-level writing, and advanced coding challenges. With the full 2-trillion-parameter capacity, GPT-5.4 Pro delivers industry-leading benchmark performance and is the go-to choice for power users and enterprise teams requiring the absolute best in language model capability. It pairs well with agentic pipelines and tool-use workflows.",
-    "img": "img/gpt.png",
-    "category": [
-      "text-to-text"
-    ],
-    "tags": [
-      "OpenAI",
-      "Large Language Model",
-      "Pro",
-      "Advanced Reasoning",
-      "Enterprise",
-      "Agentic",
-      "Tool Use",
-      "High Performance"
-    ],
-    "usage": []
-  },
+  
   "gpt-5.3-chat-latest": {
     "name": "GPT-5.3 Chat",
     "param": 2000000000000,
