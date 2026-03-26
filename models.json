@@ -659,11 +659,11 @@
     ],
     "usage": []
   },
-  "gpt-6.1": {
-    "name": "GPT-6.1",
+  "gpt-5.1-pro": {
+    "name": "GPT-5.1-Pro",
     "param": 27000000000,
-    "key": "openai/gpt-6.1",
-    "description": "GPT-6.1 is OpenAI's sixth-generation language model, marking a new frontier in AI reasoning, language understanding, and multi-step problem solving. It demonstrates transformative improvements in scientific reasoning, mathematical proof generation, advanced coding, and cross-domain synthesis tasks that were previously intractable for LLMs. GPT-6.1 is designed for the most demanding professional and research use cases, including autonomous research assistance, complex systems design, and high-stakes decision support. Its unprecedented scale and training improvements represent OpenAI's vision for what truly general-purpose AI can accomplish.",
+    "key": "openai/gpt-5.1",
+    "description": "GPT-5.1 pro is OpenAI's sixth-generation language model, marking a new frontier in AI reasoning, language understanding, and multi-step problem solving. It demonstrates transformative improvements in scientific reasoning, mathematical proof generation, advanced coding, and cross-domain synthesis tasks that were previously intractable for LLMs. GPT-6.1 is designed for the most demanding professional and research use cases, including autonomous research assistance, complex systems design, and high-stakes decision support. Its unprecedented scale and training improvements represent OpenAI's vision for what truly general-purpose AI can accomplish.",
     "img": "img/gpt.png",
     "category": [
       "text-to-text"
@@ -1020,50 +1020,7 @@
       "2026-03-22[*]1"
     ]
   },
-  "anthropic/claude-sonnet-4": {
-    "name": "Claude Sonnet 4",
-    "param": 200000000000,
-    "key": "anthropic/claude-sonnet-4-20250514",
-    "description": "Claude Sonnet 4 is Anthropic's foundational mid-tier model in the Claude 4 generation, designed to provide an excellent balance between output quality, reasoning depth, and inference efficiency. It handles a broad range of everyday and professional tasks with high reliability, including technical writing, code generation, customer interaction, and knowledge synthesis from long documents. Sonnet 4 introduced architectural improvements that enable better multi-step reasoning and more faithful adherence to complex instructions compared to Claude 3 Sonnet. It is a widely trusted production model for developers who want Anthropic's quality and safety guarantees at a practical cost.",
-    "img": "img/claude.png",
-    "category": [
-      "text-to-text"
-    ],
-    "tags": [
-      "Anthropic",
-      "Large Language Model",
-      "Balanced",
-      "Production Ready",
-      "Technical Writing",
-      "Code Generation",
-      "Multi-Step Reasoning",
-      "Reliable"
-    ],
-    "usage": [
-      "2026-03-23[*]1"
-    ]
-  },
-  "anthropic/claude-opus-4": {
-    "name": "Claude Opus 4",
-    "param": 1000000000000,
-    "key": "anthropic/claude-opus-4-20250514",
-    "description": "Claude Opus 4 is Anthropic's flagship premium model in the Claude 4 generation, representing the highest level of capability in the Opus tier at that release. It excels in tasks demanding exceptional reasoning, nuanced comprehension, and masterful long-form writing, including scientific paper review, complex code architecture, legal contract analysis, and creative writing at a professional level. Claude Opus 4 is built on Anthropic's most advanced Constitutional AI training to date, delivering outputs that are not only highly capable but also carefully aligned with human values and safety expectations. It is the reference model for benchmarking Anthropic's quality ceiling.",
-    "img": "img/claude.png",
-    "category": [
-      "text-to-text"
-    ],
-    "tags": [
-      "Anthropic",
-      "Large Language Model",
-      "Pro",
-      "Constitutional AI",
-      "Flagship",
-      "Scientific Reasoning",
-      "Legal Analysis",
-      "Creative Writing"
-    ],
-    "usage": []
-  },
+  
   "google/gemini-2-5-pro": {
     "name": "Gemini 2.5 Pro",
     "param": 1000000000000,
