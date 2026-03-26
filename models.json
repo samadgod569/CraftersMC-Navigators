@@ -1451,5 +1451,255 @@
       "Edge Deployment"
     ],
     "usage": []
+  },
+  
+  "mistral/mistral-embed": {
+    "name": "Mistral Embed",
+    "param": 750000000,
+    "key": "mistral/mistral-embed",
+    "description": "Mistral Embed is Mistral AI's dedicated text embedding model, designed for high-performance semantic search, retrieval-augmented generation (RAG), and document clustering tasks. It produces high-dimensional vector representations optimized for both multilingual and code-heavy content, delivering strong results on MTEB benchmarks. With its compact architecture, it balances embedding quality with inference speed, making it a practical choice for production search pipelines and knowledge base retrieval systems.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-embedding"
+    ],
+    "tags": [
+      "Mistral",
+      "Embeddings",
+      "Vector Search",
+      "Semantic Search",
+      "RAG",
+      "Multilingual",
+      "Text Retrieval"
+    ],
+    "usage": []
+  },
+  "mistral/mistral-medium": {
+    "name": "Mistral Medium",
+    "param": 35000000000,
+    "key": "mistral/mistral-medium-2505",
+    "description": "Mistral Medium 2505 is a balanced mid-tier language model from Mistral AI, optimized for strong performance across reasoning, instruction following, and text generation at a cost-efficient scale. It builds on Mistral's open-weight philosophy, offering a blend of quality and speed suitable for enterprise deployments, conversational AI, and content generation. The model supports a large context window and excels at tasks requiring nuanced understanding and structured outputs.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Balanced",
+      "Enterprise",
+      "Instruction Following",
+      "Text Generation",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "mistral/mistral-medium": {
+    "name": "Mistral Medium",
+    "param": 35000000000,
+    "key": "mistral/mistral-medium-2508",
+    "description": "Mistral Medium 2508 is an updated iteration of Mistral's Medium series, featuring incremental improvements in factual grounding, reasoning depth, and multilingual support compared to its predecessor. It maintains the same efficient architecture while delivering better performance on complex multi-step tasks and long-context retention. This version is ideal for teams that require consistent, high-quality outputs for customer-facing applications, data analysis, and agentic workflows.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Balanced",
+      "Updated",
+      "Long Context",
+      "Reasoning",
+      "Multilingual"
+    ],
+    "usage": []
+  },
+  "mistral/mistral-large": {
+    "name": "Mistral Large",
+    "param": 123000000000,
+    "key": "mistral/mistral-large-2411",
+    "description": "Mistral Large 2411 is Mistral AI's flagship high-performance model, designed to compete with top-tier frontier models on reasoning, coding, and multilingual benchmarks. With a massive parameter count and advanced training techniques, it delivers exceptional results on complex professional tasks including legal analysis, scientific research, and enterprise-grade software development. It supports a 128k context window and is optimized for agentic architectures, tool use, and structured output generation.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Flagship",
+      "Frontier Model",
+      "Reasoning",
+      "Code Generation",
+      "Enterprise",
+      "Long Context"
+    ],
+    "usage": []
+  },
+  "mistral/codestral": {
+    "name": "Codestral",
+    "param": 22000000000,
+    "key": "mistral/codestral-2508",
+    "description": "Codestral 2508 is Mistral AI's specialized code generation and understanding model, trained on a diverse corpus of programming languages, frameworks, and technical documentation. It excels at code completion, refactoring, bug detection, and natural language-to-code translation across popular languages like Python, JavaScript, Java, C++, Rust, and Go. With a 128k token context window, it can handle entire codebases or long technical documents in a single pass, making it a powerful tool for developer productivity and AI-assisted software engineering.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text",
+      "code"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Code Generation",
+      "Developer",
+      "Programming",
+      "Long Context",
+      "Software Engineering"
+    ],
+    "usage": []
+  },
+  "mistral/codestral-embed": {
+    "name": "Codestral Embed",
+    "param": 450000000,
+    "key": "mistral/codestral-embed",
+    "description": "Codestral Embed is Mistral AI's specialized embedding model optimized for code and technical content. It produces vector representations that capture semantic relationships in programming languages, code structures, and technical documentation, enabling precise code search, duplicate detection, and retrieval-augmented coding assistants. Its compact size makes it ideal for integration into IDEs, code search engines, and developer tooling pipelines.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-embedding",
+      "code"
+    ],
+    "tags": [
+      "Mistral",
+      "Embeddings",
+      "Code Search",
+      "Developer",
+      "Vector Search",
+      "RAG",
+      "Programming"
+    ],
+    "usage": []
+  },
+  "mistral/voxtral-mini": {
+    "name": "Voxtral Mini",
+    "param": 8000000000,
+    "key": "mistral/voxtral-mini-2507",
+    "description": "Voxtral Mini 2507 is Mistral AI's compact speech-to-text and text-to-speech foundation model, designed for real-time voice applications with low latency and efficient resource usage. It handles transcription, voice command interpretation, and natural speech synthesis with a focus on European language support and accent robustness. Voxtral Mini is well-suited for voice assistants, interactive voice response systems, and accessibility tools that require fast, on-device speech processing.",
+    "img": "img/mistral.png",
+    "category": [
+      "speech-to-text",
+      "text-to-audio"
+    ],
+    "tags": [
+      "Mistral",
+      "Speech Recognition",
+      "Text-to-Speech",
+      "Real-Time",
+      "Voice Assistant",
+      "Lightweight",
+      "Multilingual"
+    ],
+    "usage": []
+  },
+  "mistral/magistral-medium": {
+    "name": "Magistral Medium",
+    "param": 40000000000,
+    "key": "mistral/magistral-medium-2509",
+    "description": "Magistral Medium 2509 is Mistral AI's specialized model for legal, compliance, and regulatory text processing, fine-tuned on a vast corpus of case law, statutes, contracts, and legal documents. It excels at contract analysis, legal research summarization, risk assessment, and drafting legal language with high precision. Built on Mistral's medium-scale architecture, it balances deep domain expertise with practical inference costs, making it ideal for law firms, compliance teams, and corporate legal departments.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Legal AI",
+      "Compliance",
+      "Contract Analysis",
+      "Domain Specific",
+      "Regulatory"
+    ],
+    "usage": []
+  },
+  "mistral/devstral-medium": {
+    "name": "Devstral Medium",
+    "param": 35000000000,
+    "key": "mistral/devstral-medium-2507",
+    "description": "Devstral Medium 2507 is Mistral AI's developer-focused language model, optimized for software engineering workflows, API documentation generation, and technical support automation. It combines strong code understanding with natural language capabilities, making it effective for tasks like generating technical docs, explaining complex codebases, and assisting with architecture design. Devstral is fine-tuned on developer forums, technical blogs, and open-source repositories to align with developer needs.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text",
+      "code"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Developer",
+      "Technical Documentation",
+      "Code Understanding",
+      "API Generation",
+      "DevTools"
+    ],
+    "usage": []
+  },
+  "mistral/pixtral-large": {
+    "name": "Pixtral Large",
+    "param": 125000000000,
+    "key": "mistral/pixtral-large-2411",
+    "description": "Pixtral Large 2411 is Mistral AI's flagship multimodal model, capable of understanding and reasoning across images, charts, documents, and text in a unified architecture. It excels at visual question answering, document understanding (including tables and complex layouts), and multi-modal reasoning tasks. Pixtral Large sets a new standard for open-weight multimodal models, enabling developers to build sophisticated applications that require both visual and textual comprehension without compromising on performance.",
+    "img": "img/mistral.png",
+    "category": [
+      "multimodal",
+      "text-to-text",
+      "image-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Multimodal",
+      "Vision",
+      "Large Language Model",
+      "Document Understanding",
+      "Visual Reasoning",
+      "Flagship"
+    ],
+    "usage": []
+  },
+  "mistral/ministral-8b": {
+    "name": "Ministral 8B",
+    "param": 8000000000,
+    "key": "mistral/ministral-8b-2410",
+    "description": "Ministral 8B 2410 is Mistral AI's compact 8-billion-parameter language model, delivering strong performance for its size across a wide range of tasks including summarization, classification, conversational AI, and lightweight coding. It is designed for edge deployment, cost-sensitive production environments, and applications where model size is constrained. Ministral punches above its weight class, offering competitive quality against larger models while maintaining fast inference speeds and a small memory footprint.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Lightweight",
+      "Edge",
+      "Fast",
+      "Cost Efficient",
+      "Compact"
+    ],
+    "usage": []
+  },
+  "mistral/ministral-3b": {
+    "name": "Ministral 3B",
+    "param": 3000000000,
+    "key": "mistral/ministral-3b-2410",
+    "description": "Ministral 3B 2410 is Mistral AI's ultra-lightweight language model, optimized for on-device inference, mobile applications, and resource-constrained environments. With just 3 billion parameters, it maintains solid language understanding, instruction-following, and basic reasoning capabilities suitable for real-time chat, text auto-completion, and lightweight content moderation. Its small size enables private, offline AI experiences on smartphones, IoT devices, and embedded systems.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Lightweight",
+      "On-Device",
+      "Mobile",
+      "Edge",
+      "Fast",
+      "Privacy First"
+    ],
+    "usage": []
   }
+
 }
