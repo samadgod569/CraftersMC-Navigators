@@ -1700,6 +1700,314 @@
       "Privacy First"
     ],
     "usage": []
+  },
+  
+  "Qwen/Qwen1.5-1.8B": {
+    "name": "Qwen 1.5 1.8B",
+    "param": 1800000000,
+    "key": "Qwen/Qwen1.5-1.8B",
+    "description": "Qwen 1.5 1.8B is a compact language model from Alibaba Cloud's Qwen series, designed for lightweight deployment and efficient inference. With 1.8 billion parameters, it strikes a balance between capability and resource efficiency, making it suitable for edge devices, mobile applications, and scenarios requiring fast response times. It supports multilingual understanding and basic instruction following, serving as an accessible entry point for developers building cost-effective AI applications.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Lightweight",
+      "Edge",
+      "Multilingual",
+      "Cost Efficient"
+    ],
+    "usage": []
+  },
+  "Qwen/Qwen3-4B": {
+    "name": "Qwen 3 4B",
+    "param": 4000000000,
+    "key": "Qwen/Qwen3-4B",
+    "description": "Qwen 3 4B is the base version of Alibaba's third-generation 4-billion-parameter language model, featuring architectural improvements over Qwen 2.5 for better reasoning, multilingual support, and context handling. As a foundational model, it is designed for further fine-tuning on specialized tasks and serves as a strong starting point for domain-specific applications. Qwen 3 models leverage advanced training techniques to deliver competitive performance relative to their parameter count.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Base Model",
+      "Fine-Tuning Ready",
+      "Multilingual",
+      "Reasoning"
+    ],
+    "usage": []
+  },
+  "Qwen/Qwen3-1.7B": {
+    "name": "Qwen 3 1.7B",
+    "param": 1700000000,
+    "key": "Qwen/Qwen3-1.7B",
+    "description": "Qwen 3 1.7B is a compact language model in Alibaba's Qwen 3 series, optimized for efficient deployment in resource-constrained environments. With 1.7 billion parameters, it delivers solid language understanding and generation capabilities while maintaining a small memory footprint suitable for edge computing, mobile AI, and real-time applications. It inherits the architectural improvements of the Qwen 3 family, including enhanced multilingual support and better instruction adherence.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Lightweight",
+      "Edge",
+      "Mobile",
+      "Fast"
+    ],
+    "usage": []
+  },
+  "Qwen/Qwen3-0.6B": {
+    "name": "Qwen 3 0.6B",
+    "param": 600000000,
+    "key": "Qwen/Qwen3-0.6B",
+    "description": "Qwen 3 0.6B is Alibaba's ultra-compact language model, featuring just 600 million parameters for maximum efficiency and minimal resource requirements. It is purpose-built for extreme edge deployments, IoT devices, browser-based AI via WebAssembly, and scenarios where model size is the primary constraint. Despite its tiny footprint, it maintains usable language understanding, text generation, and basic instruction-following capabilities, enabling private and offline AI experiences on virtually any platform.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Ultra Lightweight",
+      "Edge",
+      "IoT",
+      "On-Device",
+      "Browser"
+    ],
+    "usage": []
+  },
+  "fal-ai/qwen-image": {
+    "name": "Qwen Image",
+    "param": 2700000000,
+    "key": "fal-ai/qwen-image",
+    "description": "Qwen Image is Alibaba's text-to-image generation model, optimized for high-quality visual synthesis from natural language prompts. It supports a wide range of artistic styles, from photorealism to illustrative and conceptual art, with strong prompt adherence and compositional accuracy. Qwen Image is designed for creative professionals, marketing teams, and content creators seeking a versatile image generation tool that balances quality with inference speed.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-image"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Image Generation",
+      "Generative Art",
+      "Text-to-Image",
+      "Creative",
+      "Prompt Adherence"
+    ],
+    "usage": []
+  },
+  "Qwen/Qwen3-4B-Instruct": {
+    "name": "Qwen 3 4B Instruct",
+    "param": 4000000000,
+    "key": "Qwen/Qwen3-4B-Instruct-2507",
+    "description": "Qwen 3 4B Instruct 2507 is the instruction-tuned variant of Alibaba's Qwen 3 4B model, optimized for conversational AI, task completion, and interactive applications. It has been fine-tuned on high-quality instruction datasets to improve response helpfulness, safety alignment, and coherence across multi-turn interactions. This model is ideal for chatbots, virtual assistants, and applications requiring natural, instruction-following dialogue with strong multilingual support.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Conversational AI",
+      "Chatbot",
+      "Multilingual"
+    ],
+    "usage": []
+  },
+  "Qwen/Qwen2.5-1.5B-Instruct": {
+    "name": "Qwen 2.5 1.5B Instruct",
+    "param": 1500000000,
+    "key": "Qwen/Qwen2.5-1.5B-Instruct",
+    "description": "Qwen 2.5 1.5B Instruct is an instruction-tuned compact model from Alibaba's Qwen 2.5 series, offering strong conversational capabilities in a lightweight 1.5-billion-parameter package. It is fine-tuned for natural dialogue, task completion, and instruction following, making it suitable for chatbots, customer service automation, and lightweight AI assistants. Its small size enables efficient deployment on edge devices, mobile platforms, and cost-sensitive production environments.",
+    "img": "img/qwen.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Alibaba",
+      "Qwen",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Lightweight",
+      "Conversational AI",
+      "Edge"
+    ],
+    "usage": []
+  },
+  "mistralai/Mistral-7B-Instruct-v0.3": {
+    "name": "Mistral 7B Instruct v0.3",
+    "param": 7000000000,
+    "key": "mistralai/Mistral-7B-Instruct-v0.3",
+    "description": "Mistral 7B Instruct v0.3 is the latest instruction-tuned version of Mistral AI's foundational 7-billion-parameter model, delivering enhanced conversational abilities, improved instruction adherence, and better safety alignment. It builds on the strong performance of Mistral 7B with fine-tuning that makes it particularly effective for chat applications, task-oriented dialogues, and general-purpose assistant roles. The model maintains the efficient architecture of the original while offering a more refined user experience out of the box.",
+    "img": "img/mistral.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Mistral",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Conversational AI",
+      "Lightweight",
+      "Chat",
+      "Open Source"
+    ],
+    "usage": []
+  },
+  "hurrutia/meta-llama-sft": {
+    "name": "Meta LLaMA SFT",
+    "param": 7000000000,
+    "key": "hurrutia/meta-llama-sft",
+    "description": "Meta LLaMA SFT is a supervised fine-tuned variant of Meta's LLaMA architecture, optimized for improved instruction following and conversational quality. This community-developed model builds on the LLaMA base with additional training on curated instruction datasets to enhance helpfulness, coherence, and task completion capabilities. It is well-suited for developers seeking a fine-tuned LLaMA-based model for chat applications, assistants, and general-purpose text generation.",
+    "img": "img/llama.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Meta",
+      "LLaMA",
+      "Large Language Model",
+      "Instruction Tuned",
+      "Fine-Tuned",
+      "Open Source",
+      "Conversational AI"
+    ],
+    "usage": []
+  },
+  "meta-llama/Llama-2-7b-chat-hf": {
+    "name": "Llama 2 7B Chat",
+    "param": 7000000000,
+    "key": "meta-llama/Llama-2-7b-chat-hf",
+    "description": "Llama 2 7B Chat is Meta's official 7-billion-parameter conversational model, fine-tuned for dialogue applications with a focus on safety, helpfulness, and natural interaction. As part of the Llama 2 family, it was one of the most influential open-weight chat models, setting a new standard for accessible, commercially-usable language models. It excels at multi-turn conversations, instruction following, and maintains strong safety guardrails through reinforcement learning from human feedback (RLHF).",
+    "img": "img/llama.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Meta",
+      "LLaMA",
+      "Large Language Model",
+      "Chat",
+      "Conversational AI",
+      "RLHF",
+      "Open Source",
+      "Commercial Use"
+    ],
+    "usage": []
+  },
+  "meta-llama/Prompt-Guard-86M": {
+    "name": "Prompt Guard 86M",
+    "param": 86000000,
+    "key": "meta-llama/Prompt-Guard-86M",
+    "description": "Prompt Guard 86M is Meta's compact 86-million-parameter classifier model designed to detect and filter potentially harmful or malicious prompts before they reach a language model. It serves as a lightweight safety layer for LLM deployments, identifying prompt injection attempts, jailbreak attempts, and content policy violations. Prompt Guard is ideal for adding an extra safety filter to production AI systems with minimal latency overhead.",
+    "img": "img/llama.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Meta",
+      "LLaMA",
+      "Safety",
+      "Prompt Guard",
+      "Classifier",
+      "Content Moderation",
+      "Prompt Injection Detection",
+      "Lightweight"
+    ],
+    "usage": []
+  },
+  "meta-llama/Llama-Prompt-Guard-2-86M": {
+    "name": "Llama Prompt Guard 2 86M",
+    "param": 86000000,
+    "key": "meta-llama/Llama-Prompt-Guard-2-86M",
+    "description": "Llama Prompt Guard 2 86M is Meta's second-generation prompt safety classifier, building on the original Prompt Guard with improved detection capabilities for evolving prompt injection techniques and jailbreak patterns. With 86 million parameters, it remains extremely lightweight while offering enhanced accuracy in identifying malicious inputs before they are processed by larger language models. This model is an essential component for production AI systems requiring robust safety guardrails.",
+    "img": "img/llama.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Meta",
+      "LLaMA",
+      "Safety",
+      "Prompt Guard",
+      "Classifier",
+      "Content Moderation",
+      "Prompt Injection Detection",
+      "Updated"
+    ],
+    "usage": []
+  },
+  "thewordsmiths/Meta-Llama-3-8B_sft_merged": {
+    "name": "Meta Llama 3 8B SFT Merged",
+    "param": 8000000000,
+    "key": "thewordsmiths/Meta-Llama-3-8B_sft_merged",
+    "description": "Meta Llama 3 8B SFT Merged is a community-developed supervised fine-tuned variant of Meta's Llama 3 8B model, merged with additional training to enhance instruction-following and conversational capabilities. This model builds on the strong foundation of Llama 3 with fine-tuning on curated datasets to improve helpfulness, coherence, and response quality across a variety of tasks. It is well-suited for developers seeking an enhanced Llama 3-based model for chat applications and general-purpose assistants.",
+    "img": "img/llama.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Meta",
+      "LLaMA",
+      "Large Language Model",
+      "Llama 3",
+      "Instruction Tuned",
+      "Fine-Tuned",
+      "Open Source"
+    ],
+    "usage": []
+  },
+  "zai-org/glm-edge-4b-chat": {
+    "name": "GLM Edge 4B Chat",
+    "param": 4000000000,
+    "key": "zai-org/glm-edge-4b-chat",
+    "description": "GLM Edge 4B Chat is Zhipu AI's compact conversational model from the GLM (General Language Model) family, optimized for edge deployment and efficient inference. With 4 billion parameters, it balances conversational quality with resource efficiency, making it suitable for on-device assistants, mobile applications, and scenarios requiring low-latency responses. GLM Edge models leverage Zhipu's expertise in Chinese-language understanding while maintaining strong multilingual capabilities.",
+    "img": "img/glm.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Zhipu AI",
+      "GLM",
+      "Large Language Model",
+      "Chat",
+      "Edge",
+      "Lightweight",
+      "Chinese",
+      "Multilingual"
+    ],
+    "usage": []
+  },
+  "THUDM/glm-edge-1.5b-chat": {
+    "name": "GLM Edge 1.5B Chat",
+    "param": 1500000000,
+    "key": "THUDM/glm-edge-1.5b-chat",
+    "description": "GLM Edge 1.5B Chat is Zhipu AI's ultra-compact conversational model, featuring 1.5 billion parameters for maximum efficiency in resource-constrained environments. It is purpose-built for on-device deployment, mobile AI assistants, and edge applications where model size is critical. Despite its small footprint, it delivers coherent conversations, basic instruction following, and strong Chinese-language support. GLM Edge 1.5B is ideal for developers building private, offline AI experiences on smartphones, IoT devices, and embedded systems.",
+    "img": "img/glm.png",
+    "category": [
+      "text-to-text"
+    ],
+    "tags": [
+      "Zhipu AI",
+      "GLM",
+      "Large Language Model",
+      "Chat",
+      "Ultra Lightweight",
+      "Edge",
+      "On-Device",
+      "Chinese"
+    ],
+    "usage": []
   }
+
 
 }
