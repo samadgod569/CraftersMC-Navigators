@@ -648,15 +648,30 @@ if (!compareTokens || compareTokens === 0) {
 
     res.json(result);
 
-  } catch (err) {
-    console.error("NyxoAI ERROR:", err);
-    if (err.response) {
-      return res.status(err.response.status || 500).json({
-        message: err.message,
-        providerError: err.response.data
-      });
-    }
-    return res.status(500).json({ message: err.message, stack: err.stack });
+} catch (err) {
+  console.error("NyxoAI ERROR:", err);
+
+  const clean = (input) => {
+    if (!input) return input;
+    let str = typeof input === "string" ? input : JSON.stringify(input);
+
+    return str
+      .replace(/bytez/gi, "NyxoAI")
+      .replace(/https?:\/\/bytez[^\s"]*/gi, "")
+      .replace(/https?:\/\/discord\.gg[^\s"]*/gi, "");
+  };
+
+  if (err.response) {
+    return res.status(err.response.status || 500).json({
+      message: clean(err.message),
+      providerError: clean(err.response.data)
+    });
+  }
+
+  return res.status(500).json({
+    message: clean(err.message),
+    stack: clean(err.stack)
+  });
   }
 });
       
