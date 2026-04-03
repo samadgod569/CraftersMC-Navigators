@@ -386,8 +386,6 @@ app.post("/end/delete-account", async (req, res) => {
 });
 app.post("/api/v1/assistant", async (req, res) => {
   let {
-    username,
-    apiKey,
     message,
     memory = "",
     skills = "",
@@ -398,19 +396,34 @@ app.post("/api/v1/assistant", async (req, res) => {
     temperature = 0.5
   } = req.body || {};
 
-  if (!username || !apiKey || !message || !modelKey)
+  // ✅ Extract API key from Authorization header
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "nyxoAI_missing_api_key" });
+  }
+  const apiKey = authHeader.split(" ")[1].trim();
+
+  if (!apiKey || !message || !modelKey)
     return res.status(400).json({ error: "nyxoAI_missing_fields" });
 
   try {
     // ✅ Read user DB
     const db = await readDB();
-    const user = db.users.find(u => u.username === username);
-    if (!user) return res.status(401).json({ error: "nyxoAI_invalid_user" });
 
-    // ✅ Validate API key
-    const apiKeys = await readApiKeys();
-    if (!apiKeys[username] || !Object.values(apiKeys[username]).includes(apiKey))
-      return res.status(403).json({ error: "nyxoAI_invalid_api_key" });
+    // ✅ Find the user by API key
+    const apiKeys = await readApiKeys(); // { username: { keyName: keyValue, ... }, ... }
+    let usernameFound = null;
+    for (let username in apiKeys) {
+      if (Object.values(apiKeys[username]).includes(apiKey)) {
+        usernameFound = username;
+        break;
+      }
+    }
+
+    if (!usernameFound) return res.status(403).json({ error: "nyxoAI_invalid_api_key" });
+
+    const user = db.users.find(u => u.username === usernameFound);
+    if (!user) return res.status(401).json({ error: "nyxoAI_invalid_user" });
 
     if (!Array.isArray(crawling)) crawling = [];
 
@@ -449,17 +462,15 @@ app.post("/api/v1/assistant", async (req, res) => {
       }
     }
 
-    // ✅ FIX: max_new_tokens = output budget, NOT reduced by input size.
-    //    usedTokens is only used to check the user has enough balance overall.
-    //    Subtracting it from max_new_tokens was wrongly shrinking the output window.
+    // ✅ Max tokens
     let max_new_tokens = user.tokens;
     if (max_new_tokens > 128000) max_new_tokens = 128000;
-    max_new_tokens = max_new_tokens - 18;
+    max_new_tokens -= 18;
 
     if (max_new_tokens - usedTokens <= 0)
       return res.status(400).json({ error: "nyxoAI_not_enough_tokens" });
 
-    // ✅ Build final prompt
+    // ✅ Build prompt
     let finalPrompt = "";
     if (memory) finalPrompt += `THIS IS YOUR MEMORY:\n${memory}\n\n`;
     if (skills) finalPrompt += `THIS IS YOUR SKILLS:\n${skills}\n\n`;
@@ -472,9 +483,7 @@ app.post("/api/v1/assistant", async (req, res) => {
     if (!mainModel)
       return res.status(400).json({ error: "nyxoAI_invalid_model" });
 
-    // ✅ FIX: Full extractTokens matching the first endpoint.
-    //    The second version was missing `response?.provider?.usage?.total_tokens`
-    //    as an explicit fallback, causing many provider formats to return 0.
+    // ✅ extractTokens function (same as your current code)
     function extractTokens(response) {
       const usage =
         response?.provider?.usage ||
@@ -490,7 +499,7 @@ app.post("/api/v1/assistant", async (req, res) => {
       const providerTotal =
         usage.total_tokens ||
         usage.totalTokens ||
-        response?.provider?.usage?.total_tokens || // <-- was missing in v2
+        response?.provider?.usage?.total_tokens ||
         0;
 
       const openaiStyle =
@@ -543,7 +552,7 @@ app.post("/api/v1/assistant", async (req, res) => {
           lastError = err;
         }
       }
-      throw lastError || new Error("The model you are trying to access might not exists.");
+      throw lastError || new Error("The model you are trying to access might not exist.");
     };
 
     // ✅ Call main model
@@ -553,21 +562,20 @@ app.post("/api/v1/assistant", async (req, res) => {
       max_new_tokens
     );
 
-    if (!mainResponse) throw new Error("Model returned empty response");
-let mainTokens = extractTokens(mainResponse);
+    // ✅ Token counting & fallback
+    let mainTokens = extractTokens(mainResponse);
+    if (!mainTokens || mainTokens === 0) {
+      const outputText =
+        mainResponse?.choices?.[0]?.message?.content ||
+        mainResponse?.choices?.[0]?.text ||
+        "";
 
-if (!mainTokens || mainTokens === 0) {
-  const outputText =
-    mainResponse?.choices?.[0]?.message?.content ||
-    mainResponse?.choices?.[0]?.text ||
-    "";
+      const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
+      const outputChars = Buffer.byteLength(outputText, "utf-8");
 
-  const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
-  const outputChars = Buffer.byteLength(outputText, "utf-8");
+      mainTokens = inputChars + outputChars + 18;
+    }
 
-  mainTokens = inputChars + outputChars + 18;
-}
-    
     let remainingTokens = user.tokens - mainTokens;
     if (remainingTokens < 0) remainingTokens = 0;
     user.tokens = remainingTokens;
@@ -575,7 +583,7 @@ if (!mainTokens || mainTokens === 0) {
     let result = {};
     result[modelKey] = mainResponse;
 
-    // ✅ Compare model (optional)
+    // ✅ Optional compare model (same as your current code)
     if (compare) {
       const compareModel = models[compare];
       if (!compareModel)
@@ -586,19 +594,19 @@ if (!mainTokens || mainTokens === 0) {
         { messages: [{ role: "user", content: finalPrompt }], temperature },
         remainingTokens - 18
       );
+
       let compareTokens = extractTokens(compareResponse);
+      if (!compareTokens || compareTokens === 0) {
+        const outputText =
+          compareResponse?.choices?.[0]?.message?.content ||
+          compareResponse?.choices?.[0]?.text ||
+          "";
 
-if (!compareTokens || compareTokens === 0) {
-  const outputText =
-    compareResponse?.choices?.[0]?.message?.content ||
-    compareResponse?.choices?.[0]?.text ||
-    "";
+        const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
+        const outputChars = Buffer.byteLength(outputText, "utf-8");
 
-  const inputChars = Buffer.byteLength(finalPrompt, "utf-8");
-  const outputChars = Buffer.byteLength(outputText, "utf-8");
-
-  compareTokens = inputChars + outputChars + 18;
-}
+        compareTokens = inputChars + outputChars + 18;
+      }
 
       remainingTokens -= compareTokens;
       if (remainingTokens < 0) remainingTokens = 0;
@@ -607,28 +615,13 @@ if (!compareTokens || compareTokens === 0) {
       result[compare] = compareResponse;
     }
 
-    // ✅ Extract readable output text
-    let outputText = "";
-    if (mainResponse?.choices?.[0]?.message?.content)
-      outputText = mainResponse.choices[0].message.content;
-    else if (mainResponse?.choices?.[0]?.text)
-      outputText = mainResponse.choices[0].text;
-    else if (mainResponse?.output?.[0]?.content?.[0]?.text)
-      outputText = mainResponse.output[0].content[0].text;
-    else if (mainResponse?.output?.[0]?.embedding)
-      outputText = JSON.stringify(mainResponse.output[0].embedding);
-    else
-      outputText = JSON.stringify(mainResponse);
-
     // ✅ Save history
     const date = new Date().toISOString().split("T")[0];
     if (!user.history) user.history = [];
     user.history.unshift({ model: modelKey, token: String(mainTokens), date });
     if (user.history.length > 30) user.history.pop();
 
-    // ✅ FIX: Track mainModel.usage (was missing in v2 entirely)
     if (!Array.isArray(mainModel.usage)) mainModel.usage = [];
-
     let foundMain = false;
     mainModel.usage = mainModel.usage.map(entry => {
       if (entry.startsWith(date + "[*]")) {
@@ -639,41 +632,40 @@ if (!compareTokens || compareTokens === 0) {
       }
       return entry;
     });
-
     if (!foundMain) mainModel.usage.unshift(`${date}[*]1`);
     if (mainModel.usage.length > 30) mainModel.usage.pop();
 
     await writeDB(db);
-    await fs.writeFile("./models.json", JSON.stringify(models, null, 2)); // was missing in v2
+    await fs.writeFile("./models.json", JSON.stringify(models, null, 2));
 
     res.json(result);
 
-} catch (err) {
-  console.error("NyxoAI ERROR:", err);
+  } catch (err) {
+    console.error("NyxoAI ERROR:", err);
 
-  const clean = (input) => {
-    if (!input) return input;
-    let str = typeof input === "string" ? input : JSON.stringify(input);
+    const clean = (input) => {
+      if (!input) return input;
+      let str = typeof input === "string" ? input : JSON.stringify(input);
+      return str
+        .replace(/bytez/gi, "NyxoAI")
+        .replace(/https?:\/\/bytez[^\s"]*/gi, "")
+        .replace(/https?:\/\/discord\.gg[^\s"]*/gi, "");
+    };
 
-    return str
-      .replace(/bytez/gi, "NyxoAI")
-      .replace(/https?:\/\/bytez[^\s"]*/gi, "")
-      .replace(/https?:\/\/discord\.gg[^\s"]*/gi, "");
-  };
+    if (err.response) {
+      return res.status(err.response.status || 500).json({
+        message: clean(err.message),
+        providerError: clean(err.response.data)
+      });
+    }
 
-  if (err.response) {
-    return res.status(err.response.status || 500).json({
+    return res.status(500).json({
       message: clean(err.message),
-      providerError: clean(err.response.data)
+      stack: clean(err.stack)
     });
   }
-
-  return res.status(500).json({
-    message: clean(err.message),
-    stack: clean(err.stack)
-  });
-  }
 });
+
       
 // --- ROUTING ---
 app.get("/img/:filename", (req, res) => {
