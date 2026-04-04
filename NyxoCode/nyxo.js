@@ -258,8 +258,5 @@ if (!isKnown && rawArgs.length > 0) {
   })();
 } else {
   program.parse(process.argv);
-  // Default to chat if no command given
-  if (process.argv.slice(2).length === 0) {
-    startInteractive();
-  }
+
 }
