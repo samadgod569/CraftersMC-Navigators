@@ -41,7 +41,17 @@ async function ask({ apiKey, modelKey, message, think = "LOW", temperature = 0.4
     (typeof modelData === "string" ? modelData : null) ||
     JSON.stringify(modelData);
 
-  return text?.trim() || "(no response)";
+  const text =
+  modelData?.choices?.[0]?.message?.content ??
+  modelData?.choices?.[0]?.text ??
+  modelData?.output ??
+  modelData?.response ??
+  modelData?.content ??
+  (typeof modelData === "string" ? modelData : JSON.stringify(modelData));
+
+// Safely convert to string no matter what the API returns
+const textStr = typeof text === "string" ? text : JSON.stringify(text ?? "");
+return textStr.trim() || "(no response)";
 }
 
 module.exports = { ask };
