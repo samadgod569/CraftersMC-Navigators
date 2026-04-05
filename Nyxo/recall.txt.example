@@ -1,0 +1,15 @@
+# recall.txt — AI-managed persistent memory
+# Location: ~/.nyxo/recall.txt
+#
+# The AI writes to this file automatically using [[RECALL:key=value]] syntax.
+# You can manually add, edit, or delete entries here.
+# The AI reads this on every message — it will never ask for info stored here.
+#
+# Format: key=value (one per line)
+# Example entries the AI might write:
+
+github_token=ghp_yourTokenHere
+vercel_api_key=your_vercel_key
+preferred_language=TypeScript
+db_connection_string=postgresql://localhost:5432/mydb
+project_name=my-awesome-app

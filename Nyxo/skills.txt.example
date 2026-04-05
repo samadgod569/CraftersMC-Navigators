@@ -1,0 +1,13 @@
+# skills.txt — User-defined skills and behaviors for Nyxo Code
+# Place this file as:
+#   ./skills.txt          (project-specific, loaded from CWD)
+#   ~/.nyxo/skills.txt    (global fallback)
+#
+# The AI reads this on EVERY message. Write anything you want it to always do.
+# Examples:
+
+Always reply in a concise, direct style. No filler words.
+When writing code, always include error handling.
+Prefer TypeScript over JavaScript when creating new files.
+Always run tests after making changes.
+My project uses pnpm, not npm or yarn.
