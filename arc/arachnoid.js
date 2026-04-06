@@ -244,6 +244,69 @@ app.post("/api/logs", async (req, res) => {
     res.json({ status: "error", message: e.toString() });
   }
 });
+app.post("/api/signup", (req, res) => {
+  const CRED_PATH = "/platform/data/credentials.json";
+
+  function loadCredentials() {
+    if (!fs.existsSync(CRED_PATH)) return [];
+    return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
+  }
+
+  function saveCredentials(data) {
+    fs.writeFileSync(CRED_PATH, JSON.stringify(data, null, 2));
+  }
+
+  const { username, pass } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  if (!username || !pass) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  let creds = loadCredentials();
+
+  if (creds.some(c => c.username === username)) {
+    return res.json({ status: "error", message: "Username already exists" });
+  }
+
+  if (creds.some(c => c.ip === ip)) {
+    return res.json({ status: "error", message: "Only one account per IP allowed" });
+  }
+
+  creds.push({
+    username,
+    pass,
+    servers: [],
+    ip
+  });
+
+  saveCredentials(creds);
+  res.json({ status: "success", message: "Account created" });
+});
+
+app.post("/api/login", (req, res) => {
+  const CRED_PATH = "/platform/data/credentials.json";
+
+  function loadCredentials() {
+    if (!fs.existsSync(CRED_PATH)) return [];
+    return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
+  }
+
+  const { username, pass } = req.body;
+
+  if (!username || !pass) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  const creds = loadCredentials();
+  const user = creds.find(c => c.username === username && c.pass === pass);
+
+  if (user) {
+    res.json({ status: "success", valid: true });
+  } else {
+    res.json({ status: "success", valid: false });
+  }
+});
 
 app.get(/.*/, (req, res) => {
   let file = req.path === "/" ? "index.html" : req.path.slice(1);
