@@ -5,10 +5,12 @@ const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(bodyParser.json());
 
 const BASE_PATH = "/platform/apps";
 const DATA_PATH = "/platform/data/ports.json";
+const CRED_PATH = "/platform/data/credentials.json";
 const PAGES_PATH = "/platform/pages";
 const VPS_IP = "45.137.70.54";
 
@@ -28,6 +30,15 @@ function loadData() {
 
 function saveData(data) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+}
+
+function loadCredentials() {
+  if (!fs.existsSync(CRED_PATH)) return [];
+  return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
+}
+
+function saveCredentials(data) {
+  fs.writeFileSync(CRED_PATH, JSON.stringify(data, null, 2));
 }
 
 function validate(appName, password, data) {
@@ -56,10 +67,10 @@ const IMAGES = {
 };
 
 app.post("/api/deploy", async (req, res) => {
-  const { appName, repo, zipUrl, language, packages, startFile, password } = req.body;
+  const { username, password, appName, appPassword, repo, zipUrl, language, packages, startFile } = req.body;
   let logs = [];
 
-  if (!appName || (!repo && !zipUrl) || !language || !startFile || !password) {
+  if (!username || !password || !appName || !appPassword || (!repo && !zipUrl) || !language || !startFile) {
     return res.json({ status: "error", message: "Missing required fields", logs });
   }
 
@@ -75,12 +86,44 @@ app.post("/api/deploy", async (req, res) => {
     return res.json({ status: "error", message: "Invalid zip URL" });
   }
 
-  const appPath = path.join(BASE_PATH, appName);
+  let creds = loadCredentials();
+  const userIndex = creds.findIndex(c => c.username === username && c.pass === password);
+
+  if (userIndex === -1) {
+    return res.json({ status: "error", message: "Invalid username or password", logs });
+  }
+
+  const user = creds[userIndex];
   let data = loadData();
 
-  if (data[appName] && data[appName][0] !== password) {
-    return res.json({ status: "error", message: "Invalid password", logs });
+  if (user.servers.length === 0) {
+    if (data[appName]) {
+      return res.json({ status: "error", message: "App name already exists", logs });
+    }
+
+    const usedPorts = Object.values(data).map(v => v[1]);
+    const totalApps = Object.keys(data).length;
+    let newPort = 4000 + totalApps;
+    while (usedPorts.includes(newPort)) newPort++;
+
+    data[appName] = [appPassword, newPort, []];
+    saveData(data);
+
+    creds[userIndex].servers.push(appName);
+    saveCredentials(creds);
+
+    return res.json({ status: "claimed", message: "Free VPS claimed, now deploying", app: { name: appName, port: newPort } });
   }
+
+  if (!user.servers.includes(appName)) {
+    return res.json({ status: "error", message: "You don't own this app", logs });
+  }
+
+  if (data[appName] && data[appName][0] !== appPassword) {
+    return res.json({ status: "error", message: "Invalid app password", logs });
+  }
+
+  const appPath = path.join(BASE_PATH, appName);
 
   try {
     await safeRun("docker", ["rm", "-f", appName]).catch(() => {});
@@ -124,10 +167,7 @@ USER appuser
     logs.push(await safeRun("docker", ["build", "-t", appName, appPath]));
     logs.push("Docker image built.");
 
-    const PORT_BASE = 4000;
-    let usedPorts = Object.values(data).map(v => v[1]);
-    let port = data[appName]?.[1] || PORT_BASE;
-    while (usedPorts.includes(port) && port !== data[appName]?.[1]) port++;
+    const port = data[appName][1];
 
     logs.push(await safeRun("docker", [
       "run",
@@ -151,7 +191,7 @@ USER appuser
 
     logs.push(`Container started on port ${port}`);
 
-    data[appName] = [password, port, logs];
+    data[appName] = [appPassword, port, logs];
     saveData(data);
 
     res.json({
@@ -166,7 +206,7 @@ USER appuser
 
   } catch (err) {
     logs.push(err.toString());
-    data[appName] = [password, data[appName]?.[1] || null, logs];
+    data[appName] = [appPassword, data[appName]?.[1] || null, logs];
     saveData(data);
 
     res.json({
@@ -244,20 +284,10 @@ app.post("/api/logs", async (req, res) => {
     res.json({ status: "error", message: e.toString() });
   }
 });
+
 app.post("/api/signup", (req, res) => {
-  const CRED_PATH = "/platform/data/credentials.json";
-
-  function loadCredentials() {
-    if (!fs.existsSync(CRED_PATH)) return [];
-    return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
-  }
-
-  function saveCredentials(data) {
-    fs.writeFileSync(CRED_PATH, JSON.stringify(data, null, 2));
-  }
-
   const { username, pass } = req.body;
-  const ip = req.ip || req.connection.remoteAddress;
+  const ip = req.ip;
 
   if (!username || !pass) {
     return res.json({ status: "error", message: "Missing username or password" });
@@ -285,13 +315,6 @@ app.post("/api/signup", (req, res) => {
 });
 
 app.post("/api/login", (req, res) => {
-  const CRED_PATH = "/platform/data/credentials.json";
-
-  function loadCredentials() {
-    if (!fs.existsSync(CRED_PATH)) return [];
-    return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
-  }
-
   const { username, pass } = req.body;
 
   if (!username || !pass) {
