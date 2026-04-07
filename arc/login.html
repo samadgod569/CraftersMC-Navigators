@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f6f6f7; --surface: #ffffff; --border: #e2e2e5;
+      --text: #1b1b1f; --text-2: #6b6b78; --text-3: #9b9ba8;
+      --orange: #f38020; --orange-dim: rgba(243,128,32,0.1); --orange-hover: #e06b10;
+      --red: #e53e3e; --red-dim: rgba(229,62,62,0.08);
+      --green: #00b894; --green-dim: rgba(0,184,148,0.1);
+      --nav-bg: #1b1b1f; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif; --radius: 6px;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    nav { background: var(--nav-bg); height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand span { font-size: 0.95rem; font-weight: 600; color: #fff; }
+    .nav-link { font-size: 0.78rem; color: #a0a0ae; text-decoration: none; transition: color 0.15s; }
+    .nav-link:hover { color: #fff; }
+    .auth-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+    .auth-box { width: 100%; max-width: 420px; }
+    .auth-header { margin-bottom: 28px; }
+    .auth-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 6px; }
+    .auth-sub { font-size: 0.83rem; color: var(--text-2); }
+    .auth-sub a { color: var(--orange); text-decoration: none; }
+    .auth-sub a:hover { text-decoration: underline; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+    .field { margin-bottom: 18px; }
+    label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 7px; }
+    input[type=text], input[type=password] {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+      font-family: var(--mono); font-size: 0.83rem; color: var(--text); background: #fafafa; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    input:focus { border-color: var(--orange); background: #fff; box-shadow: 0 0 0 3px var(--orange-dim); }
+    input::placeholder { color: var(--text-3); }
+    .alert { padding: 11px 14px; border-radius: var(--radius); font-size: 0.78rem; margin-bottom: 18px; font-family: var(--mono); display: none; }
+    .alert.error { background: var(--red-dim); border: 1px solid rgba(229,62,62,0.2); color: var(--red); }
+    .alert.success { background: var(--green-dim); border: 1px solid rgba(0,184,148,0.2); color: var(--green); }
+    .alert.show { display: block; animation: fadeUp 0.2s ease; }
+    .btn {
+      width: 100%; padding: 11px; border: none; border-radius: var(--radius);
+      background: var(--orange); color: #fff; font-family: var(--sans); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; margin-top: 20px; transition: background 0.15s, box-shadow 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:hover { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.28); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .divider { display: flex; align-items: center; gap: 14px; margin: 22px 0 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 0.72rem; color: var(--text-3); }
+    .signup-cta { text-align: center; margin-top: 14px; font-size: 0.82rem; color: var(--text-2); }
+    .signup-cta a { color: var(--orange); text-decoration: none; font-weight: 500; }
+    .signup-cta a:hover { text-decoration: underline; }
+    .footer { text-align: center; font-size: 0.72rem; color: var(--text-3); padding: 24px; }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <img src="img/icon.png" alt="Logo" onerror="this.style.display='none'"/>
+    <span>Platform</span>
+  </div>
+  <a href="sign-up.html" class="nav-link">Create account →</a>
+</nav>
+<div class="auth-wrapper">
+  <div class="auth-box">
+    <div class="auth-header">
+      <div class="auth-title">Sign in to Platform</div>
+      <div class="auth-sub">Don't have an account? <a href="sign-up.html">Sign up free</a></div>
+    </div>
+    <div class="card">
+      <div class="alert" id="alert"></div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="your_username" autocomplete="username"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn" id="btn" onclick="doLogin()">Sign In</button>
+      <div class="divider"><div class="divider-line"></div><div class="divider-text">New here?</div><div class="divider-line"></div></div>
+      <div class="signup-cta"><a href="sign-up.html">Create a free account →</a></div>
+    </div>
+  </div>
+</div>
+<div class="footer">© 2025 Platform · All rights reserved</div>
+<script>
+  document.getElementById('username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+  document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  function showAlert(msg, type) { const el = document.getElementById('alert'); el.textContent = msg; el.className = 'alert ' + type + ' show'; }
+  async function doLogin() {
+    const username = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    const btn = document.getElementById('btn');
+    if (!username || !pass) return showAlert('Please fill in all fields.', 'error');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Signing in...';
+    try {
+      const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, pass }) });
+      const data = await res.json();
+      if (data.status === 'success' && data.valid) {
+        localStorage.setItem('username', username);
+        localStorage.setItem('password', pass);
+        showAlert('Login successful. Redirecting...', 'success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 700);
+      } else {
+        showAlert('Invalid username or password.', 'error');
+        btn.disabled = false; btn.innerHTML = 'Sign In';
+      }
+    } catch (e) {
+      showAlert('Connection error. Please try again.', 'error');
+      btn.disabled = false; btn.innerHTML = 'Sign In';
+    }
+  }
+</script>
+</body>
+</html>
