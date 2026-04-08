@@ -22,7 +22,7 @@ const MS_35D  = 35  * 24 * MS_1H;
 
 const FREE_RAM     = "512m";
 const FREE_CPU     = "0.2";
-const FREE_STORAGE = "2G";
+const FREE_STORAGE = "4G";
 
 const TIMEOUT = 20 * 60 * 1000;
 
