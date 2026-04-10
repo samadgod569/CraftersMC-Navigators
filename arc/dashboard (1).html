@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Arachnoid</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f6f7;
+      --surface: #ffffff;
+      --border: #e2e2e5;
+      --text: #1b1b1f;
+      --text-2: #6b6b78;
+      --text-3: #9b9ba8;
+      --orange: #f38020;
+      --orange-dim: rgba(243,128,32,0.10);
+      --orange-hover: #e06b10;
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.10);
+      --red: #e53e3e;
+      --red-dim: rgba(229,62,62,0.08);
+      --yellow: #f6ad55;
+      --yellow-dim: rgba(246,173,85,0.10);
+      --blue: #0051c3;
+      --blue-dim: rgba(0,81,195,0.08);
+      --nav-bg: #1b1b1f;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e8e8f0;
+      --text-2: #8888a0;
+      --text-3: #55556a;
+      --orange-dim: rgba(243,128,32,0.14);
+      --green-dim: rgba(0,184,148,0.14);
+      --red-dim: rgba(229,62,62,0.12);
+      --yellow-dim: rgba(246,173,85,0.12);
+      --blue-dim: rgba(0,81,195,0.12);
+      --nav-bg: #0a0c12;
+    }
+
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+
+    nav {
+      background: var(--nav-bg); height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; position: sticky; top: 0; z-index: 200;
+    }
+
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand span { font-size: 0.95rem; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #a0a0ae; transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+    .theme-toggle svg { width: 15px; height: 15px; }
+
+    .avatar-wrap { position: relative; }
+
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      cursor: pointer; overflow: hidden; background: none; padding: 0;
+      transition: border-color 0.15s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-btn:hover { border-color: var(--orange); }
+    .avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .avatar-initials {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.62rem; font-weight: 600; color: #fff;
+      font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.04em;
+      pointer-events: none; user-select: none;
+    }
+
+    .avatar-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.16);
+      min-width: 190px; overflow: hidden;
+      opacity: 0; transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+      transform-origin: top right;
+    }
+    .avatar-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+    .dd-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
+    .dd-username { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .dd-label { font-size: 0.7rem; color: var(--text-3); font-family: var(--mono); margin-top: 2px; }
+
+    .dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer;
+      font-size: 0.82rem; color: var(--text-2); text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      border: none; background: none; width: 100%; text-align: left;
+      font-family: var(--sans);
+    }
+    .dd-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-3); transition: color 0.12s; }
+    .dd-item:hover { background: var(--orange-dim); color: var(--text); }
+    .dd-item:hover svg { color: var(--orange); }
+    .dd-item.danger:hover { background: var(--red-dim); color: var(--red); }
+    .dd-item.danger:hover svg { color: var(--red); }
+
+    .page { max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .top-bar {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 36px; flex-wrap: wrap; gap: 14px;
+    }
+    .page-title { font-size: 1.35rem; font-weight: 600; }
+    .page-sub { font-size: 0.82rem; color: var(--text-2); margin-top: 4px; }
+
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-radius: var(--radius);
+      background: var(--orange); color: #fff; border: none; cursor: pointer;
+      font-size: 0.82rem; font-weight: 600; font-family: var(--sans);
+      transition: background 0.15s, box-shadow 0.15s;
+      text-decoration: none; white-space: nowrap;
+    }
+    .btn-add:hover { background: var(--orange-hover); box-shadow: 0 2px 14px rgba(243,128,32,0.28); }
+    .btn-add svg { width: 15px; height: 15px; }
+
+    .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .skeleton-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .skel { height: 11px; border-radius: 6px; background: var(--border); margin-bottom: 10px; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 80px 24px; text-align: center;
+    }
+    .empty-icon {
+      width: 60px; height: 60px; border-radius: 16px;
+      background: var(--orange-dim);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .empty-icon svg { width: 28px; height: 28px; color: var(--orange); }
+    .empty-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
+    .empty-sub { font-size: 0.83rem; color: var(--text-2); max-width: 340px; line-height: 1.65; margin-bottom: 28px; }
+
+    .btn-claim {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 12px 28px; border-radius: var(--radius);
+      background: var(--orange); color: #fff;
+      font-size: 0.85rem; font-weight: 600; font-family: var(--sans);
+      border: none; cursor: pointer; text-decoration: none;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .btn-claim:hover { background: var(--orange-hover); box-shadow: 0 4px 18px rgba(243,128,32,0.32); }
+    .btn-claim svg { width: 16px; height: 16px; }
+
+    .vps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+
+    .vps-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px 22px 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.28s ease both;
+    }
+    .vps-card:hover { border-color: rgba(243,128,32,0.3); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .vps-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+
+    .vps-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .vps-name { font-size: 0.92rem; font-weight: 600; color: var(--text); font-family: var(--mono); word-break: break-all; }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 0.64rem; font-weight: 600; font-family: var(--mono);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .badge-free { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0,81,195,0.14); }
+    .badge-premium { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(243,128,32,0.2); }
+
+    .status-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-family: var(--mono); color: var(--text-2); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-active { background: var(--green); box-shadow: 0 0 0 2px var(--green-dim); }
+    .dot-stopped { background: var(--text-3); }
+    .dot-suspended { background: var(--yellow); box-shadow: 0 0 0 2px var(--yellow-dim); }
+    .dot-error { background: var(--red); box-shadow: 0 0 0 2px var(--red-dim); }
+    .dot-expired { background: var(--red); }
+
+    .card-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-2);
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .icon-btn svg { width: 14px; height: 14px; }
+    .icon-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .icon-btn.err-btn { color: var(--red); border-color: rgba(229,62,62,0.3); background: var(--red-dim); cursor: default; }
+
+    .vps-port-row { margin-bottom: 16px; }
+    .port-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 0.78rem; color: var(--blue);
+      text-decoration: none; padding: 5px 10px;
+      background: var(--blue-dim); border-radius: var(--radius);
+      border: 1px solid rgba(0,81,195,0.12);
+      transition: background 0.15s;
+    }
+    .port-link:hover { background: rgba(0,81,195,0.14); }
+    .port-link svg { width: 12px; height: 12px; opacity: 0.7; }
+
+    .vps-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px; border-top: 1px solid var(--border);
+    }
+
+    .error-flag {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.7rem; font-family: var(--mono); color: var(--red);
+      background: var(--red-dim); border: 1px solid rgba(229,62,62,0.2);
+      border-radius: var(--radius); padding: 4px 8px;
+    }
+    .error-flag svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .err-topbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--red); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .no-port { font-size: 0.75rem; color: var(--text-3); font-family: var(--mono); }
+    .ts-label { font-size: 0.72rem; color: var(--text-3); font-family: var(--mono); }
+
+    .err-page {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 80px 24px; text-align: center;
+    }
+    .err-page-icon {
+      width: 60px; height: 60px; border-radius: 16px;
+      background: var(--red-dim); display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .err-page-icon svg { width: 28px; height: 28px; color: var(--red); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      .page { padding: 24px 16px 60px; }
+      .vps-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <img src="img/icon.png" alt="" onerror="this.style.display='none'"/>
+    <span>Arachnoid</span>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="avatar-wrap" id="avatar-wrap">
+      <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+        <div class="avatar-initials" id="avatar-inner"></div>
+      </button>
+      <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dd-header">
+          <div class="dd-username" id="dd-username"></div>
+          <div class="dd-label">signed in</div>
+        </div>
+        <a href="settings.html" class="dd-item">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Settings
+        </a>
+        <button class="dd-item danger" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+          Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="top-bar">
+    <div>
+      <div class="page-title">My Servers</div>
+      <div class="page-sub" id="server-count-label">Loading your deployments…</div>
+    </div>
+    <a href="deploy.html" class="btn-add" id="btn-add" style="visibility:hidden">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      New server
+    </a>
+  </div>
+
+  <div id="main-content">
+    <div class="skeleton-grid">
+      <div class="skeleton-card">
+        <div class="skel" style="width:55%;margin-bottom:18px"></div>
+        <div class="skel" style="width:38%"></div>
+        <div class="skel" style="width:68%;margin-bottom:18px"></div>
+        <div class="skel" style="width:32%"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skel" style="width:62%;margin-bottom:18px"></div>
+        <div class="skel" style="width:44%"></div>
+        <div class="skel" style="width:72%;margin-bottom:18px"></div>
+        <div class="skel" style="width:28%"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skel" style="width:48%;margin-bottom:18px"></div>
+        <div class="skel" style="width:52%"></div>
+        <div class="skel" style="width:60%;margin-bottom:18px"></div>
+        <div class="skel" style="width:36%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const username = localStorage.getItem('username') || '';
+  const password = localStorage.getItem('password') || '';
+
+  if (!username || !password) window.location.href = 'login.html';
+
+  (function initTheme() {
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('icon-sun').style.display = saved === 'dark' ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = saved === 'dark' ? 'none' : 'block';
+  })();
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.getElementById('icon-sun').style.display = next === 'dark' ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = next === 'dark' ? 'none' : 'block';
+    localStorage.setItem('theme', next);
+  }
+
+  (function initAvatar() {
+    document.getElementById('dd-username').textContent = username;
+    const inner = document.getElementById('avatar-inner');
+    const b64 = localStorage.getItem('img');
+    if (b64) {
+      inner.style.display = 'none';
+      const img = document.createElement('img');
+      img.src = b64;
+      img.alt = username;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
+      document.getElementById('avatar-btn').appendChild(img);
+    } else {
+      inner.textContent = username.slice(0, 2);
+    }
+  })();
+
+  function toggleDropdown() {
+    document.getElementById('avatar-dropdown').classList.toggle('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('avatar-wrap').contains(e.target)) {
+      document.getElementById('avatar-dropdown').classList.remove('open');
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    window.location.href = 'login.html';
+  }
+
+  function hasDeployError(logs) {
+    if (!Array.isArray(logs) || !logs.length) return false;
+    return logs.some(l => /error|fail|fatal/i.test(String(l)));
+  }
+
+  function dotClass(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'active') return 'dot-active';
+    if (s === 'stopped') return 'dot-stopped';
+    if (s === 'suspended') return 'dot-suspended';
+    if (s === 'error') return 'dot-error';
+    if (s === 'expired') return 'dot-expired';
+    return 'dot-stopped';
+  }
+
+  function timeAgo(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    return Math.floor(h / 24) + 'd ago';
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderEmpty() {
+    document.getElementById('server-count-label').textContent = 'No servers yet';
+    const addBtn = document.getElementById('btn-add');
+    addBtn.style.visibility = 'visible';
+    addBtn.href = 'deploy.html';
+
+    document.getElementById('main-content').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="empty-title">No servers yet</div>
+        <div class="empty-sub">Claim your free VPS and deploy your first application in minutes. No credit card required.</div>
+        <a href="deploy.html" class="btn-claim">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Claim Free VPS
+        </a>
+      </div>
+    `;
+  }
+
+  function renderError(msg) {
+    document.getElementById('server-count-label').textContent = 'Could not load';
+    document.getElementById('main-content').innerHTML = `
+      <div class="err-page">
+        <div class="err-page-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+            <line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="16.5" r="0.8" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="empty-title">Connection error</div>
+        <div class="empty-sub">${esc(msg)}</div>
+      </div>
+    `;
+  }
+
+  function renderCards(apps) {
+    const names = Object.keys(apps);
+    const count = names.length;
+
+    document.getElementById('server-count-label').textContent =
+      count === 1 ? '1 server' : count + ' servers';
+
+    const addBtn = document.getElementById('btn-add');
+    addBtn.style.visibility = 'visible';
+    addBtn.href = 'payout.html';
+
+    const grid = document.createElement('div');
+    grid.className = 'vps-grid';
+
+    names.forEach((appName, i) => {
+      const app = apps[appName];
+      const plan = (app.plan || 'free').toLowerCase();
+      const status = (app.status || 'unknown').toLowerCase();
+      const port = app.ipPort || app.port || '';
+      const portUrl = port ? 'http://' + port : null;
+      const failed = hasDeployError(app.logs);
+      const lastStart = app.lastStart;
+
+      const card = document.createElement('div');
+      card.className = 'vps-card';
+      card.style.animationDelay = (i * 0.06) + 's';
+
+      const topbar = failed ? '<div class="err-topbar"></div>' : '';
+
+      const errBtn = failed ? `
+        <div class="icon-btn err-btn" title="Last deployment failed">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+            <line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="16.5" r="0.8" fill="currentColor"/>
+          </svg>
+        </div>
+      ` : '';
+
+      const portHtml = portUrl
+        ? `<a href="${esc(portUrl)}" target="_blank" class="port-link">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            ${esc(port)}
+          </a>`
+        : `<span class="no-port">no port assigned</span>`;
+
+      const metaLeft = failed
+        ? `<div class="error-flag">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <circle cx="12" cy="17" r="0.75" fill="currentColor"/>
+            </svg>
+            Last deployment failed
+          </div>`
+        : `<span class="ts-label">${lastStart ? 'deployed ' + timeAgo(lastStart) : 'not yet deployed'}</span>`;
+
+      card.innerHTML = `
+        ${topbar}
+        <div class="vps-card-top">
+          <div style="min-width:0;flex:1">
+            <div class="vps-name-row">
+              <span class="vps-name">${esc(appName)}</span>
+              <span class="badge ${plan === 'premium' ? 'badge-premium' : 'badge-free'}">${esc(plan)}</span>
+            </div>
+            <div class="status-dot">
+              <span class="dot ${dotClass(status)}"></span>
+              ${esc(status)}
+            </div>
+          </div>
+          <div class="card-actions">
+            ${errBtn}
+            <a href="app-info.html?app=${encodeURIComponent(appName)}" class="icon-btn" title="Manage server">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 20h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="vps-port-row">${portHtml}</div>
+        <div class="vps-meta">
+          ${metaLeft}
+          <a href="app-info.html?app=${encodeURIComponent(appName)}" class="icon-btn" title="More options" style="margin-left:auto;flex-shrink:0">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="5" r="1.2" fill="currentColor"/>
+              <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+              <circle cx="12" cy="19" r="1.2" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    document.getElementById('main-content').innerHTML = '';
+    document.getElementById('main-content').appendChild(grid);
+  }
+
+  async function loadApps() {
+    try {
+      const res = await fetch('/api/get-app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (data.status === 'error') {
+        renderError(data.message || 'Unknown error');
+        return;
+      }
+
+      const apps = data.apps || {};
+      if (Object.keys(apps).length === 0) {
+        renderEmpty();
+      } else {
+        renderCards(apps);
+      }
+    } catch (e) {
+      renderError(e.message);
+    }
+  }
+
+  loadApps();
+</script>
+</body>
+</html>
