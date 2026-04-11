@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Arachnoid — App Hosting, Redefined</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#0c0e14;
+  --bg2:#0f1117;
+  --surface:#1a1d27;
+  --surface2:#1e2130;
+  --border:#252836;
+  --border2:#2e3245;
+  --text:#e8e8f0;
+  --text2:#8888a0;
+  --text3:#55556a;
+  --orange:#f38020;
+  --orange2:#ff9a45;
+  --orange-dim:rgba(243,128,32,0.12);
+  --orange-glow:rgba(243,128,32,0.25);
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --r:8px;
+  --r2:14px;
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+
+::selection{background:var(--orange-dim);color:var(--orange2);}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  background:rgba(12,14,20,0.85);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-mark{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,#f38020,#ff6b00);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 20px rgba(243,128,32,0.3);
+}
+.nav-logo-mark svg{width:16px;height:16px;color:#fff;}
+.nav-logo-name{font-family:var(--mono);font-size:0.92rem;font-weight:600;color:var(--text);letter-spacing:0.02em;}
+
+.nav-links{display:flex;align-items:center;gap:36px;}
+.nav-links a{font-size:0.82rem;color:var(--text2);text-decoration:none;letter-spacing:0.01em;transition:color 0.15s;}
+.nav-links a:hover{color:var(--text);}
+
+.nav-ctas{display:flex;align-items:center;gap:12px;}
+.btn-ghost{
+  padding:8px 18px;font-size:0.82rem;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);border-radius:var(--r);cursor:pointer;
+  text-decoration:none;transition:all 0.15s;font-family:var(--sans);
+}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.btn-primary{
+  padding:8px 20px;font-size:0.82rem;font-weight:600;
+  background:var(--orange);color:#fff;border:none;border-radius:var(--r);
+  cursor:pointer;text-decoration:none;font-family:var(--sans);
+  transition:all 0.15s;letter-spacing:0.01em;
+  box-shadow:0 0 16px rgba(243,128,32,0.3);
+}
+.btn-primary:hover{background:var(--orange2);box-shadow:0 0 24px rgba(243,128,32,0.45);transform:translateY(-1px);}
+
+.hero{
+  display:block;min-height:100vh;padding:120px 48px 80px;
+  position:relative;overflow:hidden;
+}
+
+.hero-glow{
+  position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(243,128,32,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2{
+  position:absolute;bottom:-200px;right:-150px;
+  width:600px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(243,128,32,0.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.grid-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 100%);
+  pointer-events:none;
+}
+
+.hero-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:80px;
+}
+.hero-inner.no-preview{grid-template-columns:1fr;max-width:680px;}
+
+.hero-left{position:relative;z-index:2;}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;background:var(--orange-dim);border:1px solid rgba(243,128,32,0.2);
+  border-radius:100px;margin-bottom:28px;
+  opacity:0;animation:fadeUp 0.6s 0.1s forwards;
+}
+.hero-badge-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite;}
+.hero-badge span{font-size:0.72rem;font-family:var(--mono);color:var(--orange);font-weight:500;letter-spacing:0.04em;}
+
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+.hero-h1{
+  font-size:clamp(2.4rem,4.5vw,3.8rem);font-weight:700;line-height:1.1;
+  letter-spacing:-0.03em;color:var(--text);margin-bottom:20px;
+  opacity:0;animation:fadeUp 0.7s 0.2s forwards;
+}
+.hero-h1 em{
+  font-style:normal;
+  background:linear-gradient(90deg,var(--orange),var(--orange2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-sub{
+  font-size:1.05rem;color:var(--text2);max-width:440px;line-height:1.7;margin-bottom:36px;
+  opacity:0;animation:fadeUp 0.7s 0.3s forwards;
+}
+
+.hero-actions{
+  display:flex;align-items:center;gap:14px;
+  opacity:0;animation:fadeUp 0.7s 0.4s forwards;
+}
+.btn-lg{
+  padding:13px 28px;font-size:0.9rem;font-weight:600;
+  background:var(--orange);color:#fff;border:none;border-radius:var(--r);
+  cursor:pointer;text-decoration:none;font-family:var(--sans);
+  transition:all 0.2s;letter-spacing:0.01em;
+  box-shadow:0 0 30px rgba(243,128,32,0.35);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-lg:hover{background:var(--orange2);box-shadow:0 0 40px rgba(243,128,32,0.5);transform:translateY(-2px);}
+.btn-lg-outline{
+  padding:13px 28px;font-size:0.9rem;font-weight:500;
+  border:1px solid var(--border2);color:var(--text);background:transparent;
+  border-radius:var(--r);cursor:pointer;text-decoration:none;font-family:var(--sans);
+  transition:all 0.15s;
+}
+.btn-lg-outline:hover{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.03);}
+
+.hero-stats{
+  display:flex;align-items:center;gap:32px;margin-top:44px;
+  opacity:0;animation:fadeUp 0.7s 0.5s forwards;
+}
+.hero-stat-value{font-family:var(--mono);font-size:1.2rem;font-weight:600;color:var(--text);}
+.hero-stat-label{font-size:0.72rem;color:var(--text3);margin-top:2px;letter-spacing:0.02em;}
+.hero-stat-divider{width:1px;height:36px;background:var(--border);}
+
+.hero-right{
+  position:relative;z-index:2;
+  opacity:0;animation:fadeRight 0.9s 0.4s forwards;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeRight{from{opacity:0;transform:translateX(30px) rotate(3deg);}to{opacity:1;transform:translateX(0) rotate(3deg);}}
+
+.console-wrap{
+  transform:rotate(3deg);
+  border-radius:var(--r2);overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06),0 0 60px rgba(243,128,32,0.08);
+}
+.console-titlebar{
+  background:#0a0c12;
+  padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);
+  display:flex;align-items:center;gap:12px;
+}
+.console-dots{display:flex;gap:6px;}
+.console-dots span{width:10px;height:10px;border-radius:50%;}
+.console-dots span:nth-child(1){background:#ff5f57;}
+.console-dots span:nth-child(2){background:#febc2e;}
+.console-dots span:nth-child(3){background:#28c840;}
+.console-title-text{font-family:var(--mono);font-size:0.7rem;color:var(--text3);letter-spacing:0.05em;flex:1;text-align:center;}
+
+.console-body{
+  background:#0d0f18;padding:0;display:grid;grid-template-columns:180px 1fr;min-height:360px;
+}
+
+.console-sidebar-inner{
+  background:#0a0c12;padding:14px 0;border-right:1px solid rgba(255,255,255,0.05);
+}
+.c-nav-item{
+  display:flex;align-items:center;gap:9px;padding:9px 16px;
+  font-size:0.74rem;color:var(--text3);cursor:pointer;
+  font-family:var(--sans);transition:all 0.12s;
+}
+.c-nav-item.active{color:var(--text);background:rgba(255,255,255,0.04);}
+.c-nav-item.active .c-nav-icon{color:var(--orange);}
+.c-nav-icon{width:14px;height:14px;color:var(--text3);}
+
+.console-main-inner{background:#0d0f18;padding:16px;overflow:hidden;}
+.console-header-bar{font-family:var(--mono);font-size:0.62rem;color:var(--text3);letter-spacing:0.08em;margin-bottom:14px;text-transform:uppercase;}
+
+.console-line{
+  font-family:var(--mono);font-size:0.78rem;line-height:1.8;
+  opacity:0;
+}
+.console-line.l1{animation:consoleLine 0.3s 1.2s forwards;}
+.console-line.l2{animation:consoleLine 0.3s 1.6s forwards;}
+.console-line.l3{animation:consoleLine 0.3s 2.0s forwards;}
+.console-line.l4{animation:consoleLine 0.3s 2.4s forwards;}
+.console-line.l5{animation:consoleLine 0.3s 2.8s forwards;}
+.console-line.l6{animation:consoleLine 0.3s 3.2s forwards;}
+.console-line.l7{animation:consoleLine 0.3s 3.6s forwards;}
+.console-line.l8{animation:consoleLine 0.3s 4.0s forwards;}
+
+@keyframes consoleLine{from{opacity:0;}to{opacity:1;}}
+
+.cl-prompt{color:var(--orange);}
+.cl-cmd{color:#6ae6c8;}
+.cl-ok{color:#6ae6c8;}
+.cl-info{color:var(--text2);}
+.cl-port{color:#a78bfa;}
+.cl-url{color:#60a5fa;}
+.cl-dim{color:var(--text3);}
+
+.cursor-blink{
+  display:inline-block;width:7px;height:13px;background:var(--orange);
+  margin-left:2px;vertical-align:-2px;
+  animation:blink 1.1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+section{padding:100px 48px;}
+.section-inner{max-width:1200px;margin:0 auto;}
+
+.section-label{
+  display:inline-block;font-family:var(--mono);font-size:0.65rem;
+  letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;
+  margin-bottom:14px;font-weight:500;
+}
+.section-title{
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;letter-spacing:-0.025em;
+  color:var(--text);line-height:1.15;margin-bottom:16px;
+}
+.section-sub{font-size:1rem;color:var(--text2);max-width:520px;line-height:1.7;}
+
+.langs-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-bottom:60px;}
+
+.langs-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:56px;gap:40px;}
+
+.langs-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;
+}
+.lang-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 18px;display:flex;align-items:center;gap:12px;
+  transition:all 0.2s;cursor:default;
+  position:relative;overflow:hidden;
+}
+.lang-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--orange-dim),transparent);
+  opacity:0;transition:opacity 0.2s;
+}
+.lang-card:hover{border-color:rgba(243,128,32,0.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.lang-card:hover::before{opacity:1;}
+.lang-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:var(--mono);font-size:0.6rem;color:var(--orange);font-weight:600;letter-spacing:0.02em;
+  text-align:center;line-height:1.2;
+}
+.lang-info{}
+.lang-name{font-size:0.82rem;font-weight:600;color:var(--text);font-family:var(--mono);}
+.lang-version{font-size:0.68rem;color:var(--text3);margin-top:2px;}
+
+.features-section{background:var(--bg);}
+.features-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2px;
+  border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;
+  background:var(--border);
+  margin-top:56px;
+}
+.feature-card:last-child:nth-child(odd){grid-column:1/-1;}
+.feature-card{
+  background:var(--bg2);padding:36px 32px;
+  transition:background 0.2s;
+  position:relative;overflow:hidden;
+}
+.feature-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--orange),transparent);
+  transform:scaleX(0);transform-origin:left;transition:transform 0.3s;
+}
+.feature-card:hover{background:var(--surface);}
+.feature-card:hover::after{transform:scaleX(1);}
+
+.feature-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--orange-dim);border:1px solid rgba(243,128,32,0.2);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.feature-icon svg{width:20px;height:20px;color:var(--orange);}
+.feature-title{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:10px;letter-spacing:-0.01em;}
+.feature-desc{font-size:0.85rem;color:var(--text2);line-height:1.7;}
+
+.host-section{background:var(--bg2);border-top:1px solid var(--border);padding-top:60px;}
+.host-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;
+  margin-top:56px;
+}
+.host-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px;transition:all 0.2s;
+}
+.host-card:hover{border-color:var(--border2);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+.host-card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.host-card-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.host-card-title{font-size:0.88rem;font-weight:600;color:var(--text);}
+.host-card-desc{font-size:0.8rem;color:var(--text2);line-height:1.65;}
+.host-card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.host-tag{
+  font-family:var(--mono);font-size:0.62rem;color:var(--text3);
+  background:rgba(255,255,255,0.04);border:1px solid var(--border2);
+  border-radius:4px;padding:3px 8px;
+}
+
+.cicd-section{background:var(--bg);border-top:1px solid var(--border);}
+.cicd-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.cicd-code{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);
+  overflow:hidden;
+}
+.cicd-code-header{
+  background:#0a0c12;padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.cicd-code-title{font-family:var(--mono);font-size:0.7rem;color:var(--text3);}
+.cicd-code-badge{
+  font-family:var(--mono);font-size:0.6rem;color:var(--orange);
+  background:var(--orange-dim);border:1px solid rgba(243,128,32,0.2);
+  padding:3px 8px;border-radius:4px;
+}
+.cicd-code-body{padding:20px;font-family:var(--mono);font-size:0.72rem;line-height:1.8;overflow-x:auto;}
+.yaml-key{color:#60a5fa;}
+.yaml-val{color:#a78bfa;}
+.yaml-str{color:#6ae6c8;}
+.yaml-comment{color:var(--text3);}
+.yaml-cmd{color:#f9a8d4;}
+
+.cicd-right{}
+.cicd-points{margin-top:32px;display:flex;flex-direction:column;gap:24px;}
+.cicd-point{display:flex;gap:16px;}
+.cicd-point-icon{
+  width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  background:var(--orange-dim);border:1px solid rgba(243,128,32,0.2);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.cicd-point-icon svg{width:16px;height:16px;color:var(--orange);}
+.cicd-point-title{font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:4px;}
+.cicd-point-desc{font-size:0.82rem;color:var(--text2);line-height:1.65;}
+
+.vps-cta-section{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:80px 48px;text-align:center;position:relative;overflow:hidden;
+}
+.vps-cta-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse,rgba(243,128,32,0.08),transparent 70%);
+  pointer-events:none;
+}
+.vps-cta-label{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;color:var(--text3);text-transform:uppercase;margin-bottom:16px;}
+.vps-cta-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:var(--text);letter-spacing:-0.025em;margin-bottom:12px;}
+.vps-cta-sub{font-size:0.95rem;color:var(--text2);max-width:480px;margin:0 auto 36px;line-height:1.7;}
+.vps-cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 32px;font-size:0.9rem;font-weight:600;
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:var(--r);
+  cursor:pointer;text-decoration:none;font-family:var(--sans);
+  transition:all 0.2s;letter-spacing:0.01em;
+}
+.vps-cta-btn:hover{
+  border-color:var(--orange);color:var(--orange);
+  box-shadow:0 0 30px var(--orange-glow);
+  transform:translateY(-2px);
+}
+.vps-cta-btn svg{width:16px;height:16px;}
+
+.cta-section{
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:100px 48px;text-align:center;position:relative;overflow:hidden;
+}
+.cta-glow{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(243,128,32,0.07),transparent);
+  pointer-events:none;
+}
+.cta-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-0.03em;color:var(--text);margin-bottom:16px;}
+.cta-title em{font-style:normal;color:var(--orange);}
+.cta-sub{font-size:1rem;color:var(--text2);max-width:480px;margin:0 auto 40px;line-height:1.7;}
+.cta-actions{display:flex;align-items:center;justify-content:center;gap:14px;}
+
+footer{
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:40px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo-text{font-family:var(--mono);font-size:0.85rem;color:var(--text3);font-weight:500;text-decoration:none;}
+.footer-links{display:flex;gap:28px;}
+.footer-links a{font-size:0.78rem;color:var(--text3);text-decoration:none;transition:color 0.15s;}
+.footer-links a:hover{color:var(--text2);}
+.footer-copy{font-size:0.75rem;color:var(--text3);}
+
+@media(max-width:900px){
+  nav{padding:0 24px;}
+  .nav-links{display:none;}
+  .hero{padding:100px 24px 60px;}
+  .hero-inner{grid-template-columns:1fr;gap:60px;}
+  .hero-right{animation:none;opacity:1;}
+  .console-wrap{transform:none;}
+  section{padding:60px 24px;}
+  .features-grid{grid-template-columns:1fr;}
+  .cicd-inner{grid-template-columns:1fr;}
+  .langs-header{flex-direction:column;align-items:flex-start;}
+  footer{flex-direction:column;gap:20px;text-align:center;}
+  .footer-links{flex-wrap:wrap;justify-content:center;}
+  .vps-cta-section,.cta-section{padding:60px 24px;}
+}
+
+.reveal{opacity:1;transform:translateY(0);transition:opacity 0.7s ease,transform 0.7s ease;}
+.js-ready .reveal{opacity:0;transform:translateY(24px);}
+.js-ready .reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+      </svg>
+    </div>
+    <span class="nav-logo-name">arachnoid</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#languages">Languages</a>
+    <a href="#hosting">What to Host</a>
+    <a href="#deploy">Deploy</a>
+  </div>
+  <div class="nav-ctas">
+    <a href="#" class="btn-ghost">Login</a>
+    <a href="#" class="btn-primary">Get Started</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span>Container-powered cloud hosting</span>
+      </div>
+      <h1 class="hero-h1">Deploy your app.<br><em>In seconds.</em></h1>
+      <p class="hero-sub">Arachnoid runs your code in isolated Docker containers. Push from GitHub, pick your runtime, and your app is live with no server configuration required.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Start Deploying
+        </a>
+        <a href="#features" class="btn-lg-outline">See Features</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <div class="hero-stat-value">16+</div>
+          <div class="hero-stat-label">Runtimes</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-value">Docker</div>
+          <div class="hero-stat-label">Isolated containers</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-value">Free tier</div>
+          <div class="hero-stat-label">No credit card</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="console-wrap">
+        <img src="img/con.png" alt="Arachnoid Dashboard" style="width:100%;height:auto;display:block;border-radius:var(--r2);" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="langs-section" id="languages">
+  <div class="section-inner">
+    <div class="langs-header reveal">
+      <div>
+        <div class="section-label">Runtimes</div>
+        <h2 class="section-title">Your language,<br>our infrastructure.</h2>
+      </div>
+      <p class="section-sub">Every container gets its own isolated environment. Bring your project in whichever language you write — multiple versions supported across all runtimes.</p>
+    </div>
+    <div class="langs-grid">
+      <div class="lang-card reveal">
+        <div class="lang-icon">NODE</div>
+        <div class="lang-info">
+          <div class="lang-name">Node.js</div>
+          <div class="lang-version">v16 / v18 / v20</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">PY</div>
+        <div class="lang-info">
+          <div class="lang-name">Python</div>
+          <div class="lang-version">3.9 / 3.10 / 3.12</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">GO</div>
+        <div class="lang-info">
+          <div class="lang-name">Go</div>
+          <div class="lang-version">1.21 / 1.22</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">TS</div>
+        <div class="lang-info">
+          <div class="lang-name">TypeScript</div>
+          <div class="lang-version">via Node 18 / 20</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">BUN</div>
+        <div class="lang-info">
+          <div class="lang-name">Bun</div>
+          <div class="lang-version">latest</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">DENO</div>
+        <div class="lang-info">
+          <div class="lang-name">Deno</div>
+          <div class="lang-version">latest</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">RB</div>
+        <div class="lang-info">
+          <div class="lang-name">Ruby</div>
+          <div class="lang-version">3.3</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">PHP</div>
+        <div class="lang-info">
+          <div class="lang-name">PHP</div>
+          <div class="lang-version">8.3</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">RS</div>
+        <div class="lang-info">
+          <div class="lang-name">Rust</div>
+          <div class="lang-version">1.78</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">JVM</div>
+        <div class="lang-info">
+          <div class="lang-name">Java</div>
+          <div class="lang-version">Temurin 21</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">.NET</div>
+        <div class="lang-info">
+          <div class="lang-name">.NET</div>
+          <div class="lang-version">SDK 8.0</div>
+        </div>
+      </div>
+      <div class="lang-card reveal">
+        <div class="lang-icon">EX</div>
+        <div class="lang-info">
+          <div class="lang-name">Elixir</div>
+          <div class="lang-version">1.16</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-section" id="features">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center;">
+      <div class="section-label" style="display:block;text-align:center;">Platform</div>
+      <h2 class="section-title" style="text-align:center;margin-bottom:0;">Everything you need to ship.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="feature-title">Live Console</div>
+        <div class="feature-desc">Stream real-time output from your container. Watch logs as they happen and catch errors instantly without SSH or extra tooling.</div>
+      </div>
+
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="feature-title">Automated Backups</div>
+        <div class="feature-desc">Your app data is backed up automatically. Restore to a previous state in one click when something breaks or goes wrong.</div>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="feature-title">GitHub Deployment</div>
+        <div class="feature-desc">Connect any GitHub repository. Arachnoid pulls your code, installs dependencies, and starts your app automatically.</div>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </div>
+        <div class="feature-title">Environment Variables</div>
+        <div class="feature-desc">Set secrets and config values per app. Variables are injected into your container at runtime and never exposed in logs.</div>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feature-title">Isolated Containers</div>
+        <div class="feature-desc">Every app runs in its own Docker container with dedicated resource limits. Fully sandboxed with no noisy neighbors.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="host-section" id="hosting">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">Use Cases</div>
+      <h2 class="section-title">What you can run on Arachnoid.</h2>
+      <p class="section-sub">Built for backend workloads. Anything that listens on a port or runs as a background process fits right in.</p>
+    </div>
+    <div class="host-grid">
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">REST APIs</div>
+        </div>
+        <div class="host-card-desc">Deploy any HTTP server and get a public URL pointing to your container instantly.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">Express</span>
+          <span class="host-tag">FastAPI</span>
+          <span class="host-tag">Gin</span>
+          <span class="host-tag">Actix</span>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">Discord Bots</div>
+        </div>
+        <div class="host-card-desc">Keep your Discord bot online 24 hours a day. Arachnoid restarts it automatically on crash.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">discord.js</span>
+          <span class="host-tag">discord.py</span>
+          <span class="host-tag">JDA</span>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">Telegram Bots</div>
+        </div>
+        <div class="host-card-desc">Long-polling and webhook bots both work. Deploy your bot and never worry about uptime again.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">node-telegram-bot-api</span>
+          <span class="host-tag">python-telegram-bot</span>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">Background Workers</div>
+        </div>
+        <div class="host-card-desc">Queue consumers, cron jobs, data pipelines. If it runs as a process, it runs on Arachnoid.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">Bull</span>
+          <span class="host-tag">Celery</span>
+          <span class="host-tag">cron</span>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">Web Scrapers</div>
+        </div>
+        <div class="host-card-desc">Scheduled scrapers, data collectors, and crawlers that run on a timer or on demand from a webhook.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">Puppeteer</span>
+          <span class="host-tag">Playwright</span>
+          <span class="host-tag">Scrapy</span>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <div class="host-card-top">
+          <div class="host-card-dot"></div>
+          <div class="host-card-title">WebSocket Servers</div>
+        </div>
+        <div class="host-card-desc">Realtime apps, chat servers, and game backends requiring persistent connections are fully supported.</div>
+        <div class="host-card-tags">
+          <span class="host-tag">Socket.io</span>
+          <span class="host-tag">ws</span>
+          <span class="host-tag">Phoenix</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cicd-section" id="deploy">
+  <div class="section-inner">
+    <div class="cicd-inner">
+      <div class="cicd-code reveal">
+        <div class="cicd-code-header">
+          <span class="cicd-code-title">.github/workflows/deploy.yml</span>
+          <span class="cicd-code-badge">GitHub Actions</span>
+        </div>
+        <div class="cicd-code-body">
+<span class="yaml-key">name</span>: <span class="yaml-val">Deploy to Arachnoid</span><br>
+<br>
+<span class="yaml-key">on</span>:<br>
+&nbsp;&nbsp;<span class="yaml-key">push</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-key">branches</span>: <span class="yaml-val">[main]</span><br>
+<br>
+<span class="yaml-key">jobs</span>:<br>
+&nbsp;&nbsp;<span class="yaml-key">deploy</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-key">runs-on</span>: <span class="yaml-val">ubuntu-latest</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-key">steps</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="yaml-key">name</span>: <span class="yaml-val">Deploy</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-key">run</span>: <span class="yaml-val">|</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-cmd">curl -X POST</span> <span class="yaml-str">https://arachnoid.vortexa.cloud/api/deploy</span> <span class="yaml-cmd">\</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-cmd">-H</span> <span class="yaml-str">"Content-Type: application/json"</span> <span class="yaml-cmd">\</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-cmd">-d</span> <span class="yaml-str">'{</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"username": "c69p2w",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"password": "${{ secrets.USERPASS }}",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"appName": "app1",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"appPassword": "${{ secrets.APPPASS }}",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"repo": "${{ secrets.REPO }}",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"language": "nodejs",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"startFile": "index.js",</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">"packages": ["express"]</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-str">}'</span>
+        </div>
+      </div>
+      <div class="cicd-right reveal">
+        <div class="section-label">CI/CD</div>
+        <h2 class="section-title">Push to main.<br>You are done.</h2>
+        <p class="section-sub">Wire Arachnoid to your GitHub Actions workflow with a single curl call. Every push to main triggers a fresh deploy automatically.</p>
+        <div class="cicd-points">
+          <div class="cicd-point">
+            <div class="cicd-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <div class="cicd-point-title">Automatic dependency install</div>
+              <div class="cicd-point-desc">Arachnoid reads your package.json or requirements.txt and installs everything before starting your app.</div>
+            </div>
+          </div>
+          <div class="cicd-point">
+            <div class="cicd-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            </div>
+            <div>
+              <div class="cicd-point-title">Zero-downtime redeploy</div>
+              <div class="cicd-point-desc">The old container keeps serving while the new build completes. The swap is instant when the container is ready.</div>
+            </div>
+          </div>
+          <div class="cicd-point">
+            <div class="cicd-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+              <div class="cicd-point-title">Secret management</div>
+              <div class="cicd-point-desc">Store credentials as GitHub secrets and pass them at deploy time. They never touch your repository code.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="vps-cta-section">
+  <div class="vps-cta-glow"></div>
+  <div class="reveal">
+    <p class="vps-cta-label">Need full root access?</p>
+    <h2 class="vps-cta-title">Looking for a dedicated VPS?</h2>
+    <p class="vps-cta-sub">Arachnoid handles containerized apps. If you need a full virtual machine with root access and a custom OS, we have dedicated VPS plans available.</p>
+    <a href="#" class="vps-cta-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      View VPS Plans
+    </a>
+  </div>
+</div>
+
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="reveal">
+    <h2 class="cta-title">Start building today.<br><em>No setup required.</em></h2>
+    <p class="cta-sub">Create a free account, connect your GitHub repository, and deploy your first app in under two minutes.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Create Free Account
+      </a>
+      <a href="#" class="btn-lg-outline">Read the Docs</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="#" class="footer-logo-text">arachnoid</a>
+  <div class="footer-links">
+    <a href="#">Status</a>
+    <a href="#">Documentation</a>
+    <a href="#">Discord</a>
+    <a href="#">Terms</a>
+    <a href="#">Privacy</a>
+  </div>
+  <div class="footer-copy">2025 Arachnoid. All rights reserved.</div>
+</footer>
+
+<script>
+document.body.classList.add('js-ready');
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
+      const idx = siblings.indexOf(entry.target);
+      setTimeout(() => entry.target.classList.add('visible'), idx * 80);
+      io.unobserve(entry.target);
+    }
+  });
+}, {threshold: 0.1});
+reveals.forEach(el => io.observe(el));
+
+// Collapse hero grid if dashboard image fails to load
+const heroImg = document.querySelector('.hero-right img');
+if (heroImg) {
+  const checkImg = () => {
+    if (!heroImg.complete || heroImg.naturalWidth === 0) {
+      document.querySelector('.hero-right').style.display = 'none';
+      document.querySelector('.hero-inner').classList.add('no-preview');
+    }
+  };
+  heroImg.addEventListener('error', checkImg);
+  heroImg.addEventListener('load', () => {
+    if (heroImg.naturalWidth === 0) checkImg();
+  });
+  // Check immediately in case it already failed
+  if (heroImg.complete) checkImg();
+}
+</script>
