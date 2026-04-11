@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - VPS Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00ff9d;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .login-box, .panel {
+            background: #0f1235;
+            border: 1px solid #00ff9d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #00ff9d;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #00ff9d;
+            padding-bottom: 10px;
+        }
+        input, select, button {
+            background: #1a1f4e;
+            border: 1px solid #00ff9d;
+            color: #00ff9d;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        button {
+            cursor: pointer;
+            background: #00ff9d;
+            color: #0a0e27;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00cc7d;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #1a1f4e;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .stat-label {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .data-section {
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #00ff9d;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #1a1f4e;
+            color: #ffd700;
+        }
+        tr:hover {
+            background: #1a1f4e;
+        }
+        .status-active { color: #00ff9d; }
+        .status-suspended { color: #ff9800; }
+        .status-expired { color: #ff5722; }
+        .status-error { color: #f44336; }
+        .premium { color: #ffd700; }
+        .free { color: #00ff9d; }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: inline-block;
+            width: 120px;
+        }
+        pre {
+            background: #0a0e27;
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 11px;
+            border: 1px solid #00ff9d;
+            border-radius: 5px;
+        }
+        .error {
+            color: #f44336;
+        }
+        .success {
+            color: #00ff9d;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="loginDiv" class="login-box">
+        <h1>🔐 Admin Login</h1>
+        <div class="form-group">
+            <label>Key 1:</label>
+            <input type="password" id="key1" placeholder="Enter first key">
+        </div>
+        <div class="form-group">
+            <label>Key 2:</label>
+            <input type="password" id="key2" placeholder="Enter second key">
+        </div>
+        <div class="form-group">
+            <label>Key 3:</label>
+            <input type="password" id="key3" placeholder="Enter third key">
+        </div>
+        <button onclick="login()">🔓 Access Admin Panel</button>
+        <div id="loginError" class="error" style="margin-top: 10px;"></div>
+    </div>
+
+    <div id="panelDiv" style="display: none;">
+        <div class="panel">
+            <h1>🖥️ Admin Dashboard</h1>
+            <div class="action-buttons">
+                <button onclick="refreshData()">🔄 Refresh All Data</button>
+                <button onclick="showGiveVpsForm()">➕ Give VPS to User</button>
+                <button onclick="showDeleteVpsForm()">🗑️ Delete VPS</button>
+                <button onclick="showUpdatePlanForm()">📝 Update Plan/Specs</button>
+                <button onclick="showGetUserForm()">👤 Get User Details</button>
+            </div>
+
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div id="giveVpsForm" class="login-box" style="display: none;">
+            <h2>➕ Give VPS to User</h2>
+            <div class="form-group"><label>Username:</label><input type="text" id="give_username" placeholder="Username"></div>
+            <div class="form-group"><label>App Name:</label><input type="text" id="give_appName" placeholder="App name"></div>
+            <div class="form-group"><label>App Password:</label><input type="text" id="give_appPassword" placeholder="App password"></div>
+            <div class="form-group"><label>Plan (free/premium):</label><input type="text" id="give_plan" placeholder="free or premium"></div>
+            <div class="form-group"><label>RAM (e.g., 1G, 512M):</label><input type="text" id="give_ram" placeholder="Optional"></div>
+            <div class="form-group"><label>CPU (e.g., 0.5, 1):</label><input type="text" id="give_cpu" placeholder="Optional"></div>
+            <div class="form-group"><label>Storage (e.g., 5G):</label><input type="text" id="give_storage" placeholder="Optional"></div>
+            <button onclick="giveVps()">✅ Give VPS</button>
+            <button onclick="hideForm('giveVpsForm')">❌ Cancel</button>
+            <div id="giveResult"></div>
+        </div>
+
+        <div id="deleteVpsForm" class="login-box" style="display: none;">
+            <h2>🗑️ Delete VPS</h2>
+            <div class="form-group"><label>App Name:</label><input type="text" id="delete_appName" placeholder="App name"></div>
+            <button onclick="deleteVps()">✅ Delete</button>
+            <button onclick="hideForm('deleteVpsForm')">❌ Cancel</button>
+            <div id="deleteResult"></div>
+        </div>
+
+        <div id="updatePlanForm" class="login-box" style="display: none;">
+            <h2>📝 Update Plan & Specs</h2>
+            <div class="form-group"><label>App Name:</label><input type="text" id="update_appName" placeholder="App name"></div>
+            <div class="form-group"><label>New Plan (free/premium):</label><input type="text" id="update_plan" placeholder="free or premium"></div>
+            <div class="form-group"><label>RAM (optional):</label><input type="text" id="update_ram" placeholder="e.g., 2G"></div>
+            <div class="form-group"><label>CPU (optional):</label><input type="text" id="update_cpu" placeholder="e.g., 1"></div>
+            <div class="form-group"><label>Storage (optional):</label><input type="text" id="update_storage" placeholder="e.g., 10G"></div>
+            <button onclick="updatePlan()">✅ Update</button>
+            <button onclick="hideForm('updatePlanForm')">❌ Cancel</button>
+            <div id="updateResult"></div>
+        </div>
+
+        <div id="getUserForm" class="login-box" style="display: none;">
+            <h2>👤 Get User Details</h2>
+            <div class="form-group"><label>Username:</label><input type="text" id="get_username" placeholder="Username"></div>
+            <button onclick="getUser()">✅ Get User</button>
+            <button onclick="hideForm('getUserForm')">❌ Cancel</button>
+            <div id="getUserResult"></div>
+        </div>
+
+        <div class="data-section">
+            <h2>📊 Users & Servers Overview</h2>
+            <div id="usersTable"></div>
+        </div>
+
+        <div class="data-section">
+            <h2>🗄️ All VPS Details (ports.json)</h2>
+            <div id="vpsTable"></div>
+        </div>
+
+        <div class="data-section">
+            <h2>📋 Raw JSON Data</h2>
+            <button onclick="toggleRawData()">Toggle Raw Data</button>
+            <pre id="rawData" style="display: none;"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    let adminKeys = { key1: '', key2: '', key3: '' };
+    let currentData = { credentials: [], ports: {} };
+
+    async function apiCall(action, params = {}) {
+        const response = await fetch('/api/admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                key1: adminKeys.key1,
+                key2: adminKeys.key2,
+                key3: adminKeys.key3,
+                action: action,
+                ...params
+            })
+        });
+        return await response.json();
+    }
+
+    async function login() {
+        const key1 = document.getElementById('key1').value;
+        const key2 = document.getElementById('key2').value;
+        const key3 = document.getElementById('key3').value;
+
+        adminKeys = { key1, key2, key3 };
+
+        const result = await apiCall('get-all-data');
+        
+        if (result.status === 'success') {
+            currentData = result;
+            document.getElementById('loginDiv').style.display = 'none';
+            document.getElementById('panelDiv').style.display = 'block';
+            renderDashboard();
+        } else {
+            document.getElementById('loginError').innerText = 'Invalid admin keys!';
+        }
+    }
+
+    async function refreshData() {
+        const result = await apiCall('get-all-data');
+        if (result.status === 'success') {
+            currentData = result;
+            renderDashboard();
+        }
+    }
+
+    function renderDashboard() {
+        const users = currentData.credentials || [];
+        const ports = currentData.ports || {};
+        
+        const totalUsers = users.length;
+        const totalServers = Object.keys(ports).length;
+        const runningServers = Object.values(ports).filter(p => p.status === 'active').length;
+        const suspendedServers = Object.values(ports).filter(p => p.status === 'suspended').length;
+        const expiredServers = Object.values(ports).filter(p => p.status === 'expired').length;
+        const freeServers = Object.values(ports).filter(p => p.plan === 'free').length;
+        const premiumServers = Object.values(ports).filter(p => p.plan === 'premium').length;
+
+        document.getElementById('stats').innerHTML = `
+            <div class="stat-card"><div class="stat-number">${totalUsers}</div><div class="stat-label">Total Users</div></div>
+            <div class="stat-card"><div class="stat-number">${totalServers}</div><div class="stat-label">Total VPS</div></div>
+            <div class="stat-card"><div class="stat-number">${runningServers}</div><div class="stat-label">Running</div></div>
+            <div class="stat-card"><div class="stat-number">${suspendedServers}</div><div class="stat-label">Suspended</div></div>
+            <div class="stat-card"><div class="stat-number">${expiredServers}</div><div class="stat-label">Expired</div></div>
+            <div class="stat-card"><div class="stat-number">${freeServers}</div><div class="stat-label">Free Plan</div></div>
+            <div class="stat-card"><div class="stat-number">${premiumServers}</div><div class="stat-label">Premium Plan</div></div>
+        `;
+
+        let usersHtml = '<table><tr><th>Username</th><th>IP</th><th>Server Count</th><th>Servers Owned</th></tr>';
+        users.forEach(user => {
+            const userServers = user.servers || [];
+            const serversList = userServers.map(s => {
+                const vps = ports[s];
+                return `${s} (${vps ? vps.plan : 'unknown'})`;
+            }).join(', ');
+            usersHtml += `<tr>
+                <td>${user.username}</td>
+                <td>${user.ip || 'N/A'}</td>
+                <td>${userServers.length}</td>
+                <td>${serversList || 'None'}</td>
+            </tr>`;
+        });
+        usersHtml += '</table>';
+        document.getElementById('usersTable').innerHTML = usersHtml;
+
+        let vpsHtml = '<table><tr><th>App Name</th><th>Owner</th><th>Plan</th><th>Status</th><th>Port</th><th>RAM</th><th>CPU</th><th>Storage</th><th>Created At</th><th>Last Start</th></tr>';
+        
+        for (const [appName, vps] of Object.entries(ports)) {
+            let owner = 'Unknown';
+            for (const user of users) {
+                if (user.servers && user.servers.includes(appName)) {
+                    owner = user.username;
+                    break;
+                }
+            }
+            
+            const statusClass = `status-${vps.status || 'unknown'}`;
+            const planClass = vps.plan === 'premium' ? 'premium' : 'free';
+            
+            vpsHtml += `<tr>
+                <td>${appName}</td>
+                <td>${owner}</td>
+                <td class="${planClass}">${vps.plan || 'free'}</td>
+                <td class="${statusClass}">${vps.status || 'unknown'}</td>
+                <td>${vps.port || 'N/A'}</td>
+                <td>${vps.ram || 'N/A'}</td>
+                <td>${vps.cpu || 'N/A'}</td>
+                <td>${vps.storage || 'N/A'}</td>
+                <td>${vps.createdAt ? new Date(vps.createdAt).toLocaleString() : 'N/A'}</td>
+                <td>${vps.lastStart ? new Date(vps.lastStart).toLocaleString() : 'N/A'}</td>
+            </tr>`;
+        }
+        vpsHtml += '</table>';
+        document.getElementById('vpsTable').innerHTML = vpsHtml;
+        
+        document.getElementById('rawData').innerHTML = JSON.stringify(currentData, null, 2);
+    }
+
+    async function giveVps() {
+        const result = await apiCall('give-vps', {
+            username: document.getElementById('give_username').value,
+            appName: document.getElementById('give_appName').value,
+            appPassword: document.getElementById('give_appPassword').value,
+            plan: document.getElementById('give_plan').value,
+            ram: document.getElementById('give_ram').value,
+            cpu: document.getElementById('give_cpu').value,
+            storage: document.getElementById('give_storage').value
+        });
+        
+        document.getElementById('giveResult').innerHTML = result.status === 'success' 
+            ? `<div class="success">✅ ${result.message}<br>${JSON.stringify(result.app, null, 2)}</div>`
+            : `<div class="error">❌ ${result.message}</div>`;
+        
+        if (result.status === 'success') {
+            setTimeout(() => refreshData(), 1000);
+        }
+    }
+
+    async function deleteVps() {
+        const result = await apiCall('delete-vps', {
+            appName: document.getElementById('delete_appName').value
+        });
+        
+        document.getElementById('deleteResult').innerHTML = result.status === 'success'
+            ? `<div class="success">✅ ${result.message}</div>`
+            : `<div class="error">❌ ${result.message}</div>`;
+        
+        if (result.status === 'success') {
+            setTimeout(() => refreshData(), 1000);
+        }
+    }
+
+    async function updatePlan() {
+        const params = {
+            appName: document.getElementById('update_appName').value,
+            newPlan: document.getElementById('update_plan').value
+        };
+        
+        const ram = document.getElementById('update_ram').value;
+        const cpu = document.getElementById('update_cpu').value;
+        const storage = document.getElementById('update_storage').value;
+        
+        if (ram) params.ram = ram;
+        if (cpu) params.cpu = cpu;
+        if (storage) params.storage = storage;
+        
+        const result = await apiCall('update-plan', params);
+        
+        document.getElementById('updateResult').innerHTML = result.status === 'success'
+            ? `<div class="success">✅ ${result.message}<br>${JSON.stringify(result.app, null, 2)}</div>`
+            : `<div class="error">❌ ${result.message}</div>`;
+        
+        if (result.status === 'success') {
+            setTimeout(() => refreshData(), 1000);
+        }
+    }
+
+    async function getUser() {
+        const result = await apiCall('get-user', {
+            username: document.getElementById('get_username').value
+        });
+        
+        document.getElementById('getUserResult').innerHTML = result.status === 'success'
+            ? `<pre class="success">${JSON.stringify(result.user, null, 2)}</pre>`
+            : `<div class="error">❌ ${result.message}</div>`;
+    }
+
+    function showGiveVpsForm() {
+        hideAllForms();
+        document.getElementById('giveVpsForm').style.display = 'block';
+    }
+
+    function showDeleteVpsForm() {
+        hideAllForms();
+        document.getElementById('deleteVpsForm').style.display = 'block';
+    }
+
+    function showUpdatePlanForm() {
+        hideAllForms();
+        document.getElementById('updatePlanForm').style.display = 'block';
+    }
+
+    function showGetUserForm() {
+        hideAllForms();
+        document.getElementById('getUserForm').style.display = 'block';
+    }
+
+    function hideForm(formId) {
+        document.getElementById(formId).style.display = 'none';
+    }
+
+    function hideAllForms() {
+        document.getElementById('giveVpsForm').style.display = 'none';
+        document.getElementById('deleteVpsForm').style.display = 'none';
+        document.getElementById('updatePlanForm').style.display = 'none';
+        document.getElementById('getUserForm').style.display = 'none';
+    }
+
+    function toggleRawData() {
+        const raw = document.getElementById('rawData');
+        raw.style.display = raw.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
+</body>
+              </html>
