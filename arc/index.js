@@ -767,7 +767,179 @@ app.post("/api/change-app-password", (req, res) => {
 
   res.json({ status: "success", message: "App password updated successfully" });
 });
+app.post("/api/admin", async (req, res) => {
+  const { key1, key2, key3, action, ...params } = req.body;
 
+  const ADMIN_KEYS = ["thisISVERYVERYSECRET", "totallySECRET", 'A++()/'];
+
+  if (key1 !== ADMIN_KEYS[0] || key2 !== ADMIN_KEYS[1] || key3 !== ADMIN_KEYS[2]) {
+    return res.json({ status: "error", message: "Invalid admin keys" });
+  }
+
+  if (action === "get-all-data") {
+    const creds = loadCredentials();
+    const ports = loadData();
+    return res.json({ status: "success", credentials: creds, ports: ports });
+  }
+
+  if (action === "give-vps") {
+    const { username, appName, appPassword, plan, ram, cpu, storage } = params;
+
+    if (!username || !appName || !appPassword || !plan) {
+      return res.json({ status: "error", message: "Missing required fields: username, appName, appPassword, plan" });
+    }
+
+    if (!isValidName(appName)) {
+      return res.json({ status: "error", message: "Invalid app name" });
+    }
+
+    if (!["free", "premium"].includes(plan)) {
+      return res.json({ status: "error", message: "Plan must be 'free' or 'premium'" });
+    }
+
+    const creds = loadCredentials();
+    const userIndex = creds.findIndex(c => c.username === username);
+
+    if (userIndex === -1) {
+      return res.json({ status: "error", message: "User not found" });
+    }
+
+    const data = loadData();
+
+    if (data[appName]) {
+      return res.json({ status: "error", message: "App name already exists" });
+    }
+
+    const usedPorts = Object.values(data).map(v => parseInt(v.port.split(":")[1]));
+    let newPort = 4000 + Object.keys(data).length;
+    while (usedPorts.includes(newPort)) newPort++;
+
+    const finalRam = ram || "512m";
+    const finalCpu = cpu || "0.2";
+    const finalStorage = storage || "4G";
+    const createdAt = plan === "premium" ? nowISO() : null;
+    const lastStart = plan === "free" ? nowISO() : null;
+
+    data[appName] = {
+      password: appPassword,
+      port: `${VPS_IP}:${newPort}`,
+      logs: [],
+      plan: plan,
+      lastStart: lastStart,
+      status: "active",
+      createdAt: createdAt,
+      ram: finalRam,
+      cpu: finalCpu,
+      storage: finalStorage
+    };
+    saveData(data);
+
+    creds[userIndex].servers.push(appName);
+    saveCredentials(creds);
+
+    res.json({
+      status: "success",
+      message: `VPS assigned to ${username}`,
+      app: { name: appName, port: newPort, url: `http://${VPS_IP}:${newPort}`, plan: plan, ram: finalRam, cpu: finalCpu, storage: finalStorage }
+    });
+  }
+
+  if (action === "delete-vps") {
+    const { appName } = params;
+
+    if (!appName) {
+      return res.json({ status: "error", message: "Missing appName" });
+    }
+
+    const data = loadData();
+    const creds = loadCredentials();
+
+    if (!data[appName]) {
+      return res.json({ status: "error", message: "App not found" });
+    }
+
+    await purgeApp(appName);
+    delete data[appName];
+    saveData(data);
+
+    for (const user of creds) {
+      const idx = user.servers.indexOf(appName);
+      if (idx !== -1) {
+        user.servers.splice(idx, 1);
+        break;
+      }
+    }
+    saveCredentials(creds);
+
+    res.json({ status: "success", message: `VPS ${appName} deleted` });
+  }
+
+  if (action === "get-user") {
+    const { username } = params;
+
+    if (!username) {
+      return res.json({ status: "error", message: "Missing username" });
+    }
+
+    const creds = loadCredentials();
+    const user = creds.find(c => c.username === username);
+
+    if (!user) {
+      return res.json({ status: "error", message: "User not found" });
+    }
+
+    const data = loadData();
+    const userApps = {};
+    user.servers.forEach(appName => {
+      if (data[appName]) {
+        userApps[appName] = data[appName];
+      }
+    });
+
+    res.json({ status: "success", user: { username: user.username, ip: user.ip, servers: userApps } });
+  }
+
+  if (action === "list-users") {
+    const creds = loadCredentials();
+    const users = creds.map(c => ({ username: c.username, ip: c.ip, serverCount: c.servers.length }));
+    res.json({ status: "success", users: users });
+  }
+
+  if (action === "update-plan") {
+    const { appName, newPlan, ram, cpu, storage } = params;
+
+    if (!appName || !newPlan || !["free", "premium"].includes(newPlan)) {
+      return res.json({ status: "error", message: "Missing appName or invalid plan" });
+    }
+
+    const data = loadData();
+
+    if (!data[appName]) {
+      return res.json({ status: "error", message: "App not found" });
+    }
+
+    data[appName].plan = newPlan;
+    
+    if (ram) data[appName].ram = ram;
+    if (cpu) data[appName].cpu = cpu;
+    if (storage) data[appName].storage = storage;
+    
+    if (newPlan === "premium" && !data[appName].createdAt) {
+      data[appName].createdAt = nowISO();
+      data[appName].lastStart = null;
+    }
+    if (newPlan === "free") {
+      data[appName].createdAt = null;
+      if (!data[appName].lastStart) data[appName].lastStart = nowISO();
+    }
+    
+    saveData(data);
+
+    res.json({ status: "success", message: `Plan for ${appName} updated to ${newPlan}`, app: data[appName] });
+  }
+
+  res.json({ status: "error", message: `Unknown action: ${action}. Available: get-all-data, give-vps, delete-vps, get-user, list-users, update-plan` });
+});
 app.get(/.*/, (req, res) => {
   let file = req.path === "/" ? "index.html" : req.path.slice(1);
 
