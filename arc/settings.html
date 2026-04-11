@@ -1096,7 +1096,7 @@ Guidelines:
 
     hideTyping();
 
-    const reply = data.answer || data.response || data.result || data.text || (typeof data === 'string' ? data : 'Sorry, I could not get a response. Please try again.');
+    const reply = data.answer || data.response || data.result || data.content || (typeof data === 'string' ? data : 'Sorry, I could not get a response. Please try again.');
     const aiTime = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     renderMessage('ai', reply, aiTime);
     chatHistory.push({ role: 'ai', content: reply, time: aiTime });
