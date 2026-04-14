@@ -483,6 +483,34 @@ app.post("/api/deploy", async (req, res) => {
     res.json({ status: "error", message: "Deployment failed", logs });
   }
 });
+app.post("/api/tebex-webhook", (req, res) => {
+  const data = req.body;
+
+  // 🔐 Validation webhook (required for activation)
+  if (data.type === "validation.webhook") {
+    return res.status(200).json({
+      id: data.id
+    });
+  }
+
+  // 💳 Payment completed
+  if (data.type === "payment.completed") {
+    const subject = data.subject;
+
+    const email = subject.customer.email;
+    const username = subject.customer.username.username;
+
+    const plan = subject.products[0].name;
+    const price = subject.price.amount;
+    const expiry = subject.products[0].expires_at;
+
+    console.log({ email, username, plan, price, expiry });
+
+    // TODO: create VPS here
+  }
+
+  return res.sendStatus(200);
+});
 
 app.post("/api/stop", async (req, res) => {
   const { appName, password } = req.body;
