@@ -1,0 +1,974 @@
+const express = require("express");
+const fs = require("fs");
+const { execFile } = require("child_process");
+const path = require("path");
+const bodyParser = require("body-parser");
+
+const app = express();
+app.set("trust proxy", 1);
+app.use(bodyParser.json());
+
+const BASE_PATH  = "/platform/apps";
+const DATA_PATH  = "/platform/data/ports.json";
+const CRED_PATH  = "/platform/data/credentials.json";
+const PAGES_PATH = "/platform/pages";
+const VPS_IP     = "45.137.70.54";
+
+const MS_1H   = 60 * 60 * 1000;
+const MS_24H  = 24  * MS_1H;
+const MS_72H  = 72  * MS_1H;
+const MS_30D  = 30  * 24 * MS_1H;
+const MS_35D  = 35  * 24 * MS_1H;
+
+const FREE_RAM     = "512m";
+const FREE_CPU     = "0.2";
+const FREE_STORAGE = "4G";
+
+const TIMEOUT = 20 * 60 * 1000;
+
+const IMAGES = {
+  nodejs:    "node:20-alpine",
+  nodejs18:  "node:18-alpine",
+  nodejs16:  "node:16-alpine",
+  python:    "python:3.12-slim",
+  python310: "python:3.10-slim",
+  python39:  "python:3.9-slim",
+  go:        "golang:1.22-alpine",
+  go121:     "golang:1.21-alpine",
+  ts:        "node:20-alpine",
+  ts18:      "node:18-alpine",
+  bun:       "oven/bun:latest",
+  deno:      "denoland/deno:latest",
+  ruby:      "ruby:3.3-slim",
+  php:       "php:8.3-cli-alpine",
+  rust:      "rust:1.78-alpine",
+  java:      "eclipse-temurin:21",
+  dotnet:    "mcr.microsoft.com/dotnet/sdk:8.0",
+  elixir:    "elixir:1.16-slim",
+};
+
+function safeRun(cmd, args = []) {
+  return new Promise((resolve, reject) => {
+    execFile(cmd, args, { timeout: TIMEOUT }, (err, stdout, stderr) => {
+      if (err) return reject(stderr || err.toString());
+      resolve((stdout || stderr).trim());
+    });
+  });
+}
+
+function loadData() {
+  if (!fs.existsSync(DATA_PATH)) return {};
+  return JSON.parse(fs.readFileSync(DATA_PATH, "utf-8"));
+}
+
+function saveData(data) {
+  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+}
+
+function loadCredentials() {
+  if (!fs.existsSync(CRED_PATH)) return [];
+  return JSON.parse(fs.readFileSync(CRED_PATH, "utf-8"));
+}
+
+function saveCredentials(data) {
+  fs.writeFileSync(CRED_PATH, JSON.stringify(data, null, 2));
+}
+
+function validate(appName, password, data) {
+  if (!data[appName]) return { ok: false, msg: "App not found" };
+  if (data[appName].password !== password) return { ok: false, msg: "Invalid password" };
+  return { ok: true };
+}
+
+function isValidName(name) {
+  return typeof name === "string" && name.length > 0;
+}
+
+const RESERVED_APP_NAMES = ["cloudra", "vortexa"];
+
+function validateAppName(name) {
+  if (!isValidName(name)) {
+    return { ok: false, msg: "App name must be a non-empty string" };
+  }
+  if (/[a-zA-Z]/.test(name) && /[A-Z]/.test(name)) {
+    return { ok: false, msg: "App name must use only lowercase letters (no uppercase allowed)" };
+  }
+  if (RESERVED_APP_NAMES.includes(name.toLowerCase())) {
+    return { ok: false, msg: `App name '${name}' is reserved and cannot be used` };
+  }
+  return { ok: true };
+}
+
+function isValidRepo(url) {
+  return url.startsWith("https://github.com/");
+}
+
+function isValidUrl(url) {
+  return /^https?:\/\/.+/.test(url);
+}
+
+function nowISO() {
+  return new Date().toISOString();
+}
+
+async function purgeApp(appName) {
+  await safeRun("docker", ["rm", "-f", appName]).catch(() => {});
+  await safeRun("docker", ["rmi", "-f", appName]).catch(() => {});
+  await safeRun("rm", ["-rf", path.join(BASE_PATH, appName)]).catch(() => {});
+}
+
+function buildDockerfile(image, language, packages, startFile) {
+  const extraPkgs = packages?.filter(Boolean) ?? [];
+  const isNode = language.startsWith("nodejs");
+  const isTs   = language === "ts" || language.startsWith("ts");
+
+  let df = `FROM ${image}\nWORKDIR /app\nCOPY . .\n\n`;
+  df += `RUN useradd -m appuser 2>/dev/null || adduser -D appuser\n\n`;
+
+  // ── Node.js / TypeScript ──────────────────────────────────────────────────
+  if (isNode || isTs) {
+    // Always run npm install to pick up package.json deps (e.g. express)
+    df += `RUN if [ -f package.json ]; then npm install; fi\n`;
+    // Install any extra packages the user explicitly requested
+    if (extraPkgs.length) df += `RUN npm install ${extraPkgs.join(" ")}\n`;
+    // TypeScript toolchain
+    if (isTs) df += `RUN npm install -g ts-node typescript\n`;
+    df += `RUN mkdir -p /home/appuser/.npm && chown -R appuser:appuser /home/appuser/.npm\n`;
+
+  // ── Python ────────────────────────────────────────────────────────────────
+  } else if (language.startsWith("python")) {
+    // Always install from requirements.txt if present
+    df += `RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi\n`;
+    // Install any extra packages the user explicitly requested
+    if (extraPkgs.length) df += `RUN pip install --no-cache-dir ${extraPkgs.join(" ")}\n`;
+    df += `RUN mkdir -p /home/appuser/.cache/pip && chown -R appuser:appuser /home/appuser/.cache\n`;
+
+  // ── Go ────────────────────────────────────────────────────────────────────
+  } else if (language.startsWith("go")) {
+    // Always run go mod download if go.mod is present
+    df += `RUN if [ -f go.mod ]; then go mod download; fi\n`;
+    if (extraPkgs.length) df += `RUN go get ${extraPkgs.join(" ")}\n`;
+    df += `RUN mkdir -p /home/appuser/.cache/go-build /home/appuser/go && chown -R appuser:appuser /home/appuser/.cache /home/appuser/go\n`;
+    df += `ENV GOPATH=/home/appuser/go\n`;
+    df += `ENV GOCACHE=/home/appuser/.cache/go-build\n`;
+
+  // ── Ruby ──────────────────────────────────────────────────────────────────
+  } else if (language === "ruby") {
+    // Always bundle install if Gemfile is present
+    df += `RUN if [ -f Gemfile ]; then bundle install; fi\n`;
+    if (extraPkgs.length) df += `RUN gem install ${extraPkgs.join(" ")}\n`;
+    df += `RUN mkdir -p /home/appuser/.gem && chown -R appuser:appuser /home/appuser/.gem\n`;
+
+  // ── PHP ───────────────────────────────────────────────────────────────────
+  } else if (language === "php") {
+    df += `RUN apt-get update -y && apt-get install -y --no-install-recommends composer && rm -rf /var/lib/apt/lists/*\n`;
+    // Always composer install if composer.json is present
+    df += `RUN if [ -f composer.json ]; then composer install --no-interaction --no-dev --optimize-autoloader; fi\n`;
+    if (extraPkgs.length) df += `RUN composer require --no-interaction ${extraPkgs.join(" ")}\n`;
+    df += `RUN mkdir -p /home/appuser/.composer && chown -R appuser:appuser /home/appuser/.composer\n`;
+
+  // ── Bun ───────────────────────────────────────────────────────────────────
+  } else if (language === "bun") {
+    // Always bun install if package.json is present
+    df += `RUN if [ -f package.json ]; then bun install; fi\n`;
+    if (extraPkgs.length) df += `RUN bun add ${extraPkgs.join(" ")}\n`;
+    df += `RUN mkdir -p /home/appuser/.bun && chown -R appuser:appuser /home/appuser/.bun\n`;
+
+  // ── Rust ──────────────────────────────────────────────────────────────────
+  } else if (language === "rust") {
+    df += `RUN mkdir -p /home/appuser/.cargo && chown -R appuser:appuser /home/appuser/.cargo\n`;
+    df += `ENV CARGO_HOME=/home/appuser/.cargo\n`;
+    df += `RUN cargo build --release\n`;
+
+  // ── Java ──────────────────────────────────────────────────────────────────
+  } else if (language === "java") {
+    df += `RUN apt-get update -y && apt-get install -y --no-install-recommends maven && rm -rf /var/lib/apt/lists/*\n`;
+    // Always mvn install if pom.xml is present
+    df += `RUN if [ -f pom.xml ]; then mvn install -DskipTests --no-transfer-progress; fi\n`;
+    df += `RUN mkdir -p /home/appuser/.m2 && chown -R appuser:appuser /home/appuser/.m2\n`;
+
+  // ── .NET ──────────────────────────────────────────────────────────────────
+  } else if (language === "dotnet") {
+    df += `ENV DOTNET_CLI_TELEMETRY_OPTOUT=1\n`;
+    df += `ENV NUGET_PACKAGES=/home/appuser/.nuget/packages\n`;
+    // Always restore if .csproj is present
+    df += `RUN if [ -f *.csproj ] 2>/dev/null || ls *.csproj 2>/dev/null; then dotnet restore; fi\n`;
+    df += `RUN mkdir -p /home/appuser/.dotnet /home/appuser/.nuget && chown -R appuser:appuser /home/appuser/.dotnet /home/appuser/.nuget\n`;
+
+  // ── Elixir ────────────────────────────────────────────────────────────────
+  } else if (language === "elixir") {
+    df += `RUN mix local.hex --force && mix local.rebar --force\n`;
+    // Always mix deps.get if mix.exs is present
+    df += `RUN if [ -f mix.exs ]; then mix deps.get; fi\n`;
+    if (extraPkgs.length) extraPkgs.forEach(p => { df += `RUN mix archive.install hex ${p} --force\n`; });
+    df += `RUN mkdir -p /home/appuser/.mix /home/appuser/.hex && chown -R appuser:appuser /home/appuser/.mix /home/appuser/.hex\n`;
+
+  // ── Deno ──────────────────────────────────────────────────────────────────
+  } else if (language === "deno") {
+    df += `ENV DENO_DIR=/home/appuser/.cache/deno\n`;
+    // Cache deps from entry file ahead of time
+    df += `RUN deno cache ${startFile} 2>/dev/null || true\n`;
+    df += `RUN mkdir -p /home/appuser/.cache/deno && chown -R appuser:appuser /home/appuser/.cache\n`;
+  }
+
+  df += `\nRUN chown -R appuser:appuser /app\n`;
+  df += `USER appuser\n\n`;
+
+  // ── CMD ───────────────────────────────────────────────────────────────────
+  if      (isNode)                              df += `CMD ["node", "${startFile}"]\n`;
+  else if (isTs)                                df += `CMD ["npx", "ts-node", "${startFile}"]\n`;
+  else if (language.startsWith("python"))       df += `CMD ["python3", "${startFile}"]\n`;
+  else if (language.startsWith("go"))           df += `CMD ["go", "run", "${startFile}"]\n`;
+  else if (language === "ruby")                 df += `CMD ["ruby", "${startFile}"]\n`;
+  else if (language === "php")                  df += `CMD ["php", "${startFile}"]\n`;
+  else if (language === "rust")                 df += `CMD ["./target/release/${startFile}"]\n`;
+  else if (language === "java")                 df += `CMD ["java", "-jar", "${startFile}"]\n`;
+  else if (language === "dotnet")               df += `CMD ["dotnet", "${startFile}"]\n`;
+  else if (language === "elixir")               df += `CMD ["elixir", "${startFile}"]\n`;
+  else if (language === "bun")                  df += `CMD ["bun", "run", "${startFile}"]\n`;
+  else if (language === "deno")                 df += `CMD ["deno", "run", "--allow-all", "${startFile}"]\n`;
+
+  return df;
+}
+
+async function runMonitor() {
+  const data = loadData();
+  const creds = loadCredentials();
+  let dataDirty = false;
+  let credsDirty = false;
+
+  for (const [appName, entry] of Object.entries(data)) {
+    const plan      = entry.plan || "free";
+    const status    = entry.status;
+    const createdAt = entry.createdAt;
+
+    if (plan === "free") {
+      const lastStart = entry.lastStart;
+      if (!lastStart) continue;
+
+      const elapsed = Date.now() - new Date(lastStart).getTime();
+
+      if (elapsed >= MS_72H) {
+        await purgeApp(appName);
+        delete data[appName];
+        dataDirty = true;
+
+        for (const user of creds) {
+          const i = user.servers.indexOf(appName);
+          if (i !== -1) { user.servers.splice(i, 1); credsDirty = true; }
+        }
+
+        console.log(`[monitor] REMOVED   ${appName} | plan=free | elapsed=${Math.round(elapsed / MS_1H)}h`);
+        continue;
+      }
+
+      if (elapsed >= MS_24H && status !== "suspended") {
+        await safeRun("docker", ["stop", appName]).catch(() => {});
+        entry.status = "suspended";
+        dataDirty = true;
+        console.log(`[monitor] SUSPENDED ${appName} | plan=free | elapsed=${Math.round(elapsed / MS_1H)}h`);
+      }
+
+    } else if (plan === "premium") {
+      if (!createdAt) continue;
+
+      const elapsed = Date.now() - new Date(createdAt).getTime();
+
+      if (elapsed >= MS_35D) {
+        await purgeApp(appName);
+        delete data[appName];
+        dataDirty = true;
+
+        for (const user of creds) {
+          const i = user.servers.indexOf(appName);
+          if (i !== -1) { user.servers.splice(i, 1); credsDirty = true; }
+        }
+
+        console.log(`[monitor] DELETED   ${appName} | plan=premium | elapsed=${Math.round(elapsed / MS_1H)}h`);
+        continue;
+      }
+
+      if (elapsed >= MS_30D && status !== "expired") {
+        await safeRun("docker", ["stop", appName]).catch(() => {});
+        entry.status = "expired";
+        dataDirty = true;
+        console.log(`[monitor] EXPIRED   ${appName} | plan=premium | elapsed=${Math.round(elapsed / MS_1H)}h`);
+      }
+    }
+  }
+
+  if (dataDirty)  saveData(data);
+  if (credsDirty) saveCredentials(creds);
+}
+
+setInterval(runMonitor, 5 * 60 * 1000);
+runMonitor();
+
+app.post("/api/deploy", async (req, res) => {
+  const { username, password, appName, appPassword, repo, zipUrl, language, packages, startFile } = req.body;
+  let logs = [];
+
+  if (!username || !password || !appName || !appPassword || (!repo && !zipUrl) || !language || !startFile) {
+    return res.json({ status: "error", message: "Missing required fields", logs });
+  }
+
+  const nameCheck = validateAppName(appName);
+  if (!nameCheck.ok) {
+    return res.json({ status: "error", message: nameCheck.msg });
+  }
+
+  if (!IMAGES[language]) {
+    return res.json({ status: "error", message: `Unsupported runtime: ${language}. Supported: ${Object.keys(IMAGES).join(", ")}` });
+  }
+
+  if (repo && !isValidRepo(repo)) {
+    return res.json({ status: "error", message: "Only GitHub repos allowed" });
+  }
+
+  if (zipUrl && !isValidUrl(zipUrl)) {
+    return res.json({ status: "error", message: "Invalid zip URL" });
+  }
+
+  const creds = loadCredentials();
+  const userIndex = creds.findIndex(c => c.username === username && c.pass === password);
+
+  if (userIndex === -1) {
+    return res.json({ status: "error", message: "Invalid username or password", logs });
+  }
+
+  const user = creds[userIndex];
+  const data = loadData();
+
+  if (user.servers.length === 0) {
+    if (data[appName]) {
+      return res.json({ status: "error", message: "App name already exists", logs });
+    }
+
+    const usedPorts = Object.values(data).map(v => parseInt(v.port.split(":")[1]));
+    const totalApps = Object.keys(data).length;
+    let newPort = 4000 + totalApps;
+    while (usedPorts.includes(newPort)) newPort++;
+
+    data[appName] = {
+      password: appPassword,
+      port: `${VPS_IP}:${newPort}`,
+      logs: [],
+      plan: "free",
+      lastStart: nowISO(),
+      status: "active",
+      createdAt: null,
+      ram: FREE_RAM,
+      cpu: FREE_CPU,
+      storage: FREE_STORAGE
+    };
+    saveData(data);
+
+    creds[userIndex].servers.push(appName);
+    saveCredentials(creds);
+
+    return res.json({
+      status: "claimed",
+      message: "Free VPS claimed, now deploying",
+      app: { name: appName, port: newPort, url: `http://${VPS_IP}:${newPort}` }
+    });
+  }
+
+  if (!user.servers.includes(appName)) {
+    return res.json({ status: "error", message: "You don't own this app", logs });
+  }
+
+  if (data[appName] && data[appName].password !== appPassword) {
+    return res.json({ status: "error", message: "Invalid app password", logs });
+  }
+
+  const existingEntry  = data[appName] || {};
+  const plan           = existingEntry.plan || "free";
+  const existingStatus = existingEntry.status;
+
+  if (plan === "premium" && existingStatus === "expired") {
+    return res.json({ status: "error", message: "This VPS has expired and cannot be redeployed", logs });
+  }
+
+  const existingCreatedAt = existingEntry.createdAt || null;
+  const ram     = existingEntry.ram     || FREE_RAM;
+  const cpu     = existingEntry.cpu     || FREE_CPU;
+  const storage = existingEntry.storage || FREE_STORAGE;
+  const appPath = path.join(BASE_PATH, appName);
+
+  try {
+    await safeRun("docker", ["rm", "-f", appName]).catch(() => {});
+    await safeRun("rm", ["-rf", appPath]);
+    await safeRun("mkdir", ["-p", appPath]);
+
+    if (repo) {
+      logs.push(await safeRun("git", ["clone", repo, appPath]));
+    } else {
+      const zipPath = path.join(appPath, "code.zip");
+      logs.push(await safeRun("curl", ["-L", zipUrl, "-o", zipPath]));
+      logs.push(await safeRun("unzip", [zipPath, "-d", appPath]));
+      await safeRun("rm", [zipPath]);
+    }
+
+    const dockerfile = buildDockerfile(IMAGES[language], language, packages, startFile);
+    fs.writeFileSync(path.join(appPath, "Dockerfile"), dockerfile);
+    logs.push("Dockerfile created.");
+
+    logs.push(await safeRun("docker", ["build", "-t", appName, appPath]));
+    logs.push("Docker image built.");
+
+    const port = parseInt(data[appName].port.split(":")[1]);
+
+    logs.push(await safeRun("docker", [
+      "run", "-d",
+      "--name", appName,
+      "-p", `${port}:${port}`,
+      `--memory=${ram}`,
+      `--cpus=${cpu}`,
+      "--pids-limit=200",
+      "--security-opt=no-new-privileges",
+      "--cap-drop=ALL",
+      "--cap-add=NET_BIND_SERVICE",
+      "--ulimit", "nproc=200",
+      "--ulimit", "nofile=1024",
+      "--tmpfs", "/tmp:rw,size=100m,noexec",
+      "--restart=always",
+      "--network=bridge",
+      appName
+    ]));
+
+    logs.push(`Container started on port ${port}`);
+
+    const resolvedCreatedAt = plan === "premium"
+      ? (existingCreatedAt || nowISO())
+      : null;
+
+    data[appName] = {
+      password: appPassword,
+      port: `${VPS_IP}:${port}`,
+      logs,
+      plan,
+      lastStart: nowISO(),
+      status: "active",
+      createdAt: resolvedCreatedAt,
+      ram,
+      cpu,
+      storage
+    };
+    saveData(data);
+
+    res.json({
+      status: "success",
+      app: { name: appName, port, url: `http://${VPS_IP}:${port}` },
+      logs
+    });
+
+  } catch (err) {
+    logs.push(err.toString());
+    const ex = data[appName] || {};
+    data[appName] = {
+      password: appPassword,
+      port: ex.port || null,
+      logs,
+      plan: ex.plan || "free",
+      lastStart: ex.lastStart || nowISO(),
+      status: "error",
+      createdAt: ex.createdAt || null,
+      ram: ex.ram || FREE_RAM,
+      cpu: ex.cpu || FREE_CPU,
+      storage: ex.storage || FREE_STORAGE
+    };
+    saveData(data);
+
+    res.json({ status: "error", message: "Deployment failed", logs });
+  }
+});
+
+app.post("/api/stop", async (req, res) => {
+  const { appName, password } = req.body;
+  const data = loadData();
+
+  const v = validate(appName, password, data);
+  if (!v.ok) return res.json({ status: "error", message: v.msg });
+
+  const plan   = data[appName].plan || "free";
+  const status = data[appName].status;
+
+  if (plan === "premium" && status === "expired") {
+    return res.json({ status: "error", message: "This VPS has expired and cannot be controlled" });
+  }
+
+  try {
+    const out = await safeRun("docker", ["stop", appName]);
+    data[appName].status = "stopped";
+    saveData(data);
+    res.json({ status: "success", output: out });
+  } catch (e) {
+    res.json({ status: "error", message: e.toString() });
+  }
+});
+
+app.post("/api/start", async (req, res) => {
+  const { appName, password } = req.body;
+  const data = loadData();
+
+  const v = validate(appName, password, data);
+  if (!v.ok) return res.json({ status: "error", message: v.msg });
+
+  const plan   = data[appName].plan || "free";
+  const status = data[appName].status;
+
+  if (plan === "premium" && status === "expired") {
+    return res.json({ status: "error", message: "This VPS has expired and cannot be controlled" });
+  }
+
+  try {
+    const out = await safeRun("docker", ["start", appName]);
+    data[appName].lastStart = nowISO();
+    data[appName].status = "active";
+    saveData(data);
+    res.json({ status: "success", output: out });
+  } catch (e) {
+    res.json({ status: "error", message: e.toString() });
+  }
+});
+
+app.post("/api/inspect", async (req, res) => {
+  const { appName, password } = req.body;
+  const data = loadData();
+
+  const v = validate(appName, password, data);
+  if (!v.ok) return res.json({ status: "error", message: v.msg });
+
+  try {
+    const out  = await safeRun("docker", ["inspect", appName]);
+    const json = JSON.parse(out);
+
+    json.forEach(c => {
+      delete c.HostConfig;
+      delete c.GraphDriver;
+      delete c.Mounts;
+    });
+
+    res.json({ status: "success", data: json });
+  } catch (e) {
+    res.json({ status: "error", message: e.toString() });
+  }
+});
+
+app.post("/api/logs", async (req, res) => {
+  const { appName, password } = req.body;
+  const data = loadData();
+
+  const v = validate(appName, password, data);
+  if (!v.ok) return res.json({ status: "error", message: v.msg });
+
+  try {
+    const out = await safeRun("docker", ["logs", appName]);
+    res.json({ status: "success", logs: out });
+  } catch (e) {
+    res.json({ status: "error", message: e.toString() });
+  }
+});
+
+app.post("/api/signup", (req, res) => {
+  const { username, pass } = req.body;
+  const ip = req.ip;
+
+  if (!username || !pass) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+    return res.json({ status: "error", message: "Invalid username format" });
+  }
+
+  const creds = loadCredentials();
+
+  if (creds.some(c => c.username === username)) {
+    return res.json({ status: "error", message: "Username already exists" });
+  }
+
+  if (creds.some(c => c.ip === ip)) {
+    return res.json({ status: "error", message: "Only one account per IP allowed" });
+  }
+
+  creds.push({ username, pass, servers: [], ip });
+  saveCredentials(creds);
+  res.json({ status: "success", message: "Account created" });
+});
+
+app.post("/api/login", (req, res) => {
+  const { username, pass } = req.body;
+
+  if (!username || !pass) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  const creds = loadCredentials();
+  const user  = creds.find(c => c.username === username && c.pass === pass);
+
+  res.json({ status: "success", valid: !!user });
+});
+
+app.post("/api/get-app", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  const creds = loadCredentials();
+  const user  = creds.find(c => c.username === username && c.pass === password);
+
+  if (!user) {
+    return res.json({ status: "error", message: "Invalid username or password" });
+  }
+
+  if (user.servers.length === 0) {
+    return res.json({ status: "success", apps: {} });
+  }
+
+  const data = loadData();
+  const apps = {};
+
+  user.servers.forEach(appName => {
+    if (data[appName]) {
+      const { password: appPass, port: ipPort, logs, plan, lastStart, status, createdAt, ram, cpu, storage } = data[appName];
+      apps[appName] = { appPass, ipPort, logs, plan, lastStart, status, createdAt, ram, cpu, storage };
+    }
+  });
+
+  res.json({ status: "success", apps });
+});
+
+app.post("/api/delete-app", async (req, res) => {
+  const { username, password, appName, appPassword } = req.body;
+
+  if (!username || !password || !appName || !appPassword) {
+    return res.json({ status: "error", message: "Missing required fields" });
+  }
+
+  const creds = loadCredentials();
+  const userIndex = creds.findIndex(c => c.username === username && c.pass === password);
+
+  if (userIndex === -1) {
+    return res.json({ status: "error", message: "Invalid username or password" });
+  }
+
+  if (!creds[userIndex].servers.includes(appName)) {
+    return res.json({ status: "error", message: "You don't own this app" });
+  }
+
+  const data = loadData();
+
+  if (!data[appName]) {
+    return res.json({ status: "error", message: "App not found" });
+  }
+
+  if (data[appName].password !== appPassword) {
+    return res.json({ status: "error", message: "Invalid app password" });
+  }
+
+  try {
+    await purgeApp(appName);
+
+    delete data[appName];
+    saveData(data);
+
+    creds[userIndex].servers = creds[userIndex].servers.filter(s => s !== appName);
+    saveCredentials(creds);
+
+    res.json({ status: "success", message: `App ${appName} deleted successfully` });
+  } catch (e) {
+    res.json({ status: "error", message: e.toString() });
+  }
+});
+
+app.post("/api/delete-account", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.json({ status: "error", message: "Missing username or password" });
+  }
+
+  const creds = loadCredentials();
+  const userIndex = creds.findIndex(c => c.username === username && c.pass === password);
+
+  if (userIndex === -1) {
+    return res.json({ status: "error", message: "Invalid username or password" });
+  }
+
+  const user = creds[userIndex];
+  const data = loadData();
+
+  for (const appName of user.servers) {
+    await purgeApp(appName);
+    delete data[appName];
+  }
+
+  saveData(data);
+  creds.splice(userIndex, 1);
+  saveCredentials(creds);
+
+  res.json({ status: "success", message: "Account and all associated apps have been permanently deleted" });
+});
+
+app.post("/api/change-credentials", (req, res) => {
+  const { oldUsername, oldPassword, newUsername, newPassword } = req.body;
+
+  if (!oldUsername || !oldPassword || !newUsername || !newPassword) {
+    return res.json({ status: "error", message: "Missing required fields" });
+  }
+
+  if (!/^[a-zA-Z0-9_-]+$/.test(newUsername)) {
+    return res.json({ status: "error", message: "Invalid new username format" });
+  }
+
+  if (newPassword.length < 6) {
+    return res.json({ status: "error", message: "New password must be at least 6 characters" });
+  }
+
+  const creds = loadCredentials();
+  const userIndex = creds.findIndex(c => c.username === oldUsername && c.pass === oldPassword);
+
+  if (userIndex === -1) {
+    return res.json({ status: "error", message: "Invalid current credentials" });
+  }
+
+  if (newUsername !== oldUsername && creds.some(c => c.username === newUsername)) {
+    return res.json({ status: "error", message: "New username is already taken" });
+  }
+
+  creds[userIndex].username = newUsername;
+  creds[userIndex].pass     = newPassword;
+  saveCredentials(creds);
+
+  res.json({ status: "success", message: "Credentials updated successfully" });
+});
+
+app.post("/api/change-app-password", (req, res) => {
+  const { username, password, appName, oldAppPassword, newAppPassword } = req.body;
+
+  if (!username || !password || !appName || !oldAppPassword || !newAppPassword) {
+    return res.json({ status: "error", message: "Missing required fields" });
+  }
+
+  if (newAppPassword.length < 4) {
+    return res.json({ status: "error", message: "New app password must be at least 4 characters" });
+  }
+
+  const creds = loadCredentials();
+  const user  = creds.find(c => c.username === username && c.pass === password);
+
+  if (!user) {
+    return res.json({ status: "error", message: "Invalid username or password" });
+  }
+
+  if (!user.servers.includes(appName)) {
+    return res.json({ status: "error", message: "You don't own this app" });
+  }
+
+  const data = loadData();
+
+  if (!data[appName]) {
+    return res.json({ status: "error", message: "App not found" });
+  }
+
+  if (data[appName].password !== oldAppPassword) {
+    return res.json({ status: "error", message: "Invalid current app password" });
+  }
+
+  data[appName].password = newAppPassword;
+  saveData(data);
+
+  res.json({ status: "success", message: "App password updated successfully" });
+});
+app.post("/api/admin", async (req, res) => {
+  const { key1, key2, key3, action, ...params } = req.body;
+
+  const ADMIN_KEYS = ["thisISVERYVERYSECRET", "totallySECRET", 'A++()/'];
+
+  if (key1 !== ADMIN_KEYS[0] || key2 !== ADMIN_KEYS[1] || key3 !== ADMIN_KEYS[2]) {
+    return res.json({ status: "error", message: "Invalid admin keys" });
+  }
+
+  if (action === "get-all-data") {
+    const creds = loadCredentials();
+    const ports = loadData();
+    return res.json({ status: "success", credentials: creds, ports: ports });
+  }
+
+  if (action === "give-vps") {
+    const { username, appName, appPassword, plan, ram, cpu, storage } = params;
+
+    if (!username || !appName || !appPassword || !plan) {
+      return res.json({ status: "error", message: "Missing required fields: username, appName, appPassword, plan" });
+    }
+
+    const nameCheck = validateAppName(appName);
+    if (!nameCheck.ok) {
+      return res.json({ status: "error", message: nameCheck.msg });
+    }
+
+    if (!["free", "premium"].includes(plan)) {
+      return res.json({ status: "error", message: "Plan must be 'free' or 'premium'" });
+    }
+
+    const creds = loadCredentials();
+    const userIndex = creds.findIndex(c => c.username === username);
+
+    if (userIndex === -1) {
+      return res.json({ status: "error", message: "User not found" });
+    }
+
+    const data = loadData();
+
+    if (data[appName]) {
+      return res.json({ status: "error", message: "App name already exists" });
+    }
+
+    const usedPorts = Object.values(data).map(v => parseInt(v.port.split(":")[1]));
+    let newPort = 4000 + Object.keys(data).length;
+    while (usedPorts.includes(newPort)) newPort++;
+
+    const finalRam = ram || "512m";
+    const finalCpu = cpu || "0.2";
+    const finalStorage = storage || "4G";
+    const createdAt = plan === "premium" ? nowISO() : null;
+    const lastStart = plan === "free" ? nowISO() : null;
+
+    data[appName] = {
+      password: appPassword,
+      port: `${VPS_IP}:${newPort}`,
+      logs: [],
+      plan: plan,
+      lastStart: lastStart,
+      status: "active",
+      createdAt: createdAt,
+      ram: finalRam,
+      cpu: finalCpu,
+      storage: finalStorage
+    };
+    saveData(data);
+
+    creds[userIndex].servers.push(appName);
+    saveCredentials(creds);
+
+    res.json({
+      status: "success",
+      message: `VPS assigned to ${username}`,
+      app: { name: appName, port: newPort, url: `http://${VPS_IP}:${newPort}`, plan: plan, ram: finalRam, cpu: finalCpu, storage: finalStorage }
+    });
+  }
+
+  if (action === "delete-vps") {
+    const { appName } = params;
+
+    if (!appName) {
+      return res.json({ status: "error", message: "Missing appName" });
+    }
+
+    const data = loadData();
+    const creds = loadCredentials();
+
+    if (!data[appName]) {
+      return res.json({ status: "error", message: "App not found" });
+    }
+
+    await purgeApp(appName);
+    delete data[appName];
+    saveData(data);
+
+    for (const user of creds) {
+      const idx = user.servers.indexOf(appName);
+      if (idx !== -1) {
+        user.servers.splice(idx, 1);
+        break;
+      }
+    }
+    saveCredentials(creds);
+
+    res.json({ status: "success", message: `VPS ${appName} deleted` });
+  }
+
+  if (action === "get-user") {
+    const { username } = params;
+
+    if (!username) {
+      return res.json({ status: "error", message: "Missing username" });
+    }
+
+    const creds = loadCredentials();
+    const user = creds.find(c => c.username === username);
+
+    if (!user) {
+      return res.json({ status: "error", message: "User not found" });
+    }
+
+    const data = loadData();
+    const userApps = {};
+    user.servers.forEach(appName => {
+      if (data[appName]) {
+        userApps[appName] = data[appName];
+      }
+    });
+
+    res.json({ status: "success", user: { username: user.username, ip: user.ip, servers: userApps } });
+  }
+
+  if (action === "list-users") {
+    const creds = loadCredentials();
+    const users = creds.map(c => ({ username: c.username, ip: c.ip, serverCount: c.servers.length }));
+    res.json({ status: "success", users: users });
+  }
+
+  if (action === "update-plan") {
+    const { appName, newPlan, ram, cpu, storage } = params;
+
+    if (!appName || !newPlan || !["free", "premium"].includes(newPlan)) {
+      return res.json({ status: "error", message: "Missing appName or invalid plan" });
+    }
+
+    const data = loadData();
+
+    if (!data[appName]) {
+      return res.json({ status: "error", message: "App not found" });
+    }
+
+    data[appName].plan = newPlan;
+    
+    if (ram) data[appName].ram = ram;
+    if (cpu) data[appName].cpu = cpu;
+    if (storage) data[appName].storage = storage;
+    
+    if (newPlan === "premium" && !data[appName].createdAt) {
+      data[appName].createdAt = nowISO();
+      data[appName].lastStart = null;
+    }
+    if (newPlan === "free") {
+      data[appName].createdAt = null;
+      if (!data[appName].lastStart) data[appName].lastStart = nowISO();
+    }
+    
+    saveData(data);
+
+    res.json({ status: "success", message: `Plan for ${appName} updated to ${newPlan}`, app: data[appName] });
+  }
+
+  res.json({ status: "error", message: `Unknown action: ${action}. Available: get-all-data, give-vps, delete-vps, get-user, list-users, update-plan` });
+});
+app.get(/.*/, (req, res) => {
+  let file = req.path === "/" ? "index.html" : req.path.slice(1);
+
+  if (!path.extname(file)) file += ".html";
+
+  const filePath = path.join(PAGES_PATH, file);
+
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send("Not Found");
+  }
+});
+
+app.listen(3560, "0.0.0.0", () => console.log("Backend running on port 3560"));
