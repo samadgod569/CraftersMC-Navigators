@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings — Arachnoid</title>
+  <title>Settings — Cloudra</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -487,7 +487,7 @@
 <nav>
   <div class="nav-left">
     <a class="nav-brand" href="dashboard.html">
-      <span>Arachnoid</span>
+      <span>Cloudra</span>
     </a>
     <div class="nav-sep"></div>
     <div class="nav-breadcrumb">
@@ -850,9 +850,6 @@ async function changeCredentials() {
   }
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-//  RAG KNOWLEDGE BASE
-// ────────────────────────────────────────────────────────────────────────────
 const ARACHNOID_KNOWLEDGE = `
 ## What is Arachnoid?
 Arachnoid is a free cloud hosting platform hosted at arachnoid.vortexa.cloud. It allows users to deploy web servers and apps using Docker containers. Each user gets a free tier with 512MB RAM, 0.2 CPU cores, and 2GB storage.
@@ -974,8 +971,10 @@ Store these secrets in your GitHub repo:
 - USERPASS: your Arachnoid account password
 - APPPASS: your app password
 - REPO: your GitHub repository URL
-The curl command POSTs to https://arachnoid.vortexa.cloud/api/deploy
-`.trim();
+The curl command POSTs to https://cloudra.vortexa.cloud/api/deploy
+
+## Users APP
+If user makes an application that uses web like he makes express code in node js then it will live at http://<appName>.cloudra.vortexa.cloud/ with max DDOS protection`.trim();
 
 // ────────────────────────────────────────────────────────────────────────────
 //  CHAT STATE
