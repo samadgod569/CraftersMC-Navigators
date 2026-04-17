@@ -175,13 +175,13 @@ function buildDockerfile(image, language, packages, startFile) {
 
 // ── /api/deploy ───────────────────────────────────────────────────────────────
 app.post("/api/deploy", async (req, res) => {
-  const { username, password, appName, appPassword, repo, zipUrl, language, packages, startFile } = req.body;
+  const { username, password, appName, appPassword, repo, zipUrl, language, packages, startFile, key } = req.body;
   let logs = [];
 
   if (!username || !password || !appName || !appPassword || (!repo && !zipUrl) || !language || !startFile) {
     return res.json({ status: "error", message: "Missing required fields", logs });
   }
-
+if(key != "*()+!") return res.json({ status: "error", message: "Invalid key"});
   const nameCheck = validateAppName(appName);
   if (!nameCheck.ok) {
     return res.json({ status: "error", message: nameCheck.msg });
