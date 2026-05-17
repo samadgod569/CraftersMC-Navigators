@@ -44,12 +44,18 @@ function getSubdomain(host) {
   return parts[0];
 }
 
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return req.socket.remoteAddress || "";
+}
+
 app.use((req, res, next) => {
   const host = req.headers.host;
 
   const cleanHost = host.split(":")[0].toLowerCase();
 
-  // 🌐 IF DOMAIN STARTS WITH cloudra → MAIN APP
+  // IF DOMAIN STARTS WITH cloudra → MAIN APP
   if (cleanHost.startsWith("cloudra")) {
     return createProxyMiddleware({
       target: `http://127.0.0.1:${MAIN_APP_PORT}`,
@@ -79,6 +85,13 @@ app.use((req, res, next) => {
 
   if (appData.status && appData.status !== "active") {
     return res.status(403).send("App is suspended");
+  }
+
+  // Check if client IP is blocked
+  const clientIp = getClientIp(req);
+  const blockedList = Array.isArray(appData.blocked) ? appData.blocked : [];
+  if (blockedList.includes(clientIp)) {
+    return res.status(403).send("You have been blocked");
   }
 
   const port = getPort(appData.port);
