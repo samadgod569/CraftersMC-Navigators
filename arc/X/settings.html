@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings — Cloudra</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f6f7;
+      --surface: #ffffff;
+      --border: #e2e2e5;
+      --text: #1b1b1f;
+      --text-2: #6b6b78;
+      --text-3: #9b9ba8;
+      --orange: #f38020;
+      --orange-dim: rgba(243,128,32,0.10);
+      --orange-hover: #e06b10;
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.10);
+      --red: #e53e3e;
+      --red-dim: rgba(229,62,62,0.08);
+      --yellow: #f6ad55;
+      --yellow-dim: rgba(246,173,85,0.10);
+      --blue: #0051c3;
+      --blue-dim: rgba(0,81,195,0.08);
+      --nav-bg: #1b1b1f;
+      --sidebar-bg: #16181f;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+      --sidebar-w: 56px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e8e8f0;
+      --text-2: #8888a0;
+      --text-3: #55556a;
+      --orange-dim: rgba(243,128,32,0.14);
+      --green-dim: rgba(0,184,148,0.14);
+      --red-dim: rgba(229,62,62,0.12);
+      --yellow-dim: rgba(246,173,85,0.12);
+      --blue-dim: rgba(0,81,195,0.12);
+      --nav-bg: #0a0c12;
+      --sidebar-bg: #0a0c12;
+    }
+
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Nav ── */
+    nav {
+      background: var(--nav-bg); height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 200; flex-shrink: 0;
+    }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand span { font-size: 0.95rem; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
+    .nav-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.12); }
+    .nav-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+    .nav-breadcrumb a { color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s; }
+    .nav-breadcrumb a:hover { color: rgba(255,255,255,0.8); }
+    .nav-breadcrumb svg { width: 12px; height: 12px; color: rgba(255,255,255,0.25); }
+    .nav-breadcrumb span { color: rgba(255,255,255,0.85); font-family: var(--mono); font-size: 0.78rem; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #a0a0ae; transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+    .theme-toggle svg { width: 15px; height: 15px; }
+
+    .avatar-wrap { position: relative; }
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      cursor: pointer; overflow: hidden; background: none; padding: 0;
+      transition: border-color 0.15s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-btn:hover { border-color: var(--orange); }
+    .avatar-initials {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.62rem; font-weight: 600; color: #fff;
+      font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.04em;
+      pointer-events: none; user-select: none;
+    }
+    .avatar-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.16);
+      min-width: 190px; overflow: hidden;
+      opacity: 0; transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+      transform-origin: top right;
+    }
+    .avatar-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .dd-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
+    .dd-username { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .dd-label { font-size: 0.7rem; color: var(--text-3); font-family: var(--mono); margin-top: 2px; }
+    .dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer;
+      font-size: 0.82rem; color: var(--text-2); text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      border: none; background: none; width: 100%; text-align: left; font-family: var(--sans);
+    }
+    .dd-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-3); transition: color 0.12s; }
+    .dd-item:hover { background: var(--orange-dim); color: var(--text); }
+    .dd-item:hover svg { color: var(--orange); }
+    .dd-item.danger:hover { background: var(--red-dim); color: var(--red); }
+    .dd-item.danger:hover svg { color: var(--red); }
+
+    /* ── Shell ── */
+    .shell { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar {
+      width: var(--sidebar-w); background: var(--sidebar-bg);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 0; gap: 4px; flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .sb-btn {
+      width: 38px; height: 38px; border-radius: var(--radius);
+      background: transparent; border: 1px solid transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: rgba(255,255,255,0.35);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .sb-btn svg { width: 17px; height: 17px; }
+    .sb-btn:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.06); }
+    .sb-btn.active { color: var(--orange); background: rgba(243,128,32,0.12); border-color: rgba(243,128,32,0.2); }
+    .sb-tooltip {
+      position: absolute; left: calc(100% + 12px); top: 50%;
+      transform: translateY(-50%);
+      background: #1b1b1f; color: #e8e8f0;
+      font-size: 0.72rem; font-family: var(--sans); font-weight: 500;
+      padding: 5px 10px; border-radius: var(--radius);
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity 0.15s; z-index: 100;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .sb-btn:hover .sb-tooltip { opacity: 1; }
+    .sb-spacer { flex: 1; }
+
+    /* ── Main ── */
+    .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+    /* ── Sections ── */
+    .section { display: none; flex-direction: column; flex: 1; padding: 28px 28px 40px; max-width: 680px; }
+    .section.active { display: flex; }
+
+    .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+    .section-sub { font-size: 0.8rem; color: var(--text-2); margin-bottom: 28px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 18px;
+    }
+    .card-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-header-icon {
+      width: 30px; height: 30px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--orange-dim); color: var(--orange); flex-shrink: 0;
+    }
+    .card-header-icon svg { width: 15px; height: 15px; }
+    .card-title { font-size: 0.88rem; font-weight: 600; }
+    .card-sub { font-size: 0.73rem; color: var(--text-2); margin-top: 1px; }
+    .card-body { padding: 20px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--mono); }
+    .form-input {
+      width: 100%; padding: 9px 13px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); font-size: 0.83rem;
+      color: var(--text); font-family: var(--sans);
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+    }
+    .form-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); }
+    .form-input::placeholder { color: var(--text-3); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: var(--radius);
+      font-size: 0.8rem; font-weight: 600; font-family: var(--sans);
+      border: none; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+    .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.28); }
+    .btn-ghost { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-ghost:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); }
+    .btn-danger:hover:not(:disabled) { background: var(--red); color: #fff; }
+
+    .spin { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Inline msg ── */
+    .inline-msg {
+      font-size: 0.78rem; padding: 0; height: 0; overflow: hidden;
+      transition: height 0.2s, padding 0.2s, opacity 0.2s;
+      border-radius: var(--radius); opacity: 0;
+    }
+    .inline-msg.ok { color: var(--green); background: var(--green-dim); border: 1px solid rgba(0,184,148,0.2); padding: 8px 12px; height: auto; opacity: 1; margin-top: 12px; }
+    .inline-msg.err { color: var(--red); background: var(--red-dim); border: 1px solid rgba(229,62,62,0.2); padding: 8px 12px; height: auto; opacity: 1; margin-top: 12px; }
+
+    /* ── Avatar upload ── */
+    .avatar-upload-zone {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .avatar-preview {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--orange); border: 3px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 700; color: #fff;
+      font-family: var(--sans); text-transform: uppercase;
+      overflow: hidden; flex-shrink: 0; transition: border-color 0.2s;
+      position: relative; cursor: pointer;
+    }
+    .avatar-preview:hover { border-color: var(--orange); }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .avatar-overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.45); display: flex; align-items: center;
+      justify-content: center; opacity: 0; transition: opacity 0.2s;
+    }
+    .avatar-preview:hover .avatar-overlay { opacity: 1; }
+    .avatar-overlay svg { width: 20px; height: 20px; color: #fff; }
+    .avatar-upload-info { flex: 1; }
+    .avatar-upload-info p { font-size: 0.8rem; color: var(--text-2); margin-top: 6px; }
+    #avatar-file-input { display: none; }
+    .avatar-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+    /* ── AI Chat ── */
+    #section-ai { max-width: 100%; padding: 0; display: none; flex-direction: column; height: calc(100vh - 54px); }
+    #section-ai.active { display: flex; }
+
+    .ai-layout { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+    .ai-header {
+      padding: 18px 28px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .ai-header-row { display: flex; align-items: center; gap: 12px; }
+    .ai-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 3px var(--green-dim);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 3px var(--green-dim); }
+      50% { box-shadow: 0 0 0 6px transparent; }
+    }
+    .ai-title { font-size: 0.95rem; font-weight: 600; }
+    .ai-subtitle { font-size: 0.75rem; color: var(--text-2); margin-top: 2px; }
+    .ai-clear-btn {
+      margin-left: auto; padding: 6px 12px; border-radius: var(--radius);
+      font-size: 0.73rem; font-weight: 500; font-family: var(--sans);
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-2); cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ai-clear-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+    .ai-clear-btn svg { width: 12px; height: 12px; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 24px 28px;
+      display: flex; flex-direction: column; gap: 20px;
+      min-height: 0;
+    }
+
+    /* Scrollbar */
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Messages */
+    .msg { display: flex; gap: 12px; animation: msgIn 0.3s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .msg.user { flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .msg-avatar.ai { background: linear-gradient(135deg, #f38020, #e06b10); color: #fff; }
+    .msg-avatar.user { background: var(--blue); color: #fff; }
+
+    .msg-content { max-width: 75%; display: flex; flex-direction: column; gap: 4px; }
+    .msg.user .msg-content { align-items: flex-end; }
+
+    .msg-bubble {
+      padding: 11px 15px; border-radius: 14px;
+      font-size: 0.83rem; line-height: 1.6; color: var(--text);
+      word-break: break-word;
+    }
+    .msg.ai .msg-bubble {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+    .msg.user .msg-bubble {
+      background: var(--orange); color: #fff;
+      border-top-right-radius: 4px;
+    }
+    .msg-time { font-size: 0.67rem; color: var(--text-3); font-family: var(--mono); padding: 0 2px; }
+
+    /* ── Full Markdown styles for AI bubbles ── */
+    .msg.ai .msg-bubble code {
+      font-family: var(--mono); font-size: 0.76rem;
+      background: var(--bg); padding: 2px 6px;
+      border-radius: 4px; border: 1px solid var(--border);
+      color: var(--orange);
+    }
+    .msg.ai .msg-bubble pre {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      margin: 10px 0; overflow-x: auto; font-size: 0.76rem;
+      font-family: var(--mono); line-height: 1.55;
+      position: relative;
+    }
+    .msg.ai .msg-bubble pre code {
+      background: none; padding: 0; border: none; color: var(--text);
+    }
+    .msg.ai .msg-bubble h1,
+    .msg.ai .msg-bubble h2,
+    .msg.ai .msg-bubble h3 {
+      font-family: var(--sans); font-weight: 600; color: var(--text);
+      margin: 14px 0 6px; line-height: 1.3;
+    }
+    .msg.ai .msg-bubble h1 { font-size: 1rem; }
+    .msg.ai .msg-bubble h2 { font-size: 0.92rem; }
+    .msg.ai .msg-bubble h3 { font-size: 0.86rem; color: var(--text-2); }
+    .msg.ai .msg-bubble p { margin: 6px 0; }
+    .msg.ai .msg-bubble ul,
+    .msg.ai .msg-bubble ol {
+      margin: 6px 0 6px 18px; display: flex; flex-direction: column; gap: 3px;
+    }
+    .msg.ai .msg-bubble ul { list-style: disc; }
+    .msg.ai .msg-bubble ol { list-style: decimal; }
+    .msg.ai .msg-bubble li { line-height: 1.5; }
+    .msg.ai .msg-bubble li::marker { color: var(--orange); }
+    .msg.ai .msg-bubble strong { font-weight: 600; color: var(--text); }
+    .msg.ai .msg-bubble em { font-style: italic; color: var(--text-2); }
+    .msg.ai .msg-bubble blockquote {
+      border-left: 3px solid var(--orange); margin: 8px 0;
+      padding: 6px 12px; background: var(--orange-dim);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--text-2); font-style: italic;
+    }
+    .msg.ai .msg-bubble hr {
+      border: none; border-top: 1px solid var(--border); margin: 12px 0;
+    }
+    .msg.ai .msg-bubble a {
+      color: var(--orange); text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .msg.ai .msg-bubble a:hover { color: var(--orange-hover); }
+
+    /* Typewriter cursor */
+    .typing-cursor {
+      display: inline-block; width: 2px; height: 0.9em;
+      background: var(--orange); margin-left: 2px;
+      vertical-align: middle; border-radius: 1px;
+      animation: blink 0.7s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Typing indicator */
+    .typing-indicator { display: flex; gap: 5px; align-items: center; padding: 4px 2px; }
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3);
+      animation: typing 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Suggestions */
+    .suggestions {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 0 28px 16px;
+    }
+    .suggestion-chip {
+      padding: 7px 13px; border-radius: 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.76rem; color: var(--text-2); cursor: pointer;
+      transition: all 0.15s; font-family: var(--sans);
+      animation: chipIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .suggestion-chip:hover { background: var(--orange-dim); border-color: var(--orange); color: var(--orange); }
+    @keyframes chipIn {
+      from { opacity: 0; transform: scale(0.9) translateY(6px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Chat input */
+    .chat-input-area {
+      padding: 16px 28px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .chat-input-row { display: flex; gap: 10px; align-items: flex-end; }
+    .chat-textarea {
+      flex: 1; padding: 10px 14px; min-height: 44px; max-height: 140px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); font-size: 0.83rem;
+      color: var(--text); font-family: var(--sans);
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+      resize: none; line-height: 1.5; overflow-y: auto;
+    }
+    .chat-textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); }
+    .chat-textarea::placeholder { color: var(--text-3); }
+    .chat-send-btn {
+      width: 44px; height: 44px; border-radius: var(--radius-lg);
+      background: var(--orange); color: #fff; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .chat-send-btn:hover:not(:disabled) { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.3); }
+    .chat-send-btn:active { transform: scale(0.93); }
+    .chat-send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .chat-send-btn svg { width: 18px; height: 18px; }
+
+    /* Empty state */
+    .chat-empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      text-align: center; padding: 40px 28px;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .chat-empty-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange-dim), rgba(243,128,32,0.02));
+      border: 1px solid rgba(243,128,32,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--orange);
+    }
+    .chat-empty-icon svg { width: 24px; height: 24px; }
+    .chat-empty h3 { font-size: 0.95rem; font-weight: 600; }
+    .chat-empty p { font-size: 0.8rem; color: var(--text-2); max-width: 300px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-left">
+    <a class="nav-brand" href="dashboard.html">
+      <span>Cloudra</span>
+    </a>
+    <div class="nav-sep"></div>
+    <div class="nav-breadcrumb">
+      <a href="dashboard.html">Servers</a>
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" style="display:none"><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="avatar-wrap">
+      <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+        <div class="avatar-initials" id="avatar-inner"></div>
+      </button>
+      <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dd-header">
+          <div class="dd-username" id="dd-username"></div>
+          <div class="dd-label">account</div>
+        </div>
+        <a class="dd-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+          Dashboard
+        </a>
+        <a class="dd-item" href="settings.html">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.7"/></svg>
+          Settings
+        </a>
+        <button class="dd-item danger" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <button class="sb-btn active" id="sb-profile" onclick="switchSection('profile')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">Profile & Avatar</span>
+    </button>
+
+    <button class="sb-btn" id="sb-ai" onclick="switchSection('ai')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">AI Assistant</span>
+    </button>
+    <div class="sb-spacer"></div>
+    <a class="sb-btn" href="dashboard.html" title="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+      <span class="sb-tooltip">Dashboard</span>
+    </a>
+  </aside>
+
+  <main class="main">
+
+    <!-- ── PROFILE ── -->
+    <section class="section active" id="section-profile">
+      <div class="section-title">Profile & Avatar</div>
+      <div class="section-sub">Customize your profile picture shown across the platform.</div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="card-title">Profile Picture</div>
+            <div class="card-sub">Stored in your browser's local storage</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="avatar-upload-zone">
+            <div class="avatar-preview" id="avatar-preview-big" onclick="document.getElementById('avatar-file-input').click()">
+              <div class="avatar-overlay">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+              </div>
+            </div>
+            <input type="file" id="avatar-file-input" accept="image/*"/>
+            <div class="avatar-upload-info">
+              <strong style="font-size:0.85rem;" id="avatar-username-display"></strong>
+              <p>Click your avatar to upload a new image. Supports JPG, PNG, GIF, WebP up to 2MB.</p>
+              <div class="avatar-actions">
+                <button class="btn btn-primary" onclick="document.getElementById('avatar-file-input').click()">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  Upload Image
+                </button>
+                <button class="btn btn-ghost" id="btn-remove-avatar" onclick="removeAvatar()">
+                  <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="inline-msg" id="msg-avatar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ACCOUNT ── -->
+    <section class="section" id="section-credentials">
+      <div class="section-title">Linked Account</div>
+      <div class="section-sub">Your account is managed through Discord. Username and password are handled automatically.</div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon" style="background:rgba(88,101,242,0.1);color:#5865F2;">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          </div>
+          <div>
+            <div class="card-title">Discord Account</div>
+            <div class="card-sub">Credentials are managed by Discord — no password changes needed</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:16px;padding:12px 0;">
+            <div id="discord-avatar-preview" style="width:54px;height:54px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:0.95rem;font-weight:600;" id="discord-username-display"></div>
+              <div style="font-size:0.75rem;color:var(--text-3);margin-top:3px;font-family:var(--mono);">Signed in via Discord OAuth</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:0.76rem;color:var(--text-2);line-height:1.55;">
+            To change your username or avatar, update them directly in Discord. Your profile picture can still be customized in the <strong>Profile</strong> tab above.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AI ASSISTANT ── -->
+    <section class="section" id="section-ai">
+      <div class="ai-layout">
+        <div class="ai-header">
+          <div class="ai-header-row">
+            <div class="ai-status-dot"></div>
+            <div>
+              <div class="ai-title">Arachnoid Assistant</div>
+              <div class="ai-subtitle">Trained on platform docs · Powered by AI</div>
+            </div>
+            <button class="ai-clear-btn" onclick="clearChat()">
+              <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Clear chat
+            </button>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-empty" id="chat-empty">
+            <div class="chat-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>How can I help you?</h3>
+            <p>Ask me anything about deploying apps, managing servers, or troubleshooting issues on Arachnoid.</p>
+          </div>
+        </div>
+
+        <div class="suggestions" id="chat-suggestions">
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">How do I deploy a Node.js app?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">Why are my logs empty?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">How do I change my app password?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">What languages are supported?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">My app keeps crashing</button>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <textarea class="chat-textarea" id="chat-input" placeholder="Ask anything about Arachnoid…" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()">
+              <svg viewBox="0 0 24 24" fill="none"><line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="22 2 15 22 11 13 2 9 22 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+//  AUTH GUARD
+// ────────────────────────────────────────────────────────────────────────────
+const username = localStorage.getItem('username') || '';
+const password = localStorage.getItem('password') || '';
+if (!username || !password) window.location.href = 'login.html';
+
+// ────────────────────────────────────────────────────────────────────────────
+//  THEME
+// ────────────────────────────────────────────────────────────────────────────
+(function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('icon-sun').style.display = saved === 'dark' ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = saved === 'dark' ? 'none' : 'block';
+})();
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.getElementById('icon-sun').style.display = next === 'dark' ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = next === 'dark' ? 'none' : 'block';
+  localStorage.setItem('theme', next);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  AVATAR / NAV INIT
+// ────────────────────────────────────────────────────────────────────────────
+function initAvatar() {
+  document.getElementById('dd-username').textContent = username;
+  document.getElementById('avatar-username-display').textContent = username;
+  const inner = document.getElementById('avatar-inner');
+  const navBtn = document.getElementById('avatar-btn');
+  const bigPreview = document.getElementById('avatar-preview-big');
+  const b64 = localStorage.getItem('img');
+
+  // Nav avatar
+  inner.innerHTML = '';
+  navBtn.querySelectorAll('img').forEach(e => e.remove());
+  if (b64) {
+    inner.style.display = 'none';
+    const img = document.createElement('img');
+    img.src = b64; img.alt = username;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
+    navBtn.appendChild(img);
+  } else {
+    inner.style.display = 'flex';
+    inner.textContent = username.slice(0, 2);
+  }
+
+  // Big preview
+  bigPreview.innerHTML = `<div class="avatar-overlay"><svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.7"/></svg></div>`;
+  if (b64) {
+    const img = document.createElement('img');
+    img.src = b64; img.alt = username;
+    bigPreview.insertBefore(img, bigPreview.firstChild);
+  } else {
+    bigPreview.style.background = 'var(--orange)';
+    const initDiv = document.createElement('div');
+    initDiv.style.cssText = 'font-size:1.5rem;font-weight:700;color:#fff;z-index:1;';
+    initDiv.textContent = username.slice(0, 2).toUpperCase();
+    bigPreview.insertBefore(initDiv, bigPreview.firstChild);
+  }
+
+  // Discord account tab preview
+  const discordPreview = document.getElementById('discord-avatar-preview');
+  const discordUsernameDisplay = document.getElementById('discord-username-display');
+  if (discordUsernameDisplay) discordUsernameDisplay.textContent = username;
+  if (discordPreview) {
+    discordPreview.innerHTML = '';
+    if (b64) {
+      const img = document.createElement('img');
+      img.src = b64; img.alt = username;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      discordPreview.appendChild(img);
+    } else {
+      discordPreview.textContent = username.slice(0,2).toUpperCase();
+    }
+  }
+}
+initAvatar();
+
+// ────────────────────────────────────────────────────────────────────────────
+//  FILE UPLOAD
+// ────────────────────────────────────────────────────────────────────────────
+document.getElementById('avatar-file-input').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showMsg('msg-avatar', 'Image must be under 2MB.', 'err'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    localStorage.setItem('img', e.target.result);
+    initAvatar();
+    showMsg('msg-avatar', 'Profile picture updated!', 'ok');
+  };
+  reader.readAsDataURL(file);
+});
+
+function removeAvatar() {
+  localStorage.removeItem('img');
+  initAvatar();
+  showMsg('msg-avatar', 'Profile picture removed.', 'ok');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  DROPDOWN
+// ────────────────────────────────────────────────────────────────────────────
+function toggleDropdown() { document.getElementById('avatar-dropdown').classList.toggle('open'); }
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('avatar-wrap').contains(e.target))
+    document.getElementById('avatar-dropdown').classList.remove('open');
+});
+function logout() {
+  localStorage.removeItem('username');
+  localStorage.removeItem('password');
+  window.location.href = 'login.html';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  SECTION SWITCH
+// ────────────────────────────────────────────────────────────────────────────
+function switchSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const btn = document.getElementById('sb-' + id);
+  if (btn) btn.classList.add('active');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  INLINE MSG
+// ────────────────────────────────────────────────────────────────────────────
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'inline-msg ' + type;
+  setTimeout(() => { el.className = 'inline-msg'; el.textContent = ''; }, 4000);
+}
+
+
+
+const ARACHNOID_KNOWLEDGE = `
+## What is Arachnoid?
+Arachnoid is a free cloud hosting platform hosted at arachnoid.vortexa.cloud. It allows users to deploy web servers and apps using Docker containers. Each user gets a free tier with 512MB RAM, 0.2 CPU cores, and 2GB storage.
+
+## Supported Languages & Runtimes
+Arachnoid supports the following languages:
+- Node.js (v16, v18, v20) — runs with "node <startFile>"
+- TypeScript (ts, ts18) — runs with ts-node
+- Python (3.9, 3.10, 3.12) — runs with python3
+- Go (1.21, 1.22) — runs with go run
+- Ruby 3.3 — runs with ruby
+- PHP 8.3 — runs with php
+- Bun (latest) — runs with bun
+- Deno (latest) — runs with deno
+- Rust 1.78 — builds with cargo, runs the compiled binary
+- Java 21 (Eclipse Temurin) — runs with java -jar
+- .NET 8.0 — runs with dotnet
+- Elixir 1.16 — runs with elixir
+
+## How to Deploy an App
+1. Go to the Deploy page from the dashboard
+2. Enter your app name (alphanumeric, dashes, underscores only)
+3. Paste your GitHub repository URL (must start with https://github.com/)
+4. Select your language/runtime
+5. Enter the start file (e.g., index.js for Node.js, main.py for Python)
+6. Add any extra npm/pip/gem packages needed
+7. Set an app password (min 4 characters)
+8. Click Deploy — it will clone, build, and start your container
+
+## App Lifecycle
+- Apps have statuses: active, stopped, suspended, error, expired
+- Free apps are automatically suspended after 72 hours of inactivity to save resources
+- If suspended, go to the app info page and click "Restart Server" 
+- After 35 days of suspension, free apps are permanently deleted
+- Premium apps expire after 30 days without renewal and are deleted after 5 more days
+
+## Starting & Stopping Apps
+- Use the Start/Stop buttons in the app info page (Runtime Logs tab)
+- Start: spins up the Docker container
+- Stop: halts the container (data is preserved)
+- Update: pulls latest code from GitHub and redeploys
+
+## Viewing Logs
+- Runtime Logs: shows live stdout/stderr from your running app
+- Deployment Logs: shows build output from the last deployment
+- If logs appear empty, click the Refresh button
+- Logs are fetched from the server each time via /api/logs endpoint
+
+## App Password
+- Each app has its own password separate from your account password
+- Required to start/stop/update/inspect/delete the app
+- Change it in the app info page under the Credentials sidebar section
+- Must be at least 4 characters
+
+## Resource Limits
+- Free plan: 512MB RAM, 0.2 CPU cores, 2GB storage
+- Premium plan: higher limits based on subscription
+- Apps run in isolated Docker containers (Node Alpine, Python Slim, etc.)
+
+## GitHub Workflow / CI-CD
+Arachnoid supports automatic deployments via GitHub Actions.
+The workflow sends a POST to /api/deploy with your credentials.
+You need to store USERPASS and APPPASS as GitHub repository secrets.
+The workflow triggers on push to the main branch.
+
+## Common Errors & Fixes
+
+### App won't start
+- Check that your start file name is correct (case-sensitive)
+- Check runtime logs for error messages
+- Make sure your app listens on the PORT environment variable (process.env.PORT)
+- For Node.js: use app.listen(process.env.PORT || 3000)
+- For Python Flask: use app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+
+### Logs are empty / not showing
+- Click the Refresh button to fetch latest logs
+- If still empty, your app may have crashed immediately — check deployment logs
+- The log viewer fetches from /api/logs — make sure your app is running
+
+### App crashes on start
+- Make sure all dependencies are in package.json / requirements.txt
+- Check that you have the right language selected
+- For Node.js, ensure express (or your framework) is listed in dependencies
+- View deployment logs to see build errors
+
+### Port / connection issues
+- Your app MUST listen on process.env.PORT — Arachnoid assigns a dynamic port
+- Don't hardcode a port number
+- The public IP and port are shown on the app info page (e.g., 45.137.70.54:4003)
+
+### Cannot deploy
+- GitHub repo URL must start with https://github.com/
+- App name can only contain letters, numbers, dashes, and underscores
+- Make sure you're not already at the app limit for free accounts
+
+### Suspended app
+- Free apps suspend after 72 hours of inactivity
+- Click "Restart Server" in the banner on the app info page
+- After restarting, check logs to confirm the app is running
+
+## Account Management
+- Change your username and password in Settings → Credentials
+- Delete your account from the dashboard (deletes all apps and data permanently)
+- Only one account per IP address is allowed
+- Username must be alphanumeric with dashes/underscores only
+- Password must be at least 6 characters
+
+## Settings Page
+- Profile: upload a profile picture (stored in localStorage, max 2MB)
+- Credentials: change your username and/or password (requires current password)
+- AI Assistant: this chat — ask me anything about the platform!
+
+## Backup
+- The Backup section allows you to download or manage your app files
+- Access from the app info page sidebar (upload icon)
+
+## GitHub Actions Integration
+Store these secrets in your GitHub repo:
+- USERPASS: your Arachnoid account password
+- APPPASS: your app password
+- REPO: your GitHub repository URL
+The curl command POSTs to https://cloudra.vortexa.cloud/api/deploy
+
+## Users APP
+If user makes an application that uses web like he makes express code in node js then it will live at http://<appName>.cloudra.vortexa.cloud/ with max DDOS protection`.trim();
+
+// ────────────────────────────────────────────────────────────────────────────
+//  CHAT STATE
+// ────────────────────────────────────────────────────────────────────────────
+const CHAT_STORAGE_KEY = 'arachnoid_chat_history';
+let chatHistory = [];
+let isAiTyping = false;
+
+function loadChatHistory() {
+  try {
+    const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (saved) {
+      chatHistory = JSON.parse(saved);
+      const empty = document.getElementById('chat-empty');
+      if (chatHistory.length > 0 && empty) empty.remove();
+      chatHistory.forEach(msg => renderMessage(msg.role, msg.content, msg.time, false));
+      scrollBottom();
+    }
+  } catch(e) { chatHistory = []; }
+}
+
+function saveChatHistory() {
+  try { localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory.slice(-60))); } catch(e) {}
+}
+
+function clearChat() {
+  chatHistory = [];
+  localStorage.removeItem(CHAT_STORAGE_KEY);
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML = `
+    <div class="chat-empty" id="chat-empty">
+      <div class="chat-empty-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>How can I help you?</h3>
+      <p>Ask me anything about deploying apps, managing servers, or troubleshooting issues on Arachnoid.</p>
+    </div>`;
+  document.getElementById('chat-suggestions').style.display = 'flex';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  RENDER MESSAGE
+// ────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+//  MARKDOWN PARSER
+// ────────────────────────────────────────────────────────────────────────────
+function parseMarkdown(md) {
+  // Protect code blocks first
+  const codeBlocks = [];
+  md = md.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const i = codeBlocks.length;
+    codeBlocks.push(`<pre><code class="lang-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`);
+    return `\x00CODE${i}\x00`;
+  });
+
+  // Inline code
+  md = md.replace(/`([^`\n]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
+
+  // Headings
+  md = md.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  md = md.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  md = md.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  // Bold + italic
+  md = md.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  md = md.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  md = md.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  md = md.replace(/_(.+?)_/g, '<em>$1</em>');
+
+  // Blockquote
+  md = md.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // HR
+  md = md.replace(/^---+$/gm, '<hr>');
+
+  // Links
+  md = md.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  // Unordered lists — group consecutive bullet lines
+  md = md.replace(/(^[\-\*\+] .+(\n|$))+/gm, match => {
+    const items = match.trim().split('\n').map(l => `<li>${l.replace(/^[\-\*\+] /, '')}</li>`).join('');
+    return `<ul>${items}</ul>`;
+  });
+
+  // Ordered lists
+  md = md.replace(/(^\d+\. .+(\n|$))+/gm, match => {
+    const items = match.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('');
+    return `<ol>${items}</ol>`;
+  });
+
+  // Paragraphs — wrap non-tagged lines
+  md = md.replace(/^(?!<[a-z]|\x00CODE)(.+)$/gm, '<p>$1</p>');
+
+  // Restore code blocks
+  md = md.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeBlocks[parseInt(i)]);
+
+  return md;
+}
+
+function renderMessage(role, content, time, animate = true, typewriter = false) {
+  const empty = document.getElementById('chat-empty');
+  if (empty) empty.remove();
+
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (!animate) div.style.animation = 'none';
+
+  const initials = role === 'ai' ? 'AI' : username.slice(0,2).toUpperCase();
+  const avatarClass = role === 'ai' ? 'ai' : 'user';
+  const timeStr = time || new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  div.innerHTML = `
+    <div class="msg-avatar ${avatarClass}">${initials}</div>
+    <div class="msg-content">
+      <div class="msg-bubble" id="bubble-${Date.now()}"></div>
+      <div class="msg-time">${timeStr}</div>
+    </div>`;
+  msgs.appendChild(div);
+
+  const bubble = div.querySelector('.msg-bubble');
+
+  if (role === 'ai' && typewriter) {
+    typewriteMarkdown(bubble, content, () => scrollBottom());
+  } else if (role === 'ai') {
+    bubble.innerHTML = parseMarkdown(content);
+  } else {
+    bubble.textContent = content;
+  }
+
+  if (animate) scrollBottom();
+  return div;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  TYPEWRITER
+// ────────────────────────────────────────────────────────────────────────────
+function typewriteMarkdown(bubble, fullText, onTick) {
+  let i = 0;
+  const speed = 12; // ms per char
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  bubble.appendChild(cursor);
+
+  const interval = setInterval(() => {
+    if (i >= fullText.length) {
+      clearInterval(interval);
+      cursor.remove();
+      // Render final proper MD
+      bubble.innerHTML = parseMarkdown(fullText);
+      if (onTick) onTick();
+      return;
+    }
+    // Reveal raw text char by char, then parse MD incrementally
+    i += Math.min(3, fullText.length - i); // 3 chars per tick for speed
+    const partial = fullText.slice(0, i);
+    // Light parse during typing — just line breaks + code blocks rough pass
+    bubble.innerHTML = parseMarkdown(partial);
+    bubble.appendChild(cursor);
+    if (onTick) onTick();
+  }, speed);
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function scrollBottom() {
+  const msgs = document.getElementById('chat-messages');
+  setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  TYPING INDICATOR
+// ────────────────────────────────────────────────────────────────────────────
+let typingEl = null;
+function showTyping() {
+  const empty = document.getElementById('chat-empty');
+  if (empty) empty.remove();
+  const msgs = document.getElementById('chat-messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'msg ai';
+  typingEl.innerHTML = `
+    <div class="msg-avatar ai">AI</div>
+    <div class="msg-content">
+      <div class="msg-bubble">
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>`;
+  msgs.appendChild(typingEl);
+  scrollBottom();
+}
+function hideTyping() {
+  if (typingEl) { typingEl.remove(); typingEl = null; }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  SEND MESSAGE
+// ────────────────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  if (isAiTyping) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Hide suggestions permanently once first message sent
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  renderMessage('user', text, time);
+  chatHistory.push({ role: 'user', content: text, time });
+  saveChatHistory();
+
+  isAiTyping = true;
+  document.getElementById('chat-send-btn').disabled = true;
+  showTyping();
+
+  try {
+    // Build conversation for API (last 10 messages for context)
+    const recentHistory = chatHistory.slice(-10);
+    const conversationContext = recentHistory.map(m =>
+      `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
+    ).join('\n');
+
+    const systemPrompt = `You are the Arachnoid Assistant — a helpful, friendly support bot for the Arachnoid cloud hosting platform. You ONLY answer questions about Arachnoid and its features. If asked about something unrelated, politely redirect to Arachnoid topics.
+
+Use the following Arachnoid platform knowledge to answer accurately:
+
+${ARACHNOID_KNOWLEDGE}
+
+Guidelines:
+- Be concise and clear. Use bullet points for lists.
+- Use code blocks (\`\`\`) for commands or code snippets.
+- If you don't know something specific, say so honestly.
+- Always be helpful and friendly.
+- Address the user by username: ${username}`;
+
+    const question = `${systemPrompt}\n\nConversation so far:\n${conversationContext}\n\nUser's latest question: ${text}\n\nAssistant:`;
+
+    const res = await fetch('https://code-mon.codemon.workers.dev/ai?question=' + encodeURIComponent(question));
+    const data = await res.json();
+
+    hideTyping();
+
+    const reply = data.content || data.answer || data.response || data.result || data.text || (typeof data === 'string' ? data : 'Sorry, I could not get a response. Please try again.');
+    const aiTime = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    renderMessage('ai', reply, aiTime, true, true);
+    chatHistory.push({ role: 'ai', content: reply, time: aiTime });
+    saveChatHistory();
+
+  } catch(e) {
+    hideTyping();
+    const errTime = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    renderMessage('ai', 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.', errTime);
+  } finally {
+    isAiTyping = false;
+    document.getElementById('chat-send-btn').disabled = false;
+    input.focus();
+  }
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  document.getElementById('chat-suggestions').style.display = 'none';
+  sendMessage();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+//  INIT
+// ────────────────────────────────────────────────────────────────────────────
+loadChatHistory();
+</script>
+</body>
+</html>
