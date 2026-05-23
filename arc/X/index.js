@@ -1666,7 +1666,6 @@ app.post("/api/scan", async (req, res) => {
   }
 
 try {
-    // Get JSON output, only HIGH and CRITICAL vulnerabilities
     const output = await safeRun("trivy", [
       "image", 
       "--format", "json",
@@ -1675,58 +1674,15 @@ try {
       appName
     ]);
     
-    console.log("Trivy output length:", output.length);
-    
-    const scanData = JSON.parse(output);
-    console.log("Results count:", scanData.Results ? scanData.Results.length : 0);
-    
-    // Extract and summarize vulnerabilities
-    let highCount = 0;
-    let criticalCount = 0;
-    const vulns = [];
-    
-    // Trivy JSON structure: scanData.Results is an array
-    if (scanData.Results && Array.isArray(scanData.Results)) {
-      for (let i = 0; i < scanData.Results.length; i++) {
-        const result = scanData.Results[i];
-        console.log(`Result ${i}:`, result.Target, "Vulns:", result.Vulnerabilities ? result.Vulnerabilities.length : 0);
-        
-        if (result.Vulnerabilities && Array.isArray(result.Vulnerabilities)) {
-          for (const vuln of result.Vulnerabilities) {
-            if (vuln.Severity === "CRITICAL") criticalCount++;
-            if (vuln.Severity === "HIGH") highCount++;
-            
-            // Only include essential info
-            vulns.push({
-              id: vuln.VulnerabilityID,
-              package: vuln.PkgName,
-              version: vuln.InstalledVersion,
-              severity: vuln.Severity,
-              title: vuln.Title || vuln.Description?.substring(0, 100) || "No title available",
-              fixedVersion: vuln.FixedVersion || "No fix available"
-            });
-          }
-        }
-      }
-    }
-    
-    console.log("Final counts - High:", highCount, "Critical:", criticalCount, "Total:", vulns.length);
-    
     setNginxCooldown(clientIp);
     res.json({ 
       status: "success", 
       appName,
-      summary: {
-        critical: criticalCount,
-        high: highCount,
-        total: vulns.length
-      },
-      vulnerabilities: vulns
+      report: JSON.parse(output)
     });
   } catch (e) {
-    console.error("Scan error:", e);
     res.json({ status: "error", message: "Trivy scan failed: " + e.toString() });
-           }
+}
 });
 
 // ── /api/ssl ─────────────────────────────────────────────────────────────────
