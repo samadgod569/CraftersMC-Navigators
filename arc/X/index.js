@@ -1735,12 +1735,45 @@ app.post("/api/ssl", async (req, res) => {
       setNginxCooldown(clientIp);
       res.json({ status: "success", message: `SSL enabled for ${certName}`, https: true });
     } else {
-      // Disable SSL — remove cert
+      // Disable SSL — remove cert AND clean up nginx config
+      
+      // First, delete the certificate
       await safeRun("certbot", ["delete", "--cert-name", certName, "--non-interactive"]);
+      
+      // Read the nginx config file
+      const nginxConfigPath = "/etc/nginx/sites-available/cloudra";
+      let nginxConfig = fs.readFileSync(nginxConfigPath, "utf8");
+      
+      // Remove certbot-managed SSL lines for this specific app
+      // Remove the if block for this app
+      const ifBlockRegex = new RegExp(`\\s*if \\(\\$host = ${certName.replace(/\./g, '\\.')}\\) \\{[^}]+\\}[^\\n]*\\n`, 'g');
+      nginxConfig = nginxConfig.replace(ifBlockRegex, '');
+      
+      // Remove "# managed by Certbot" comments for this app's certificates
+      const certPathEscaped = certName.replace(/\./g, '\\.');
+      nginxConfig = nginxConfig.replace(
+        new RegExp(`\\s*ssl_certificate /etc/letsencrypt/live/${certPathEscaped}/fullchain\\.pem;[^\\n]*\\n`, 'g'),
+        ''
+      );
+      nginxConfig = nginxConfig.replace(
+        new RegExp(`\\s*ssl_certificate_key /etc/letsencrypt/live/${certPathEscaped}/privkey\\.pem;[^\\n]*\\n`, 'g'),
+        ''
+      );
+      
+      // Write the cleaned config back
+      fs.writeFileSync(nginxConfigPath, nginxConfig);
+      
+      // Test nginx config before reloading
+      try {
+        await safeRun("nginx", ["-t"]);
+        await safeRun("nginx", ["-s", "reload"]);
+      } catch (testError) {
+        console.error("Nginx config test failed after SSL removal:", testError);
+        throw new Error("Failed to update nginx config. Please check /etc/nginx/sites-available/cloudra manually.");
+      }
+      
       data[appName].https = false;
       saveData(data);
-      // Reload nginx to drop HTTPS config certbot injected
-      await safeRun("nginx", ["-s", "reload"]).catch(() => {});
       setNginxCooldown(clientIp);
       res.json({ status: "success", message: `SSL removed for ${certName}`, https: false });
     }
