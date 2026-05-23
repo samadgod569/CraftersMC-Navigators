@@ -660,8 +660,8 @@ app.post("/api/logs", async (req, res) => {
 // ── Discord OAuth helper ─────────────────────────────────────────────────────
 async function discordExchange(code, redirectUri) {
   const params = new URLSearchParams({
-    client_id:     process.env.DISCORD_CLIENT_ID,
-    client_secret: process.env.DISCORD_CLIENT_SECRET,
+    client_id:     "1506619418678136862",
+    client_secret: "5TW4cC3fnM-fqCse50R8Nt6iJxAeeDyZ",
     grant_type:    "authorization_code",
     code,
     redirect_uri:  redirectUri
