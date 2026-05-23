@@ -19,7 +19,7 @@ const CRED_PATH    = "/platform/data/credentials.json";
 const PAGES_PATH   = "/platform/pages";
 const BACKUP_PATH  = "/platform/backups";
 const NGINX_PATH   = "/etc/nginx/sites-enabled";
-const VPS_IP       = "45.137.70.54";
+const VPS_IP       = "176.100.36.236";
 
 const MS_1H   = 60 * 60 * 1000;
 const MS_24H  = 24  * MS_1H;
@@ -1666,9 +1666,54 @@ app.post("/api/scan", async (req, res) => {
   }
 
   try {
-    const output = await safeRun("trivy", ["image", "--no-progress", appName]);
+    // Get JSON output, only HIGH and CRITICAL vulnerabilities
+    const output = await safeRun("trivy", [
+      "image", 
+      "--format", "json",
+      "--severity", "HIGH,CRITICAL",
+      "--quiet",
+      appName
+    ]);
+    
+    const scanData = JSON.parse(output);
+    
+    // Extract and summarize vulnerabilities
+    let highCount = 0;
+    let criticalCount = 0;
+    const vulns = [];
+    
+    if (scanData.Results) {
+      for (const result of scanData.Results) {
+        if (result.Vulnerabilities) {
+          for (const vuln of result.Vulnerabilities) {
+            if (vuln.Severity === "CRITICAL") criticalCount++;
+            if (vuln.Severity === "HIGH") highCount++;
+            
+            // Only include essential info
+            vulns.push({
+              id: vuln.VulnerabilityID,
+              package: vuln.PkgName,
+              version: vuln.InstalledVersion,
+              severity: vuln.Severity,
+              title: vuln.Title,
+              fixedVersion: vuln.FixedVersion || "N/A"
+            });
+          }
+        }
+      }
+    }
+    
     setNginxCooldown(clientIp);
-    res.json({ status: "success", appName, report: output });
+    res.json({ 
+      status: "success", 
+      appName,
+      summary: {
+        critical: criticalCount,
+        high: highCount,
+        total: vulns.length
+      },
+      vulnerabilities: vulns.slice(0, 100) // Limit to first 100
+    });
   } catch (e) {
     res.json({ status: "error", message: "Trivy scan failed: " + e.toString() });
   }
