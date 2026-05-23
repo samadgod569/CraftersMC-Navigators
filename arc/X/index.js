@@ -1668,9 +1668,8 @@ app.post("/api/scan", async (req, res) => {
 try {
     const output = await safeRun("trivy", [
       "image", 
-      "--format", "json",
-      "--severity", "HIGH,CRITICAL",
-      "--quiet",
+      "--severity", "HIGH,CRITICAL,MEDIUM,LOW",
+      "--no-progress",
       appName
     ]);
     
@@ -1678,7 +1677,7 @@ try {
     res.json({ 
       status: "success", 
       appName,
-      report: JSON.parse(output)
+      report: output  // Send raw text, not JSON
     });
   } catch (e) {
     res.json({ status: "error", message: "Trivy scan failed: " + e.toString() });
