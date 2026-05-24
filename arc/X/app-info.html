@@ -1,0 +1,2844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>App Info — Arachnoid</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f6f7;
+      --surface: #ffffff;
+      --border: #e2e2e5;
+      --text: #1b1b1f;
+      --text-2: #6b6b78;
+      --text-3: #9b9ba8;
+      --orange: #f38020;
+      --orange-dim: rgba(243,128,32,0.10);
+      --orange-hover: #e06b10;
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.10);
+      --red: #e53e3e;
+      --red-dim: rgba(229,62,62,0.08);
+      --yellow: #f6ad55;
+      --yellow-dim: rgba(246,173,85,0.10);
+      --blue: #0051c3;
+      --blue-dim: rgba(0,81,195,0.08);
+      --nav-bg: #1b1b1f;
+      --sidebar-bg: #16181f;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+      --sidebar-w: 56px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e8e8f0;
+      --text-2: #8888a0;
+      --text-3: #55556a;
+      --orange-dim: rgba(243,128,32,0.14);
+      --green-dim: rgba(0,184,148,0.14);
+      --red-dim: rgba(229,62,62,0.12);
+      --yellow-dim: rgba(246,173,85,0.12);
+      --blue-dim: rgba(0,81,195,0.12);
+      --nav-bg: #0a0c12;
+      --sidebar-bg: #0a0c12;
+    }
+
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    nav {
+      background: var(--nav-bg); height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 200; flex-shrink: 0;
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand span { font-size: 0.95rem; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
+
+    .nav-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.12); }
+
+    .nav-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+    .nav-breadcrumb a { color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s; }
+    .nav-breadcrumb a:hover { color: rgba(255,255,255,0.8); }
+    .nav-breadcrumb svg { width: 12px; height: 12px; color: rgba(255,255,255,0.25); }
+    .nav-breadcrumb span { color: rgba(255,255,255,0.85); font-family: var(--mono); font-size: 0.78rem; }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #a0a0ae; transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+    .theme-toggle svg { width: 15px; height: 15px; }
+
+    .avatar-wrap { position: relative; }
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      cursor: pointer; overflow: hidden; background: none; padding: 0;
+      transition: border-color 0.15s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-btn:hover { border-color: var(--orange); }
+    .avatar-initials {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.62rem; font-weight: 600; color: #fff;
+      font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.04em;
+      pointer-events: none; user-select: none;
+    }
+    .avatar-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.16);
+      min-width: 190px; overflow: hidden;
+      opacity: 0; transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+      transform-origin: top right;
+    }
+    .avatar-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .dd-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
+    .dd-username { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .dd-label { font-size: 0.7rem; color: var(--text-3); font-family: var(--mono); margin-top: 2px; }
+    .dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer;
+      font-size: 0.82rem; color: var(--text-2); text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      border: none; background: none; width: 100%; text-align: left;
+      font-family: var(--sans);
+    }
+    .dd-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-3); transition: color 0.12s; }
+    .dd-item:hover { background: var(--orange-dim); color: var(--text); }
+    .dd-item:hover svg { color: var(--orange); }
+    .dd-item.danger:hover { background: var(--red-dim); color: var(--red); }
+    .dd-item.danger:hover svg { color: var(--red); }
+
+    .shell { display: flex; flex: 1; overflow: hidden; }
+
+    .sidebar {
+      width: var(--sidebar-w); background: var(--sidebar-bg);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 0; gap: 4px; flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .sb-btn {
+      width: 38px; height: 38px; border-radius: var(--radius);
+      background: transparent; border: 1px solid transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: rgba(255,255,255,0.35);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .sb-btn svg { width: 17px; height: 17px; }
+    .sb-btn:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.06); }
+    .sb-btn.active { color: var(--orange); background: rgba(243,128,32,0.12); border-color: rgba(243,128,32,0.2); }
+    .sb-btn.danger-btn:hover { color: var(--red); background: var(--red-dim); }
+    .sb-btn.danger-btn.active { color: var(--red); background: rgba(229,62,62,0.14); border-color: rgba(229,62,62,0.25); }
+
+    .sb-tooltip {
+      position: absolute; left: calc(100% + 12px); top: 50%;
+      transform: translateY(-50%);
+      background: #1b1b1f; color: #e8e8f0;
+      font-size: 0.72rem; font-family: var(--sans); font-weight: 500;
+      padding: 5px 10px; border-radius: var(--radius);
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity 0.15s; z-index: 100;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .sb-btn:hover .sb-tooltip { opacity: 1; }
+
+    .sb-spacer { flex: 1; }
+
+    .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+    .banner {
+      padding: 12px 24px; display: flex; align-items: center; gap: 12px;
+      font-size: 0.82rem; font-weight: 500; flex-shrink: 0;
+    }
+    .banner svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .banner-expired { background: rgba(229,62,62,0.1); border-bottom: 1px solid rgba(229,62,62,0.2); color: var(--red); }
+    .banner-suspended { background: rgba(246,173,85,0.1); border-bottom: 1px solid rgba(246,173,85,0.22); color: #b07800; }
+    [data-theme="dark"] .banner-suspended { color: var(--yellow); }
+    .banner-btn {
+      margin-left: auto; padding: 5px 14px; border-radius: var(--radius);
+      font-size: 0.75rem; font-weight: 600; font-family: var(--sans);
+      border: none; cursor: pointer; white-space: nowrap; transition: opacity 0.15s;
+    }
+    .banner-btn:hover { opacity: 0.85; }
+    .banner-expired .banner-btn { background: var(--red); color: #fff; }
+    .banner-suspended .banner-btn { background: var(--yellow); color: #1b1b1f; }
+
+    .section { display: none; flex-direction: column; flex: 1; padding: 28px 28px 40px; }
+    .section.active { display: flex; }
+
+    .section-header { margin-bottom: 24px; }
+    .section-title { font-size: 1.1rem; font-weight: 600; }
+    .section-sub { font-size: 0.8rem; color: var(--text-2); margin-top: 4px; }
+
+    .app-header-row {
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap; margin-bottom: 22px;
+    }
+    .app-name-mono { font-family: var(--mono); font-size: 1.05rem; font-weight: 500; }
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 0.64rem; font-weight: 600; font-family: var(--mono);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .badge-free { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0,81,195,0.14); }
+    .badge-premium { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(243,128,32,0.2); }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.7rem; font-family: var(--mono);
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .pill-active { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,184,148,0.2); }
+    .pill-active .dot { background: var(--green); }
+    .pill-stopped { background: var(--border); color: var(--text-3); border: 1px solid var(--border); }
+    .pill-stopped .dot { background: var(--text-3); }
+    .pill-suspended { background: var(--yellow-dim); color: #b07800; border: 1px solid rgba(246,173,85,0.22); }
+    [data-theme="dark"] .pill-suspended { color: var(--yellow); }
+    .pill-suspended .dot { background: var(--yellow); }
+    .pill-error { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); }
+    .pill-error .dot { background: var(--red); }
+    .pill-expired { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); }
+    .pill-expired .dot { background: var(--red); }
+
+    .ctrl-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: var(--radius);
+      font-size: 0.8rem; font-weight: 600; font-family: var(--sans);
+      border: none; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      white-space: nowrap; text-decoration: none;
+    }
+    .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-start { background: var(--green); color: #fff; }
+    .btn-start:hover:not(:disabled) { background: #009e7e; box-shadow: 0 2px 12px rgba(0,184,148,0.3); }
+
+    .btn-stop { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-stop:hover:not(:disabled) { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+    .btn-redeploy { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0,81,195,0.18); }
+    .btn-redeploy:hover:not(:disabled) { background: var(--blue); color: #fff; box-shadow: 0 2px 12px rgba(0,81,195,0.28); }
+
+    .btn-update { background: var(--orange); color: #fff; }
+    .btn-update:hover:not(:disabled) { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.28); }
+
+    .btn-refresh { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-refresh:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+    .btn-save { background: var(--orange); color: #fff; }
+    .btn-save:hover:not(:disabled) { background: var(--orange-hover); }
+
+    .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); }
+    .btn-danger:hover:not(:disabled) { background: var(--red); color: #fff; }
+
+    .spin { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .logs-tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--bg); padding: 3px; border-radius: var(--radius); width: fit-content; }
+    .log-tab {
+      padding: 6px 16px; border-radius: 4px; font-size: 0.78rem; font-weight: 500;
+      cursor: pointer; background: transparent; border: none; color: var(--text-2);
+      font-family: var(--sans); transition: background 0.15s, color 0.15s;
+    }
+    .log-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+    .terminal-wrap {
+      background: #0d0e14; border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.07);
+      overflow: hidden; flex: 1; min-height: 320px;
+      display: flex; flex-direction: column;
+    }
+    .terminal-toolbar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 14px; background: #16181f;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .term-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .t-red { background: #ff5f56; }
+    .t-yellow { background: #ffbd2e; }
+    .t-green { background: #27c93f; }
+    .term-label { font-family: var(--mono); font-size: 0.7rem; color: rgba(255,255,255,0.25); margin-left: 6px; }
+    .log-body {
+      flex: 1; overflow-y: auto; padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      line-height: 1.6; color: #c9d1d9;
+      white-space: pre-wrap; word-break: break-all;
+      min-height: 0;
+    }
+    .log-body:empty::after { content: '(no output)'; color: rgba(255,255,255,0.2); }
+    .log-line { display: block; }
+    .log-line.err { color: #ff7b72; }
+    .log-line.warn { color: #d29922; }
+    .log-line.ok { color: #3fb950; }
+    .log-line.dim { color: rgba(255,255,255,0.25); }
+    .xterm-hidden { display: none; }
+
+    .deploy-fail-banner {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; border-radius: var(--radius);
+      background: var(--red-dim); border: 1px solid rgba(229,62,62,0.2);
+      color: var(--red); font-size: 0.8rem; margin-bottom: 16px;
+    }
+    .deploy-fail-banner svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+
+    .inspect-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .inspect-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 16px;
+    }
+    .inspect-label { font-size: 0.68rem; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .inspect-value { font-size: 0.86rem; font-weight: 500; font-family: var(--mono); word-break: break-all; }
+    .inspect-value.muted { color: var(--text-2); }
+
+    .json-block {
+      background: #0d0e14; border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-lg); padding: 16px;
+      font-family: var(--mono); font-size: 0.74rem; color: #a8b2d8;
+      overflow: auto; max-height: 420px; white-space: pre;
+      line-height: 1.7;
+    }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.77rem; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; max-width: 420px; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); color: var(--text);
+      font-size: 0.83rem; font-family: var(--sans);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--orange); }
+
+    .form-section { margin-bottom: 32px; }
+    .form-section-title {
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 16px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+
+    .inline-msg {
+      font-size: 0.78rem; padding: 8px 12px; border-radius: var(--radius);
+      display: none; margin-top: 10px; max-width: 420px;
+    }
+    .inline-msg.ok { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,184,148,0.2); display: block; }
+    .inline-msg.err { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); display: block; }
+
+    .danger-zone { border: 1px solid rgba(229,62,62,0.22); border-radius: var(--radius-lg); overflow: hidden; }
+    .danger-zone-header {
+      padding: 14px 20px; background: rgba(229,62,62,0.06);
+      border-bottom: 1px solid rgba(229,62,62,0.14);
+      font-size: 0.8rem; font-weight: 600; color: var(--red);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .danger-zone-header svg { width: 15px; height: 15px; }
+    .danger-item {
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .danger-item:last-child { border-bottom: none; }
+    .danger-item-info .di-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 3px; }
+    .danger-item-info .di-sub { font-size: 0.77rem; color: var(--text-2); }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px;
+      max-width: 400px; width: 90%;
+      transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-title { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+    .modal-sub { font-size: 0.82rem; color: var(--text-2); margin-bottom: 22px; line-height: 1.6; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-cancel:hover { border-color: var(--text-2); color: var(--text); }
+
+    .coming-soon-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.68rem; font-weight: 600; font-family: var(--mono);
+      background: var(--yellow-dim); color: #b07800;
+      border: 1px solid rgba(246,173,85,0.22); letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .coming-soon-badge { color: var(--yellow); }
+
+    .code-block-wrap { position: relative; margin-bottom: 24px; }
+    .code-block {
+      background: #0d0e14; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg); padding: 18px 20px;
+      font-family: var(--mono); font-size: 0.74rem; color: #a8b2d8;
+      overflow-x: auto; white-space: pre; line-height: 1.75;
+    }
+    .code-block .cb-key { color: #79c0ff; }
+    .code-block .cb-val { color: #a5d6ff; }
+    .code-block .cb-secret { color: #d2a8ff; }
+    .code-block .cb-comment { color: #555e6d; }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius); padding: 5px 10px;
+      font-size: 0.7rem; font-family: var(--sans); color: rgba(255,255,255,0.5);
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
+    .copy-btn svg { width: 12px; height: 12px; }
+
+    .lang-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .lang-table th {
+      text-align: left; padding: 8px 12px;
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--text-3); font-family: var(--mono);
+      border-bottom: 1px solid var(--border);
+    }
+    .lang-table td {
+      padding: 9px 12px; border-bottom: 1px solid var(--border);
+      font-family: var(--mono); color: var(--text);
+    }
+    .lang-table tr:last-child td { border-bottom: none; }
+    .lang-table tr:hover td { background: var(--orange-dim); }
+    .lang-table .td-key { color: var(--orange); }
+    .lang-table .td-dim { color: var(--text-3); }
+    .lang-table-wrap {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; margin-top: 8px;
+    }
+
+    .loading-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; flex: 1; gap: 14px; color: var(--text-3);
+    }
+    .loading-state svg { width: 28px; height: 28px; }
+
+
+    .usage-bar-wrap { margin-bottom: 18px; }
+    .usage-bar-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .usage-bar-name { font-size: 0.72rem; font-family: var(--mono); color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; }
+    .usage-bar-val { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; color: var(--text); }
+    .usage-bar-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .usage-bar-fill { height: 100%; border-radius: 99px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+    .fill-green { background: var(--green); }
+    .fill-orange { background: var(--orange); }
+    .fill-red { background: var(--red); }
+    .fill-blue { background: var(--blue); }
+    .usage-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+    .usage-stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+    .usc-label { font-size: 0.65rem; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .usc-value { font-size: 1.1rem; font-weight: 600; font-family: var(--mono); }
+    .usc-sub { font-size: 0.68rem; color: var(--text-3); font-family: var(--mono); margin-top: 2px; }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .toggle-row:last-of-type { border-bottom: none; }
+    .toggle-info .tgl-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+    .toggle-info .tgl-sub { font-size: 0.74rem; color: var(--text-2); }
+    .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 99px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+    .toggle-switch input:checked + .toggle-track { background: var(--green); }
+    .toggle-switch input:checked + .toggle-track::after { transform: translateX(20px); }
+    .toggle-switch input:disabled + .toggle-track { opacity: 0.5; cursor: not-allowed; }
+
+    .ip-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); font-size: 0.72rem; font-family: var(--mono); margin: 3px; }
+    .ip-tag button { background: none; border: none; cursor: pointer; color: var(--red); display: flex; align-items: center; padding: 0; font-size: 0.8rem; line-height: 1; }
+    .ip-tags-wrap { display: flex; flex-wrap: wrap; min-height: 36px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); margin-bottom: 10px; }
+    .ip-add-row { display: flex; gap: 8px; }
+    .ip-add-row input { flex: 1; }
+
+    .scout-result { background: #0d0e14; border: 1px solid rgba(255,255,255,0.07); border-radius: var(--radius-lg); overflow: hidden; margin-top: 16px; }
+    .scout-report-section { border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .scout-report-section:last-child { border-bottom: none; }
+    .scout-section-header { padding: 10px 16px; background: #16181f; font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; transition: background 0.15s; }
+    .scout-section-header:hover { background: #1e2130; }
+    .scout-section-header .ss-title { color: var(--orange); }
+    .scout-section-header .ss-type { color: rgba(255,255,255,0.3); font-size: 0.66rem; margin-left: 10px; }
+    .scout-section-header .ss-count { font-size: 0.66rem; color: rgba(255,255,255,0.4); }
+    .scout-section-header .ss-chevron { color: rgba(255,255,255,0.3); font-size: 0.8rem; transition: transform 0.2s; }
+    .scout-section-header.collapsed .ss-chevron { transform: rotate(-90deg); }
+    .scout-table-wrap { overflow-x: auto; max-height: 500px; overflow-y: auto; }
+    .scout-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.71rem; }
+    .scout-table th { padding: 8px 12px; text-align: left; background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); font-weight: 600; font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.07); white-space: nowrap; }
+    .scout-table td { padding: 7px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #c9d1d9; vertical-align: top; line-height: 1.5; }
+    .scout-table tr:last-child td { border-bottom: none; }
+    .scout-table tr:hover td { background: rgba(255,255,255,0.025); }
+    .sv-crit { color: #ff5f5f; font-weight: 700; }
+    .sv-high { color: #f38020; font-weight: 600; }
+    .sv-med { color: #f6c057; }
+    .sv-low { color: #5adfb5; }
+    .sv-unk { color: rgba(255,255,255,0.35); }
+    .sv-id { color: #79c0ff; }
+    .sv-id a { color: #79c0ff; text-decoration: none; }
+    .sv-id a:hover { text-decoration: underline; }
+    .sv-title { max-width: 320px; color: rgba(200,200,220,0.85); font-size: 0.68rem; }
+    .sv-fixed { color: #5adfb5; }
+    .sv-none { color: rgba(255,255,255,0.2); }
+    .scout-summary-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.72rem; }
+    .scout-summary-table td { padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c9d1d9; }
+    .scout-summary-table tr:last-child td { border-bottom: none; }
+    .scout-summary-table .st-target { color: rgba(255,255,255,0.5); font-size: 0.66rem; word-break: break-all; }
+    .scout-summary-table .st-type { color: rgba(255,255,255,0.35); font-size: 0.64rem; }
+    .scout-summary-table .st-n { font-weight: 600; color: var(--orange); }
+    .scout-legend { padding: 10px 16px; font-size: 0.65rem; color: rgba(255,255,255,0.25); font-family: var(--mono); background: rgba(0,0,0,0.2); }
+    .scout-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--text-3); text-align: center; border: 1px dashed var(--border); border-radius: var(--radius-lg); margin-top: 16px; }
+    .scout-empty svg { width: 32px; height: 32px; opacity: 0.35; }
+    .scout-stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .scout-stat { padding: 6px 14px; border-radius: 20px; font-size: 0.72rem; font-family: var(--mono); font-weight: 600; }
+    .scout-crit { background: rgba(229,62,62,0.15); color: var(--red); border: 1px solid rgba(229,62,62,0.25); }
+    .scout-high { background: rgba(243,128,32,0.14); color: var(--orange); border: 1px solid rgba(243,128,32,0.25); }
+    .scout-med { background: rgba(246,173,85,0.14); color: #b07800; border: 1px solid rgba(246,173,85,0.25); }
+    .scout-low { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,184,148,0.2); }
+    .scout-unknown { background: var(--border); color: var(--text-3); border: 1px solid var(--border); }
+
+    .premium-gate { display: flex; align-items: flex-start; gap: 14px; padding: 20px; border-radius: var(--radius-lg); background: var(--yellow-dim); border: 1px solid rgba(246,173,85,0.22); color: #b07800; font-size: 0.82rem; line-height: 1.6; }
+    [data-theme="dark"] .premium-gate { color: var(--yellow); }
+    .premium-gate svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    .domain-step { display: flex; gap: 14px; margin-bottom: 20px; }
+    .domain-step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--orange-dim); color: var(--orange); font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; border: 1px solid rgba(243,128,32,0.2); }
+    .domain-step-body .ds-title { font-size: 0.83rem; font-weight: 600; margin-bottom: 4px; }
+    .domain-step-body .ds-sub { font-size: 0.78rem; color: var(--text-2); line-height: 1.6; }
+    .domain-step-body code { background: var(--border); padding: 1px 6px; border-radius: 3px; font-family: var(--mono); font-size: 0.76rem; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 12px; }
+      .section { padding: 20px 16px 32px; }
+    }
+
+    /* ── Backup section ───────────────────────────────────────────────────── */
+    .backup-header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+    }
+    .backup-count-badge {
+      font-size: 0.7rem; font-family: var(--mono); font-weight: 600;
+      padding: 2px 9px; border-radius: 20px;
+      background: var(--orange-dim); color: var(--orange);
+      border: 1px solid rgba(243,128,32,0.2);
+    }
+    .btn-backup { background: var(--orange); color: #fff; }
+    .btn-backup:hover:not(:disabled) { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.28); }
+
+    .backup-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; padding: 60px 20px; color: var(--text-3);
+      border: 1px dashed var(--border); border-radius: var(--radius-lg);
+    }
+    .backup-empty svg { width: 32px; height: 32px; opacity: 0.4; }
+    .backup-empty p { font-size: 0.82rem; }
+
+    .backup-list { display: flex; flex-direction: column; gap: 10px; }
+    .backup-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 16px 20px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .backup-card-icon {
+      width: 36px; height: 36px; border-radius: var(--radius);
+      background: var(--orange-dim); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--orange);
+    }
+    .backup-card-icon svg { width: 17px; height: 17px; }
+    .backup-card-info { flex: 1; min-width: 0; }
+    .backup-card-id { font-family: var(--mono); font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 3px; word-break: break-all; }
+    .backup-card-date { font-size: 0.72rem; color: var(--text-3); font-family: var(--mono); }
+    .backup-card-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+
+    .btn-restore { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,184,148,0.22); }
+    .btn-restore:hover:not(:disabled) { background: var(--green); color: #fff; }
+    .btn-dl { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-dl:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .btn-del-bkp { background: transparent; color: var(--text-3); border: 1px solid var(--border); }
+    .btn-del-bkp:hover:not(:disabled) { background: var(--red-dim); color: var(--red); border-color: rgba(229,62,62,0.3); }
+
+    .backup-premium-notice {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 18px 20px; border-radius: var(--radius-lg);
+      background: var(--yellow-dim); border: 1px solid rgba(246,173,85,0.22);
+      color: #b07800; font-size: 0.82rem; line-height: 1.6;
+    }
+    [data-theme="dark"] .backup-premium-notice { color: var(--yellow); }
+    .backup-premium-notice svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    .restore-field { margin-bottom: 16px; }
+    .restore-field label { display: block; font-size: 0.77rem; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+    .restore-field input, .restore-field select {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); color: var(--text);
+      font-size: 0.83rem; font-family: var(--mono);
+      outline: none; transition: border-color 0.15s;
+    }
+    .restore-field input:focus, .restore-field select:focus { border-color: var(--orange); }
+
+    /* ── File Manager ───────────────────────────────────────────────────────── */
+    .fm-layout { display: flex; gap: 0; flex: 1; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; min-height: 480px; }
+    .fm-sidebar { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .fm-sidebar-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .fm-sidebar-title { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-3); font-family: var(--mono); }
+    .fm-tree { flex: 1; overflow-y: auto; padding: 6px 0; }
+    .fm-item { display: flex; align-items: center; gap: 7px; padding: 6px 14px; cursor: pointer; font-size: 0.79rem; color: var(--text-2); font-family: var(--mono); border: none; background: none; width: 100%; text-align: left; transition: background 0.12s, color 0.12s; border-radius: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fm-item svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--text-3); }
+    .fm-item:hover { background: var(--orange-dim); color: var(--text); }
+    .fm-item.active { background: var(--orange-dim); color: var(--orange); font-weight: 500; }
+    .fm-item.active svg { color: var(--orange); }
+    .fm-item.dir { color: var(--text-2); }
+    .fm-item.dir svg { color: var(--blue); }
+    .fm-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0d0e14; }
+    .fm-content-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #16181f; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .fm-path { font-family: var(--mono); font-size: 0.72rem; color: rgba(255,255,255,0.4); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fm-editor { flex: 1; border: none; outline: none; background: transparent; color: #c9d1d9; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.65; padding: 14px 16px; resize: none; overflow-y: auto; tab-size: 2; }
+    .fm-empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: rgba(255,255,255,0.2); font-family: var(--mono); font-size: 0.78rem; }
+    .fm-empty-state svg { width: 28px; height: 28px; opacity: 0.3; }
+    .fm-loading-state { flex: 1; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.25); font-family: var(--mono); font-size: 0.75rem; gap: 8px; }
+    .fm-actions-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .btn-fm-new { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-fm-new:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .btn-fm-save { background: var(--green); color: #fff; }
+    .btn-fm-save:hover:not(:disabled) { background: #009e7e; }
+    .btn-fm-del { background: transparent; color: var(--text-3); border: 1px solid var(--border); }
+    .btn-fm-del:hover:not(:disabled) { background: var(--red-dim); color: var(--red); border-color: rgba(229,62,62,0.3); }
+
+    /* ── Redeploy modal ──────────────────────────────────────────────────────── */
+    .rdp-field { margin-bottom: 14px; }
+    .rdp-field label { display: block; font-size: 0.77rem; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+    .rdp-field input, .rdp-field select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 0.83rem; font-family: var(--mono); outline: none; transition: border-color 0.15s; }
+    .rdp-field input:focus, .rdp-field select:focus { border-color: var(--orange); }
+    .rdp-hint { font-size: 0.72rem; color: var(--text-3); margin-top: 4px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="dashboard.html" class="nav-brand">
+      <img src="img/icon.png" alt="" onerror="this.style.display='none'"/>
+      <span>Cloudra</span>
+    </a>
+    <div class="nav-sep"></div>
+    <div class="nav-breadcrumb">
+      <a href="dashboard.html">Servers</a>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="nav-app-name">—</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" style="display:none">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="avatar-wrap" id="avatar-wrap">
+      <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+        <div class="avatar-initials" id="avatar-inner"></div>
+      </button>
+      <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dd-header">
+          <div class="dd-username" id="dd-username"></div>
+          <div class="dd-label">signed in</div>
+        </div>
+        <a href="settings.html" class="dd-item">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Settings
+        </a>
+        <button class="dd-item danger" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="status-banner"></div>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <button class="sb-btn active" id="sb-logs" onclick="switchSection('logs')" title="Logs">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7 8h10M7 12h7M7 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">Logs</span>
+    </button>
+    <button class="sb-btn" id="sb-inspect" onclick="switchSection('inspect')" title="Inspect">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.7"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">Inspect</span>
+    </button>
+    <button class="sb-btn" id="sb-credentials" onclick="switchSection('credentials')" title="Credentials">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">Credentials</span>
+    </button>
+    <button class="sb-btn" id="sb-backup" onclick="switchSection('backup')" title="Backup">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">Backup</span>
+    </button>
+    <button class="sb-btn" id="sb-files" onclick="switchSection('files')" title="File Manager">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">Files</span>
+    </button>
+    <button class="sb-btn" id="sb-workflow" onclick="switchSection('workflow')" title="GitHub Workflow">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.7"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">GitHub Workflow</span>
+    </button>
+    <button class="sb-btn" id="sb-domain" onclick="switchSection('domain')" title="Custom Domain">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">Custom Domain</span>
+    </button>
+    <button class="sb-btn" id="sb-security" onclick="switchSection('security')" title="Security">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">Security</span>
+    </button>
+    <button class="sb-btn" id="sb-scout" onclick="switchSection('scout')" title="Scout">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sb-tooltip">Scout</span>
+    </button>
+    <button class="sb-btn" id="sb-terminal" onclick="switchSection('terminal')" title="Terminal">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="4 17 10 11 4 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span class="sb-tooltip">Terminal</span>
+    </button>
+    <div class="sb-spacer"></div>
+    <button class="sb-btn danger-btn" id="sb-danger" onclick="switchSection('danger')" title="Danger Zone">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="17" r="0.75" fill="currentColor"/></svg>
+      <span class="sb-tooltip">Danger Zone</span>
+    </button>
+  </aside>
+
+  <main class="main">
+
+    <section class="section active" id="section-logs">
+      <div id="logs-loading" class="loading-state">
+        <svg viewBox="0 0 24 24" fill="none" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span style="font-size:0.82rem;">Loading app data…</span>
+      </div>
+      <div id="logs-content" style="display:none;display:none;flex-direction:column;flex:1;">
+        <div class="app-header-row">
+          <span class="app-name-mono" id="hdr-app-name"></span>
+          <span class="badge" id="hdr-badge"></span>
+          <span class="status-pill" id="hdr-status-pill"><span class="dot"></span><span id="hdr-status-text"></span></span>
+          <span id="hdr-port" style="font-family:var(--mono);font-size:0.78rem;color:var(--text-2);"></span>
+        </div>
+        <div class="ctrl-row">
+          <button class="btn btn-start" id="btn-start" onclick="ctrlApp('start')">
+            <svg viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Start
+          </button>
+          <button class="btn btn-stop" id="btn-stop" onclick="ctrlApp('stop')">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+            Stop
+          </button>
+          <a class="btn btn-update" id="btn-update" href="#">
+            <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Deploy
+          </a>
+          <button class="btn btn-redeploy" id="btn-redeploy" onclick="openRedeployModal()">
+            <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;"><polyline points="1 4 1 10 7 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Redeploy
+          </button>
+          <button class="btn btn-refresh" onclick="refreshLogs()">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div id="deploy-fail-notice" style="display:none;" class="deploy-fail-banner">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="0.75" fill="currentColor"/></svg>
+          <span>Last deployment was a failure — review the deployment log below.</span>
+        </div>
+
+        <div class="logs-tabs">
+          <button class="log-tab active" id="tab-runtime" onclick="switchTab('runtime')">Runtime Logs</button>
+          <button class="log-tab" id="tab-deploy" onclick="switchTab('deploy')">Deployment Logs</button>
+        </div>
+
+        <div class="terminal-wrap" id="term-runtime-wrap">
+          <div class="terminal-toolbar">
+            <div class="term-dot t-red"></div>
+            <div class="term-dot t-yellow"></div>
+            <div class="term-dot t-green"></div>
+            <span class="term-label" id="term-runtime-label">runtime · stdout / stderr</span>
+          </div>
+          <div class="log-body" id="log-runtime"></div>
+        </div>
+
+        <div class="terminal-wrap xterm-hidden" id="term-deploy-wrap">
+          <div class="terminal-toolbar">
+            <div class="term-dot t-red"></div>
+            <div class="term-dot t-yellow"></div>
+            <div class="term-dot t-green"></div>
+            <span class="term-label">deployment · build output</span>
+          </div>
+          <div class="log-body" id="log-deploy"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-inspect">
+      <div class="section-header">
+        <div class="section-title">App Details</div>
+        <div class="section-sub">Complete container inspection, resource allocation and live usage.</div>
+      </div>
+      <div id="inspect-loading" class="loading-state" style="flex:0;padding:40px 0;">
+        <svg viewBox="0 0 24 24" fill="none" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span style="font-size:0.82rem;">Fetching container details…</span>
+      </div>
+      <div id="inspect-content" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);">Live Resource Usage</div>
+          <button class="btn btn-refresh" id="btn-refresh-usage" onclick="loadUsage()" style="padding:5px 12px;font-size:0.74rem;">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div class="usage-row" id="usage-stat-cards">
+          <div class="usage-stat-card"><div class="usc-label">CPU</div><div class="usc-value" id="usc-cpu">—</div><div class="usc-sub">of allocated</div></div>
+          <div class="usage-stat-card"><div class="usc-label">RAM Used</div><div class="usc-value" id="usc-ram">—</div><div class="usc-sub" id="usc-ram-sub">of limit</div></div>
+          <div class="usage-stat-card"><div class="usc-label">Disk I/O</div><div class="usc-value" id="usc-disk">—</div><div class="usc-sub" id="usc-disk-sub">read / write</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;">
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label"><span class="usage-bar-name">CPU</span><span class="usage-bar-val" id="bar-cpu-val">—</span></div>
+            <div class="usage-bar-track"><div class="usage-bar-fill fill-green" id="bar-cpu" style="width:0%"></div></div>
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-bar-label"><span class="usage-bar-name">RAM</span><span class="usage-bar-val" id="bar-ram-val">—</span></div>
+            <div class="usage-bar-track"><div class="usage-bar-fill fill-blue" id="bar-ram" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div id="usage-error" style="display:none;font-size:0.78rem;color:var(--text-3);margin-bottom:16px;padding:10px 14px;background:var(--border);border-radius:var(--radius);"></div>
+        <div class="inspect-grid" id="inspect-cards"></div>
+        <div style="margin-top: 8px;" id="inspect-extra-cards"></div>
+      </div>
+      <div id="inspect-error" style="display:none;font-size:0.82rem;color:var(--red);padding:20px 0;"></div>
+    </section>
+
+    <section class="section" id="section-domain">
+      <div class="section-header">
+        <div class="section-title">Custom Domain</div>
+        <div class="section-sub">Point your own domain to this app. Premium only.</div>
+      </div>
+      <div id="domain-gate" style="display:none;" class="premium-gate">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>Custom domains are available on <strong>premium</strong> plans only. Upgrade to use this feature.</div>
+      </div>
+      <div id="domain-content" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:14px;">Current Domain</div>
+          <div id="domain-current-display" style="font-family:var(--mono);font-size:0.9rem;font-weight:600;color:var(--orange);margin-bottom:6px;">—</div>
+          <div id="domain-current-sub" style="font-size:0.74rem;color:var(--text-3);">No custom domain assigned</div>
+        </div>
+        <div style="margin-bottom:28px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);">How To Set Up</div>
+          <div class="domain-step">
+            <div class="domain-step-num">1</div>
+            <div class="domain-step-body">
+              <div class="ds-title">Add an A Record</div>
+              <div class="ds-sub">Go to your DNS provider (Cloudflare, Namecheap, etc.) and add an <strong>A record</strong> pointing your domain to <code>45.137.70.54</code>. Leave proxy disabled (grey cloud in Cloudflare).</div>
+            </div>
+          </div>
+          <div class="domain-step">
+            <div class="domain-step-num">2</div>
+            <div class="domain-step-body">
+              <div class="ds-title">Wait for DNS Propagation</div>
+              <div class="ds-sub">DNS changes can take a few minutes to an hour. You can verify by running <code>nslookup yourdomain.com</code> — it should return <code>45.137.70.54</code>.</div>
+            </div>
+          </div>
+          <div class="domain-step">
+            <div class="domain-step-num">3</div>
+            <div class="domain-step-body">
+              <div class="ds-title">Enter Your Domain Below</div>
+              <div class="ds-sub">Once DNS is pointing to the server, enter your domain and hit Assign. We'll verify the DNS record automatically before activating it.</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Domain</label>
+          <input class="form-input" type="text" id="domain-input" placeholder="yourdomain.com" style="max-width:360px;"/>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-save" onclick="assignDomain()">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Assign Domain
+          </button>
+          <button class="btn btn-danger" id="btn-remove-domain" onclick="removeDomain()" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Remove Domain
+          </button>
+        </div>
+        <div class="inline-msg" id="msg-domain"></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-security">
+      <div class="section-header">
+        <div class="section-title">Security</div>
+        <div class="section-sub">SSL and IP blocking. Premium only.</div>
+      </div>
+      <div id="security-gate" style="display:none;" class="premium-gate">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>Security features are available on <strong>premium</strong> plans only.</div>
+      </div>
+      <div id="security-content" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:16px;">SSL / HTTPS</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="tgl-title">Enable HTTPS</div>
+              <div class="tgl-sub" id="ssl-desc">Enable HTTPS for your app with a free SSL certificate. Requires a custom domain or uses your default subdomain.</div>
+            </div>
+            <label class="toggle-switch" id="ssl-toggle-wrap">
+              <input type="checkbox" id="ssl-toggle" onchange="toggleSSL()"/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div id="ssl-locked-notice" style="display:none;margin-top:10px;font-size:0.75rem;color:var(--green);display:none;align-items:center;gap:6px;">
+            <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            HTTPS is active and locked. Contact support to disable it.
+          </div>
+          <div class="inline-msg" id="msg-ssl" style="margin-top:12px;max-width:100%;"></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:6px;">IP Blocklist</div>
+          <div style="font-size:0.77rem;color:var(--text-2);margin-bottom:14px;">Block specific IPs from reaching your app. The list below replaces the current blocklist entirely on save.</div>
+          <div class="ip-tags-wrap" id="ip-tags-wrap"></div>
+          <div class="ip-add-row">
+            <input class="form-input" type="text" id="ip-input" placeholder="e.g. 192.168.1.100" onkeydown="if(event.key==='Enter')addIpTag()"/>
+            <button class="btn btn-refresh" onclick="addIpTag()" style="white-space:nowrap;">Add IP</button>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-save" onclick="saveBlocklist()">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Save Blocklist
+            </button>
+          </div>
+          <div class="inline-msg" id="msg-block"></div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:20px;">
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:6px;">Redeploy Settings</div>
+          <div style="font-size:0.77rem;color:var(--text-2);margin-bottom:16px;line-height:1.6;">Configure packages and main file used when you hit <strong>Redeploy</strong>. Settings are saved per-app.</div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label" for="rdp-packages-store">Packages <span style="color:var(--text-3);font-weight:400;">(space-separated)</span></label>
+            <input class="form-input" type="text" id="rdp-packages-store" placeholder="e.g. express ws node-pty" style="font-family:var(--mono);"/>
+            <div style="font-size:0.71rem;color:var(--text-3);margin-top:5px;">Separate package names with spaces. These will be installed on every redeploy.</div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label" for="rdp-mainfile-store">Main File</label>
+            <input class="form-input" type="text" id="rdp-mainfile-store" placeholder="e.g. index.js" style="font-family:var(--mono);"/>
+          </div>
+          <button class="btn btn-save" onclick="saveRedeploySettings()">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Save Settings
+          </button>
+          <div class="inline-msg" id="msg-rdp-settings"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-scout">
+      <div class="section-header">
+        <div class="section-title">Vulnerability Scout</div>
+        <div class="section-sub">Scan your container image for known security vulnerabilities. Premium only.</div>
+      </div>
+      <div id="scout-gate" style="display:none;" class="premium-gate">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>Vulnerability scanning is available on <strong>premium</strong> plans only.</div>
+      </div>
+      <div id="scout-content" style="display:none;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="btn btn-update" id="btn-scout-scan" onclick="runScan()">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Start Scanning
+          </button>
+          <div id="scout-scanning-label" style="display:none;font-size:0.78rem;color:var(--text-3);font-family:var(--mono);">Scanning image, this may take a minute…</div>
+        </div>
+        <div id="scout-stats" class="scout-stat-row" style="display:none;"></div>
+        <div id="scout-empty" class="scout-empty">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:0.82rem;">No scan run yet — hit <strong>Start Scanning</strong> to analyse your image.</div>
+        </div>
+        <div id="scout-result" class="scout-result" style="display:none;"></div>
+        <div class="inline-msg" id="msg-scout" style="margin-top:12px;max-width:100%;"></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-terminal">
+      <div class="section-header">
+        <div class="section-title">Terminal</div>
+        <div class="section-sub">Execute commands inside your container. Premium only.</div>
+      </div>
+      <div id="terminal-gate" style="display:none;" class="premium-gate">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>Terminal access is available on <strong>premium</strong> plans only.</div>
+      </div>
+      <div id="terminal-content" style="display:none;flex-direction:column;flex:1;">
+        <div class="terminal-wrap" style="flex:1;min-height:480px;">
+          <div class="terminal-toolbar">
+            <div class="term-dot t-red"></div>
+            <div class="term-dot t-yellow"></div>
+            <div class="term-dot t-green"></div>
+            <span class="term-label" id="term-ws-label">shell · <span id="term-app-label">—</span></span>
+          </div>
+          <div id="term-output" class="log-body" style="min-height:360px;flex:1;"></div>
+          <div style="display:flex;align-items:center;gap:0;border-top:1px solid rgba(255,255,255,0.07);background:#0d0e14;">
+            <span id="term-prompt" style="font-family:var(--mono);font-size:12.5px;padding:10px 4px 10px 14px;flex-shrink:0;user-select:none;white-space:nowrap;"><span id="term-prompt-cwd" style="color:#79c0ff;"></span><span style="color:#5adfb5;">&nbsp;$&nbsp;</span></span>
+            <input id="term-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+              style="flex:1;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:12.5px;color:#c9d1d9;padding:10px 0;caret-color:#5adfb5;"
+              placeholder="type a command…"
+              onkeydown="termHandleKey(event)"/>
+            <button onclick="termRunCommand()" style="background:none;border:none;cursor:pointer;padding:8px 14px;color:rgba(255,255,255,0.25);display:flex;align-items:center;" title="Run">
+              <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;"><polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-danger" onclick="termClear()" style="padding:5px 12px;font-size:0.74rem;">
+            <svg viewBox="0 0 24 24" fill="none" style="width:13px;height:13px;"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Clear
+          </button>
+          <span style="font-size:0.72rem;color:var(--text-3);font-family:var(--mono);">Tab autocomplete · ↑↓ history · Ctrl+C cancel</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-credentials">
+      <div class="section-header">
+        <div class="section-title">App Password</div>
+        <div class="section-sub">Change the password used to manage this application. Account credentials can be updated in Settings.</div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-label" for="app-old-pass">Current App Password</label>
+          <input class="form-input" type="password" id="app-old-pass" placeholder="Current app password"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="app-new-pass">New App Password</label>
+          <input class="form-input" type="password" id="app-new-pass" placeholder="New app password (min 4 chars)"/>
+        </div>
+        <button class="btn btn-save" onclick="changeAppPass()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Save App Password
+        </button>
+        <div class="inline-msg" id="msg-app-pass"></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-workflow">
+      <div class="section-header">
+        <div class="section-title">GitHub Workflow</div>
+        <div class="section-sub">Auto-deploy on every push using a GitHub Actions workflow.</div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Step 1 — Add GitHub Secrets</div>
+        <div style="font-size:0.82rem;color:var(--text-2);margin-bottom:14px;line-height:1.7;">Go to your repository → <strong>Settings → Secrets and variables → Actions</strong> and add these secrets:</div>
+        <div class="lang-table-wrap" style="margin-bottom:0;">
+          <table class="lang-table">
+            <thead><tr><th>Secret Name</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td class="td-key">USERPASS</td><td class="td-dim">Your Arachnoid account password</td></tr>
+              <tr><td class="td-key">APPPASS</td><td class="td-dim">Your app password</td></tr>
+              <tr><td class="td-key">REPO</td><td class="td-dim">Full GitHub repo URL (https://github.com/user/repo)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Step 2 — Create Workflow File</div>
+        <div style="font-size:0.82rem;color:var(--text-2);margin-bottom:14px;">Create <code style="background:var(--border);padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:0.78rem;">.github/workflows/deploy.yml</code> in your repo with this content:</div>
+        <div class="code-block-wrap">
+          <div class="code-block" id="workflow-yaml-block"></div>
+          <button class="copy-btn" onclick="copyWorkflow()">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="copy-workflow-label">Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Supported Language Values</div>
+        <div style="font-size:0.82rem;color:var(--text-2);margin-bottom:10px;">Use one of these values for the <code style="background:var(--border);padding:1px 6px;border-radius:3px;font-family:var(--mono);font-size:0.78rem;">language</code> field:</div>
+        <div class="lang-table-wrap">
+          <table class="lang-table">
+            <thead><tr><th>Value</th><th>Runtime</th><th>Start File Example</th></tr></thead>
+            <tbody>
+              <tr><td class="td-key">nodejs</td><td>Node.js 20</td><td class="td-dim">index.js</td></tr>
+              <tr><td class="td-key">nodejs18</td><td>Node.js 18</td><td class="td-dim">index.js</td></tr>
+              <tr><td class="td-key">nodejs16</td><td>Node.js 16</td><td class="td-dim">index.js</td></tr>
+              <tr><td class="td-key">python</td><td>Python 3.12</td><td class="td-dim">main.py</td></tr>
+              <tr><td class="td-key">python310</td><td>Python 3.10</td><td class="td-dim">main.py</td></tr>
+              <tr><td class="td-key">python39</td><td>Python 3.9</td><td class="td-dim">main.py</td></tr>
+              <tr><td class="td-key">go</td><td>Go 1.22</td><td class="td-dim">main.go</td></tr>
+              <tr><td class="td-key">go121</td><td>Go 1.21</td><td class="td-dim">main.go</td></tr>
+              <tr><td class="td-key">ts</td><td>TypeScript (Node 20)</td><td class="td-dim">index.ts</td></tr>
+              <tr><td class="td-key">ts18</td><td>TypeScript (Node 18)</td><td class="td-dim">index.ts</td></tr>
+              <tr><td class="td-key">bun</td><td>Bun</td><td class="td-dim">index.ts</td></tr>
+              <tr><td class="td-key">deno</td><td>Deno</td><td class="td-dim">main.ts</td></tr>
+              <tr><td class="td-key">ruby</td><td>Ruby 3.3</td><td class="td-dim">main.rb</td></tr>
+              <tr><td class="td-key">php</td><td>PHP 8.3</td><td class="td-dim">index.php</td></tr>
+              <tr><td class="td-key">rust</td><td>Rust 1.78</td><td class="td-dim">app (binary name)</td></tr>
+              <tr><td class="td-key">java</td><td>Java 21</td><td class="td-dim">app.jar</td></tr>
+              <tr><td class="td-key">dotnet</td><td>.NET 8</td><td class="td-dim">app.dll</td></tr>
+              <tr><td class="td-key">elixir</td><td>Elixir 1.16</td><td class="td-dim">main.exs</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-files">
+      <div class="section-header">
+        <div class="section-title">File Manager</div>
+        <div class="section-sub">Browse, edit and create files inside your container.</div>
+      </div>
+      <div class="fm-actions-row">
+        <button class="btn btn-fm-new" id="btn-fm-new-file" onclick="fmNewFile()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><line x1="9" y1="15" x2="15" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          New File
+        </button>
+        <button class="btn btn-fm-save" id="btn-fm-save" onclick="fmSaveFile()" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Save
+        </button>
+        <button class="btn btn-fm-del" id="btn-fm-del" onclick="fmDeleteFile()" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Delete
+        </button>
+        <button class="btn btn-refresh" onclick="fmRefresh()">
+          <svg viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Refresh
+        </button>
+        <div class="inline-msg" id="msg-fm" style="margin-left:auto;flex:1;"></div>
+      </div>
+      <div class="fm-layout">
+        <div class="fm-sidebar">
+          <div class="fm-sidebar-header">
+            <span class="fm-sidebar-title">Files</span>
+          </div>
+          <div class="fm-tree" id="fm-tree">
+            <div class="fm-loading-state">
+              <svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Loading files…
+            </div>
+          </div>
+        </div>
+        <div class="fm-content" id="fm-content">
+          <div class="fm-empty-state" id="fm-empty">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Select a file to view or edit</span>
+          </div>
+          <div id="fm-editor-wrap" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="fm-content-header">
+              <span id="fm-current-path" class="fm-path">—</span>
+            </div>
+            <textarea class="fm-editor" id="fm-editor" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-danger">
+      <div class="section-header">
+        <div class="section-title">Danger Zone</div>
+        <div class="section-sub">Irreversible actions — proceed with care.</div>
+      </div>
+      <div class="danger-zone">
+        <div class="danger-zone-header">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="17" r="0.75" fill="currentColor"/></svg>
+          Irreversible Actions
+        </div>
+        <div class="danger-item">
+          <div class="danger-item-info">
+            <div class="di-title">Delete Application</div>
+            <div class="di-sub">Permanently remove this app, its container, image and all associated data.</div>
+          </div>
+          <button class="btn btn-danger" onclick="openDeleteModal()">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Backup Section ──────────────────────────────────────────────── -->
+    <section class="section" id="section-backup">
+      <div class="section-header">
+        <div class="section-title">Backups</div>
+        <div class="section-sub">Create and manage point-in-time snapshots of your app. Premium plan only — up to 5 backups.</div>
+      </div>
+
+      <!-- Non-premium notice (shown/hidden by JS) -->
+      <div id="backup-free-notice" style="display:none;" class="backup-premium-notice">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>Backups are a <strong>premium plan</strong> feature. Upgrade your VPS to create and restore backups.</div>
+      </div>
+
+      <!-- Premium backup UI (shown/hidden by JS) -->
+      <div id="backup-premium-ui" style="display:none;">
+        <div class="backup-header-row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:0.82rem;color:var(--text-2);">Snapshots</span>
+            <span class="backup-count-badge" id="backup-count-badge">0 / 5</span>
+          </div>
+          <button class="btn btn-backup" id="btn-create-backup" onclick="createBackup()">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Create Backup
+          </button>
+        </div>
+        <div class="inline-msg" id="msg-backup" style="margin-bottom:14px;max-width:100%;"></div>
+        <div id="backup-list-wrap"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── Redeploy Modal ──────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-redeploy">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title">Redeploy App</div>
+    <div class="modal-sub" style="margin-bottom:16px;">Reinstall packages, restart with the specified main file — no new container created.</div>
+    <div class="rdp-field">
+      <label>Packages <span style="color:var(--text-3);font-weight:400;">(space-separated)</span></label>
+      <input type="text" id="rdp-modal-packages" placeholder="express ws node-pty"/>
+      <div class="rdp-hint">Leave blank to skip package installation. Separate with spaces.</div>
+    </div>
+    <div class="rdp-field">
+      <label>Main File</label>
+      <input type="text" id="rdp-modal-mainfile" placeholder="index.js"/>
+    </div>
+    <div class="rdp-field">
+      <label>Runtime</label>
+      <select id="rdp-modal-runtime">
+        <option value="">— auto-detect —</option>
+        <option value="nodejs">Node.js 20</option>
+        <option value="nodejs18">Node.js 18</option>
+        <option value="nodejs16">Node.js 16</option>
+        <option value="python">Python 3.12</option>
+        <option value="python310">Python 3.10</option>
+        <option value="python39">Python 3.9</option>
+        <option value="go">Go 1.22</option>
+        <option value="go121">Go 1.21</option>
+        <option value="ts">TypeScript (Node 20)</option>
+        <option value="ts18">TypeScript (Node 18)</option>
+        <option value="bun">Bun</option>
+        <option value="deno">Deno</option>
+        <option value="ruby">Ruby 3.3</option>
+        <option value="php">PHP 8.3</option>
+        <option value="rust">Rust 1.78</option>
+        <option value="java">Java 21</option>
+        <option value="dotnet">.NET 8</option>
+        <option value="elixir">Elixir 1.16</option>
+      </select>
+      <div class="rdp-hint">Leave blank to auto-detect from your main file extension.</div>
+    </div>
+    <div class="inline-msg" id="msg-redeploy-modal"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-save" id="btn-redeploy-confirm" onclick="confirmRedeploy()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Redeploy
+      </button>
+      <button class="btn btn-stop" onclick="closeRedeployModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Restore modal -->
+<div class="modal-overlay" id="modal-restore">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title">Restore from Backup</div>
+    <div class="modal-sub">
+      Restoring will wipe the current container and rebuild it from backup
+      <strong id="restore-modal-id"></strong>. Provide the runtime details below.
+    </div>
+    <div class="restore-field">
+      <label>Runtime (language)</label>
+      <select id="restore-language">
+        <option value="">— Select runtime —</option>
+        <option value="nodejs">Node.js 20</option>
+        <option value="nodejs18">Node.js 18</option>
+        <option value="nodejs16">Node.js 16</option>
+        <option value="python">Python 3.12</option>
+        <option value="python310">Python 3.10</option>
+        <option value="python39">Python 3.9</option>
+        <option value="go">Go 1.22</option>
+        <option value="go121">Go 1.21</option>
+        <option value="ts">TypeScript (Node 20)</option>
+        <option value="ts18">TypeScript (Node 18)</option>
+        <option value="bun">Bun</option>
+        <option value="deno">Deno</option>
+        <option value="ruby">Ruby 3.3</option>
+        <option value="php">PHP 8.3</option>
+        <option value="rust">Rust 1.78</option>
+        <option value="java">Java 21</option>
+        <option value="dotnet">.NET 8</option>
+        <option value="elixir">Elixir 1.16</option>
+      </select>
+    </div>
+    <div class="restore-field">
+      <label>Start File</label>
+      <input type="text" id="restore-start-file" placeholder="e.g. index.js"/>
+    </div>
+    <div class="restore-field">
+      <label>Extra Packages <span style="color:var(--text-3);font-weight:400;">(comma-separated, optional)</span></label>
+      <input type="text" id="restore-packages" placeholder="e.g. express, axios"/>
+    </div>
+    <div class="inline-msg" id="msg-restore" style="max-width:100%;"></div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn btn-cancel" onclick="closeRestoreModal()">Cancel</button>
+      <button class="btn btn-restore" id="btn-restore-confirm" onclick="confirmRestore()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Restore
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal">
+    <div class="modal-title">Delete Application</div>
+    <div class="modal-sub">This will permanently delete <strong id="modal-app-name-display"></strong> along with its container and image. Enter the app password to confirm.</div>
+    <div class="form-group">
+      <label class="form-label" for="delete-app-pass">App Password</label>
+      <input class="form-input" type="password" id="delete-app-pass" placeholder="App password" style="max-width:100%;"/>
+    </div>
+    <div class="inline-msg" id="msg-delete"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">
+        <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Delete Permanently
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const username = localStorage.getItem('username') || '';
+  const password = localStorage.getItem('password') || '';
+  if (!username || !password) window.location.href = 'login.html';
+
+  const params = new URLSearchParams(window.location.search);
+  const appName = params.get('app') || '';
+  if (!appName) window.location.href = 'dashboard.html';
+
+  let appData = null;
+  let appPass = null;
+  let inspectLoaded = false;
+
+  document.getElementById('nav-app-name').textContent = appName;
+  document.getElementById('modal-app-name-display').textContent = appName;
+
+  (function initTheme() {
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('icon-sun').style.display = saved === 'dark' ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = saved === 'dark' ? 'none' : 'block';
+  })();
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.getElementById('icon-sun').style.display = next === 'dark' ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = next === 'dark' ? 'none' : 'block';
+    localStorage.setItem('theme', next);
+  }
+
+  (function initAvatar() {
+    document.getElementById('dd-username').textContent = username;
+    const inner = document.getElementById('avatar-inner');
+    const b64 = localStorage.getItem('img');
+    if (b64) {
+      inner.style.display = 'none';
+      const img = document.createElement('img');
+      img.src = b64;
+      img.alt = username;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
+      document.getElementById('avatar-btn').appendChild(img);
+    } else {
+      inner.textContent = username.slice(0, 2);
+    }
+  })();
+
+  function toggleDropdown() {
+    document.getElementById('avatar-dropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('avatar-wrap').contains(e.target)) {
+      document.getElementById('avatar-dropdown').classList.remove('open');
+    }
+  });
+  function logout() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    window.location.href = 'login.html';
+  }
+
+  function switchSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('active');
+    const btn = document.getElementById('sb-' + id);
+    if (btn) btn.classList.add('active');
+    if (id === 'inspect' && !inspectLoaded) loadInspect();
+    if (id === 'domain') initDomainSection();
+    if (id === 'security') initSecuritySection();
+    if (id === 'scout') initScoutSection();
+    if (id === 'terminal') initTerminalSection();
+    if (id === 'files') fmInit();
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-runtime').classList.toggle('active', tab === 'runtime');
+    document.getElementById('tab-deploy').classList.toggle('active', tab === 'deploy');
+    document.getElementById('term-runtime-wrap').classList.toggle('xterm-hidden', tab !== 'runtime');
+    document.getElementById('term-deploy-wrap').classList.toggle('xterm-hidden', tab !== 'deploy');
+  }
+
+  function statusPillClass(status) {
+    const s = (status || '').toLowerCase();
+    if (s === 'active') return 'pill-active';
+    if (s === 'stopped') return 'pill-stopped';
+    if (s === 'suspended') return 'pill-suspended';
+    if (s === 'error') return 'pill-error';
+    if (s === 'expired') return 'pill-expired';
+    return 'pill-stopped';
+  }
+
+  function hasDeployError(logs) {
+    if (!Array.isArray(logs) || !logs.length) return false;
+    return logs.some(l => /error|fail|fatal/i.test(String(l)));
+  }
+
+  function renderBanner(plan, status) {
+    const wrap = document.getElementById('status-banner');
+    if (plan === 'premium' && status === 'expired') {
+      wrap.innerHTML = `
+        <div class="banner banner-expired">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.5" r="0.8" fill="currentColor"/></svg>
+          Your VPS has expired — recharge now to restore access.
+          <button class="banner-btn" onclick="window.location.href='payout.html'">Recharge Now</button>
+        </div>`;
+    } else if (plan === 'free' && status === 'suspended') {
+      wrap.innerHTML = `
+        <div class="banner banner-suspended">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="4" height="16" rx="1" stroke="currentColor" stroke-width="1.7"/><rect x="14" y="4" width="4" height="16" rx="1" stroke="currentColor" stroke-width="1.7"/></svg>
+          Your VPS has been suspended due to inactivity — restart the server to break this suspension before your VPS gets permanently deleted.
+          <button class="banner-btn" onclick="ctrlApp('start')">Restart Server</button>
+        </div>`;
+    }
+  }
+
+  function appendLog(elId, text, type) {
+    const el = document.getElementById(elId);
+    const span = document.createElement('span');
+    span.className = 'log-line' + (type ? ' ' + type : '');
+    span.textContent = text;
+    el.appendChild(span);
+    el.appendChild(document.createTextNode('\n'));
+  }
+
+  function clearLog(elId) {
+    document.getElementById(elId).innerHTML = '';
+  }
+
+  function writeToLog(elId, text) {
+    clearLog(elId);
+    if (!text) { appendLog(elId, '(no output)', 'dim'); return; }
+    text.split('\n').forEach(line => {
+      let type = '';
+      if (/error|fail|fatal/i.test(line)) type = 'err';
+      else if (/warn/i.test(line)) type = 'warn';
+      else if (/success|started|running|ready|listening/i.test(line)) type = 'ok';
+      appendLog(elId, line, type);
+    });
+    const el = document.getElementById(elId);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async function loadAppData() {
+    try {
+      const res = await fetch('/api/get-app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.status === 'error') throw new Error(data.message);
+      const app = data.apps[appName];
+      if (!app) throw new Error('App not found');
+      appData = app;
+      appPass = app.appPass;
+
+      renderBanner(app.plan, app.status);
+
+      document.getElementById('hdr-app-name').textContent = appName;
+      document.getElementById('hdr-badge').textContent = app.plan || 'free';
+      document.getElementById('hdr-badge').className = 'badge ' + (app.plan === 'premium' ? 'badge-premium' : 'badge-free');
+
+      const pill = document.getElementById('hdr-status-pill');
+      pill.className = 'status-pill ' + statusPillClass(app.status);
+      pill.querySelector('.dot').className = 'dot';
+      document.getElementById('hdr-status-text').textContent = app.status || 'unknown';
+
+      const appUrl = `http://${appName}.cloudra.vortexa.cloud`;
+      const portEl = document.getElementById('hdr-port');
+      portEl.innerHTML = `<a href="${appUrl}" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:none;font-family:var(--mono);font-size:0.78rem;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${appUrl}</a>`;
+
+
+      document.getElementById('btn-update').href = 'deploy.html?app=' + encodeURIComponent(appName);
+
+      const deployFailed = hasDeployError(app.logs);
+      if (deployFailed) {
+        document.getElementById('deploy-fail-notice').style.display = 'flex';
+      }
+
+      document.getElementById('logs-loading').style.display = 'none';
+      const lc = document.getElementById('logs-content');
+      lc.style.display = 'flex';
+      lc.style.flexDirection = 'column';
+      lc.style.flex = '1';
+
+      termRuntime = null; // no longer used
+      termDeploy = null;
+
+      clearLog('log-deploy');
+      if (Array.isArray(app.logs) && app.logs.length) {
+        app.logs.forEach(l => {
+          let type = '';
+          if (/error|fail|fatal/i.test(String(l))) type = 'err';
+          else if (/success|built|started|clone/i.test(String(l))) type = 'ok';
+          appendLog('log-deploy', String(l), type);
+        });
+        const dep = document.getElementById('log-deploy');
+        dep.scrollTop = dep.scrollHeight;
+      } else {
+        appendLog('log-deploy', '(no deployment logs)', 'dim');
+      }
+
+      await loadRuntimeLogs();
+    } catch (e) {
+      document.getElementById('logs-loading').innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--red)"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.5" r="0.8" fill="currentColor"/></svg>
+        <span style="font-size:0.82rem;color:var(--red);">${e.message}</span>`;
+    }
+  }
+
+  async function loadRuntimeLogs() {
+    if (!appPass) return;
+    try {
+      const res = await fetch('/api/logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName, password: appPass })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        writeToLog('log-runtime', data.logs);
+        document.getElementById('term-runtime-label').textContent = 'runtime · stdout / stderr · ' + appName;
+      } else {
+        writeToLog('log-runtime', '');
+        appendLog('log-runtime', data.message || 'Failed to fetch logs', 'err');
+      }
+    } catch (e) {
+      writeToLog('log-runtime', '');
+      appendLog('log-runtime', e.message, 'err');
+    }
+  }
+
+  async function refreshLogs() {
+    clearLog('log-runtime');
+    appendLog('log-runtime', 'Refreshing…', 'dim');
+    await loadRuntimeLogs();
+  }
+
+  async function ctrlApp(action) {
+    if (!appPass) return;
+    const btn = document.getElementById('btn-' + action);
+    const origHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+    try {
+      const res = await fetch('/api/' + action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName, password: appPass })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        await loadAppData();
+      } else {
+        alert(data.message || 'Action failed');
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
+    } catch (e) {
+      alert(e.message);
+      btn.disabled = false;
+      btn.innerHTML = origHTML;
+    }
+  }
+
+  async function loadUsage() {
+    if (!appPass) return;
+    const errEl = document.getElementById('usage-error');
+    errEl.style.display = 'none';
+    try {
+      const res = await fetch('/api/load', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Failed');
+      const u = data.usage;
+      const cpuPct = parseFloat(u.cpu) || 0;
+      const ramPct = parseFloat(u.ram.percent) || 0;
+      document.getElementById('usc-cpu').textContent = u.cpu;
+      document.getElementById('usc-ram').textContent = u.ram.used;
+      document.getElementById('usc-ram-sub').textContent = 'of ' + u.ram.limit;
+      document.getElementById('usc-disk').textContent = u.disk.read;
+      document.getElementById('usc-disk-sub').textContent = 'read · ' + u.disk.write + ' write';
+      document.getElementById('bar-cpu-val').textContent = u.cpu;
+      document.getElementById('bar-ram-val').textContent = u.ram.percent;
+      const cpuBar = document.getElementById('bar-cpu');
+      cpuBar.style.width = Math.min(cpuPct, 100) + '%';
+      cpuBar.className = 'usage-bar-fill ' + (cpuPct > 80 ? 'fill-red' : cpuPct > 50 ? 'fill-orange' : 'fill-green');
+      const ramBar = document.getElementById('bar-ram');
+      ramBar.style.width = Math.min(ramPct, 100) + '%';
+      ramBar.className = 'usage-bar-fill ' + (ramPct > 80 ? 'fill-red' : ramPct > 50 ? 'fill-orange' : 'fill-blue');
+    } catch (e) {
+      errEl.textContent = 'Could not load usage: ' + e.message;
+      errEl.style.display = 'block';
+    }
+  }
+
+  async function loadInspect() {
+    inspectLoaded = true;
+    if (!appPass) { document.getElementById('inspect-error').textContent = 'App password not available.'; document.getElementById('inspect-error').style.display = 'block'; document.getElementById('inspect-loading').style.display = 'none'; return; }
+    try {
+      const res = await fetch('/api/inspect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName, password: appPass })
+      });
+      const data = await res.json();
+      document.getElementById('inspect-loading').style.display = 'none';
+      if (data.status !== 'success') throw new Error(data.message || 'Inspect failed');
+
+      const c = data.data && data.data[0] ? data.data[0] : {};
+      const state = c.State || {};
+      const config = c.Config || {};
+      const netSettings = c.NetworkSettings || {};
+      const bridge = (netSettings.Networks || {}).bridge || {};
+      const ports = netSettings.Ports || {};
+      const portKeys = Object.keys(ports);
+      const exposedPort = portKeys.length ? portKeys[0].replace('/tcp','') : '—';
+      const hostPort = portKeys.length && ports[portKeys[0]]?.[0] ? ports[portKeys[0]][0].HostPort : '—';
+      const envList = (config.Env || []).filter(e => !e.startsWith('PATH=') && !e.startsWith('LANG='));
+
+      const cards = [
+        { label: 'Container ID', value: (c.Id || '—').slice(0, 12) },
+        { label: 'Status', value: state.Status || '—' },
+        { label: 'Running', value: state.Running ? 'Yes' : 'No' },
+        { label: 'PID', value: state.Pid ? String(state.Pid) : '—' },
+        { label: 'Exit Code', value: state.ExitCode != null ? String(state.ExitCode) : '—' },
+        { label: 'Image', value: config.Image || '—' },
+        { label: 'Working Dir', value: config.WorkingDir || '—' },
+        { label: 'User', value: config.User || '—' },
+        { label: 'Command', value: (config.Cmd || []).join(' ') || '—' },
+        { label: 'Container Port', value: exposedPort },
+        { label: 'Host Port', value: hostPort },
+        { label: 'IP Address', value: bridge.IPAddress || netSettings.IPAddress || '—' },
+        { label: 'Gateway', value: bridge.Gateway || '—' },
+        { label: 'MAC Address', value: bridge.MacAddress || '—' },
+        { label: 'Platform', value: c.Platform || '—' },
+        { label: 'Driver', value: c.Driver || '—' },
+        { label: 'Restart Count', value: c.RestartCount != null ? String(c.RestartCount) : '—' },
+        { label: 'Started At', value: state.StartedAt && state.StartedAt !== '0001-01-01T00:00:00Z' ? new Date(state.StartedAt).toLocaleString() : '—' },
+        { label: 'RAM Limit', value: appData ? appData.ram || '—' : '—' },
+        { label: 'CPU Limit', value: appData ? appData.cpu || '—' : '—' },
+        { label: 'Storage', value: appData ? appData.storage || '—' : '—' },
+        { label: 'Plan', value: appData ? (appData.plan || '—') : '—' },
+        { label: 'Created At', value: appData && appData.createdAt ? new Date(appData.createdAt).toLocaleString() : (c.Created ? new Date(c.Created).toLocaleString() : '—') },
+        { label: 'Last Start', value: appData && appData.lastStart ? new Date(appData.lastStart).toLocaleString() : '—' },
+      ];
+
+      const grid = document.getElementById('inspect-cards');
+      grid.innerHTML = cards.map(card => `
+        <div class="inspect-card">
+          <div class="inspect-label">${card.label}</div>
+          <div class="inspect-value ${card.value === '—' ? 'muted' : ''}">${card.value}</div>
+        </div>
+      `).join('');
+
+      const extra = document.getElementById('inspect-extra-cards');
+      if (envList.length) {
+        extra.innerHTML = `
+          <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-3);font-family:var(--mono);margin-bottom:10px;margin-top:6px;">Environment Variables</div>
+          <div style="border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+            ${envList.map(e => {
+              const idx = e.indexOf('=');
+              const k = e.slice(0, idx);
+              const v = e.slice(idx + 1);
+              return `<div style="display:flex;gap:16px;padding:9px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.74rem;">
+                <span style="color:var(--orange);flex-shrink:0;min-width:160px;">${k}</span>
+                <span style="color:var(--text-2);word-break:break-all;">${v}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        `;
+        extra.lastElementChild.lastElementChild.style.borderBottom = 'none';
+      }
+
+      document.getElementById('inspect-content').style.display = 'block';
+      loadUsage();
+    } catch (e) {
+      document.getElementById('inspect-error').textContent = e.message;
+      document.getElementById('inspect-error').style.display = 'block';
+    }
+  }
+
+  function initDomainSection() {
+    if (!appData) return;
+    const isPremium = appData.plan === 'premium';
+    document.getElementById('domain-gate').style.display = isPremium ? 'none' : 'flex';
+    document.getElementById('domain-content').style.display = isPremium ? 'block' : 'none';
+    if (!isPremium) return;
+    const domain = appData.domain || '';
+    const cur = document.getElementById('domain-current-display');
+    const sub = document.getElementById('domain-current-sub');
+    const removeBtn = document.getElementById('btn-remove-domain');
+    if (domain) {
+      cur.textContent = domain;
+      sub.textContent = 'Active custom domain';
+      removeBtn.style.display = 'inline-flex';
+    } else {
+      cur.textContent = '—';
+      sub.textContent = 'No custom domain assigned';
+      removeBtn.style.display = 'none';
+    }
+  }
+
+  async function assignDomain() {
+    if (!appPass) return;
+    const domain = document.getElementById('domain-input').value.trim();
+    if (!domain) { showMsg('msg-domain', 'Enter a domain.', 'err'); return; }
+    showMsg('msg-domain', 'Verifying DNS and assigning…', '');
+    try {
+      const res = await fetch('/api/domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, domain })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      showMsg('msg-domain', 'Domain assigned: ' + data.domain, 'ok');
+      appData.domain = data.domain;
+      initDomainSection();
+    } catch (e) { showMsg('msg-domain', e.message, 'err'); }
+  }
+
+  async function removeDomain() {
+    if (!appPass) return;
+    if (!confirm('Remove the custom domain from this app?')) return;
+    try {
+      const res = await fetch('/api/delete-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      showMsg('msg-domain', 'Domain removed.', 'ok');
+      appData.domain = '';
+      initDomainSection();
+    } catch (e) { showMsg('msg-domain', e.message, 'err'); }
+  }
+
+  let currentBlockedIps = [];
+
+  function initSecuritySection() {
+    if (!appData) return;
+    const isPremium = appData.plan === 'premium';
+    document.getElementById('security-gate').style.display = isPremium ? 'none' : 'flex';
+    document.getElementById('security-content').style.display = isPremium ? 'block' : 'none';
+    if (!isPremium) return;
+    const httpsEnabled = appData.https === true;
+    const toggle = document.getElementById('ssl-toggle');
+    toggle.checked = httpsEnabled;
+    // Once HTTPS is enabled, lock the toggle — cannot be disabled from UI
+    if (httpsEnabled) {
+      toggle.disabled = true;
+      toggle.onchange = null;
+      const notice = document.getElementById('ssl-locked-notice');
+      notice.style.display = 'flex';
+      document.getElementById('ssl-desc').textContent = 'HTTPS is active. SSL certificate is provisioned and locked for this domain.';
+    } else {
+      toggle.disabled = false;
+      toggle.onchange = toggleSSL;
+      document.getElementById('ssl-locked-notice').style.display = 'none';
+    }
+    currentBlockedIps = Array.isArray(appData.blocked) ? [...appData.blocked] : [];
+    renderIpTags();
+    // Load redeploy settings from localStorage
+    const rdpKey = 'rdp_settings_' + appName;
+    const stored = JSON.parse(localStorage.getItem(rdpKey) || '{}');
+    document.getElementById('rdp-packages-store').value = stored.packages || '';
+    document.getElementById('rdp-mainfile-store').value = stored.mainFile || '';
+  }
+
+  async function toggleSSL() {
+    if (!appPass) return;
+    const toggle = document.getElementById('ssl-toggle');
+    const newState = toggle.checked;
+    // Only allow enabling, not disabling
+    if (!newState) { toggle.checked = true; return; }
+    toggle.disabled = true;
+    showMsg('msg-ssl', 'Enabling SSL…', '');
+    try {
+      const res = await fetch('/api/ssl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      appData.https = data.https;
+      toggle.checked = true;
+      toggle.onchange = null; // lock permanently
+      document.getElementById('ssl-locked-notice').style.display = 'flex';
+      document.getElementById('ssl-desc').textContent = 'HTTPS is active. SSL certificate is provisioned and locked for this domain.';
+      showMsg('msg-ssl', 'SSL enabled successfully. It is now locked.', 'ok');
+    } catch (e) {
+      toggle.checked = false;
+      toggle.disabled = false;
+      showMsg('msg-ssl', e.message, 'err');
+    }
+  }
+
+  function renderIpTags() {
+    const wrap = document.getElementById('ip-tags-wrap');
+    if (!currentBlockedIps.length) {
+      wrap.innerHTML = '<span style="font-size:0.74rem;color:var(--text-3);padding:4px 2px;">No IPs blocked</span>';
+      return;
+    }
+    wrap.innerHTML = currentBlockedIps.map((ip, i) =>
+      `<span class="ip-tag">${ip}<button onclick="removeIpTag(${i})" title="Remove">×</button></span>`
+    ).join('');
+  }
+
+  function removeIpTag(i) {
+    currentBlockedIps.splice(i, 1);
+    renderIpTags();
+  }
+
+  function addIpTag() {
+    const input = document.getElementById('ip-input');
+    const ip = input.value.trim();
+    if (!ip) return;
+    if (currentBlockedIps.includes(ip)) { input.value = ''; return; }
+    currentBlockedIps.push(ip);
+    input.value = '';
+    renderIpTags();
+  }
+
+  async function saveBlocklist() {
+    if (!appPass) return;
+    try {
+      const res = await fetch('/api/blocked', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, blocked: currentBlockedIps })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      appData.blocked = [...currentBlockedIps];
+      showMsg('msg-block', 'Blocklist saved (' + currentBlockedIps.length + ' IPs).', 'ok');
+    } catch (e) { showMsg('msg-block', e.message, 'err'); }
+  }
+
+  function initScoutSection() {
+    if (!appData) return;
+    const isPremium = appData.plan === 'premium';
+    document.getElementById('scout-gate').style.display = isPremium ? 'none' : 'flex';
+    document.getElementById('scout-content').style.display = isPremium ? 'block' : 'none';
+  }
+
+  async function runScan() {
+    if (!appPass) return;
+    const btn = document.getElementById('btn-scout-scan');
+    const label = document.getElementById('scout-scanning-label');
+    const resultEl = document.getElementById('scout-result');
+    const emptyEl = document.getElementById('scout-empty');
+    const statsEl = document.getElementById('scout-stats');
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Scanning…`;
+    label.style.display = 'block';
+    emptyEl.style.display = 'none';
+    resultEl.style.display = 'none';
+    statsEl.style.display = 'none';
+    showMsg('msg-scout', '', '');
+    try {
+      const res = await fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      const report = data.report || '';
+      renderScoutReport(report);
+    } catch (e) { showMsg('msg-scout', e.message, 'err'); emptyEl.style.display = 'flex'; }
+    finally {
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Start Scanning`;
+      label.style.display = 'none';
+    }
+  }
+
+  function sevClass(sev) {
+    if (!sev) return 'sv-unk';
+    const s = sev.toUpperCase();
+    if (s === 'CRITICAL') return 'sv-crit';
+    if (s === 'HIGH') return 'sv-high';
+    if (s === 'MEDIUM') return 'sv-med';
+    if (s === 'LOW') return 'sv-low';
+    return 'sv-unk';
+  }
+
+  function parseTrivy(raw) {
+    // Parse trivy table-format output into structured sections
+    const sections = [];
+    const lines = raw.split('\n');
+    let i = 0;
+    let summaryLines = [];
+    let inSummary = false;
+
+    // Collect summary table (first table block before any section target)
+    while (i < lines.length) {
+      const line = lines[i];
+      // Detect section targets: lines like "appname (debian XX)" or "usr/local/..."
+      if (/^[a-zA-Z\/].*\(.*\)\s*$/.test(line.trim()) && i > 0) break;
+      if (/^={3,}/.test(line)) break;
+      summaryLines.push(line);
+      i++;
+    }
+
+    // Now parse per-target sections
+    while (i < lines.length) {
+      const line = lines[i];
+      // Target header: "appname (type)" followed by "======"
+      if (i + 1 < lines.length && /^={3,}/.test(lines[i + 1])) {
+        const headerLine = line.trim();
+        const typeMatch = headerLine.match(/^(.*)\((.*)\)\s*$/);
+        const target = typeMatch ? typeMatch[1].trim() : headerLine;
+        const type = typeMatch ? typeMatch[2].trim() : '';
+        i += 2; // skip header + ====
+        // Skip "Total:" line
+        if (i < lines.length && /^Total:/.test(lines[i])) i++;
+        // Collect vuln rows from ASCII table
+        const vulns = [];
+        while (i < lines.length) {
+          const l = lines[i];
+          if (l.trim() === '' && i + 1 < lines.length && /^[a-zA-Z\/]/.test(lines[i + 1])) { i++; break; }
+          if (/^[├└│┌┐┤┘]/.test(l) || /^[+|-]{3,}/.test(l)) { i++; continue; }
+          // Try to extract pipe-delimited row
+          if (l.includes('│')) {
+            const cols = l.split('│').map(c => c.trim()).filter((_, idx) => idx > 0);
+            if (cols.length >= 4) {
+              const [lib, cve, sev, status, ver, fix, title] = cols;
+              if (lib || cve) vulns.push({ lib, cve, sev, status, ver, fix: fix || '', title: title || '' });
+            }
+          }
+          i++;
+        }
+        if (vulns.length > 0 || type) sections.push({ target, type, vulns });
+      } else {
+        i++;
+      }
+    }
+    return { summaryLines, sections };
+  }
+
+  function renderScoutReport(report) {
+    const statsEl = document.getElementById('scout-stats');
+    const resultEl = document.getElementById('scout-result');
+
+    // Count severities
+    const critCount = (report.match(/CRITICAL/g) || []).length;
+    const highCount = (report.match(/\bHIGH\b/g) || []).length;
+    const medCount  = (report.match(/\bMEDIUM\b/g) || []).length;
+    const lowCount  = (report.match(/\bLOW\b/g) || []).length;
+
+    statsEl.innerHTML = [
+      critCount ? `<span class="scout-stat scout-crit">CRITICAL: ${critCount}</span>` : '',
+      highCount ? `<span class="scout-stat scout-high">HIGH: ${highCount}</span>` : '',
+      medCount  ? `<span class="scout-stat scout-med">MEDIUM: ${medCount}</span>` : '',
+      lowCount  ? `<span class="scout-stat scout-low">LOW: ${lowCount}</span>` : '',
+      (!critCount && !highCount && !medCount && !lowCount) ? `<span class="scout-stat scout-low">✓ No vulnerabilities found</span>` : ''
+    ].join('');
+    statsEl.style.display = 'flex';
+
+    // Parse and render
+    const { summaryLines, sections } = parseTrivy(report);
+
+    let html = '';
+
+    // Summary table section
+    if (summaryLines.some(l => l.includes('│'))) {
+      html += `<div class="scout-report-section">
+        <div class="scout-section-header" onclick="toggleScoutSection(this)">
+          <span><span class="ss-title">Report Summary</span></span>
+          <span style="display:flex;align-items:center;gap:10px;"><span class="ss-count">${sections.length} target(s)</span><span class="ss-chevron">▾</span></span>
+        </div>
+        <div><table class="scout-summary-table">
+          <tr><th style="padding:8px 14px;text-align:left;font-size:0.64rem;font-family:var(--mono);color:rgba(255,255,255,0.35);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.05);">Target</th><th style="padding:8px 14px;text-align:left;font-size:0.64rem;font-family:var(--mono);color:rgba(255,255,255,0.35);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.05);">Type</th><th style="padding:8px 14px;text-align:right;font-size:0.64rem;font-family:var(--mono);color:rgba(255,255,255,0.35);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.05);">Vulnerabilities</th></tr>`;
+      summaryLines.forEach(l => {
+        if (!l.includes('│')) return;
+        const cols = l.split('│').map(c => c.trim()).filter((_, i) => i > 0 && i < 4);
+        if (cols.length >= 3 && cols[0] && cols[0] !== 'Target') {
+          const vcount = parseInt(cols[2]) || 0;
+          html += `<tr><td class="st-target">${escHtml(cols[0])}</td><td class="st-type">${escHtml(cols[1])}</td><td style="text-align:right;" class="${vcount > 0 ? 'st-n' : ''}">${escHtml(cols[2])}</td></tr>`;
+        }
+      });
+      html += '</table></div></div>';
+    }
+
+    // Per-target vuln sections
+    sections.forEach(sec => {
+      if (!sec.vulns.length) return;
+      const crit = sec.vulns.filter(v => v.sev && v.sev.toUpperCase() === 'CRITICAL').length;
+      const high = sec.vulns.filter(v => v.sev && v.sev.toUpperCase() === 'HIGH').length;
+      const label = [crit ? `<span class="sv-crit">${crit} CRITICAL</span>` : '', high ? `<span class="sv-high">${high} HIGH</span>` : ''].filter(Boolean).join(' ');
+      html += `<div class="scout-report-section">
+        <div class="scout-section-header" onclick="toggleScoutSection(this)">
+          <span><span class="ss-title">${escHtml(sec.target)}</span><span class="ss-type">${escHtml(sec.type)}</span></span>
+          <span style="display:flex;align-items:center;gap:10px;">${label || ''}<span class="ss-count">${sec.vulns.length} vulns</span><span class="ss-chevron">▾</span></span>
+        </div>
+        <div class="scout-table-wrap">
+          <table class="scout-table">
+            <thead><tr>
+              <th>Library</th><th>CVE ID</th><th>Severity</th><th>Status</th>
+              <th>Installed</th><th>Fixed</th><th>Description</th>
+            </tr></thead>
+            <tbody>`;
+      sec.vulns.forEach(v => {
+        const url = v.cve && /^CVE-/i.test(v.cve) ? `https://avd.aquasec.com/nvd/${v.cve.toLowerCase()}` : '';
+        const cveCell = url ? `<a href="${url}" target="_blank" rel="noopener">${escHtml(v.cve)}</a>` : escHtml(v.cve || '—');
+        html += `<tr>
+          <td style="white-space:nowrap;">${escHtml(v.lib || '')}</td>
+          <td class="sv-id" style="white-space:nowrap;">${cveCell}</td>
+          <td style="white-space:nowrap;"><span class="${sevClass(v.sev)}">${escHtml(v.sev || '—')}</span></td>
+          <td style="white-space:nowrap;color:rgba(255,255,255,0.4);font-size:0.67rem;">${escHtml(v.status || '—')}</td>
+          <td style="white-space:nowrap;color:rgba(255,255,255,0.5);font-size:0.67rem;">${escHtml(v.ver || '—')}</td>
+          <td style="white-space:nowrap;" class="${v.fix ? 'sv-fixed' : 'sv-none'}">${escHtml(v.fix || '—')}</td>
+          <td class="sv-title">${escHtml((v.title || '').split('\n')[0].trim())}</td>
+        </tr>`;
+      });
+      html += '</tbody></table></div></div>';
+    });
+
+    if (!html) {
+      // Fallback: render as styled pre
+      html = `<div style="padding:16px 20px;font-family:var(--mono);font-size:0.72rem;color:#c9d1d9;white-space:pre-wrap;word-break:break-all;line-height:1.7;max-height:500px;overflow-y:auto;">${escHtml(report)}</div>`;
+    }
+
+    resultEl.innerHTML = html;
+    resultEl.style.display = 'block';
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function toggleScoutSection(header) {
+    header.classList.toggle('collapsed');
+    const body = header.nextElementSibling;
+    if (body) body.style.display = header.classList.contains('collapsed') ? 'none' : '';
+  }
+
+  // ── API-based terminal ─────────────────────────────────────────────────────
+  let termHistory = [];
+  let termHistoryIdx = -1;
+  let termCwd = '/app';                 // tracked working directory
+  let termTabCandidates = [];           // tab-completion candidates
+  let termTabIdx = -1;
+  let termTabBase = '';
+
+  // Strip ANSI escape codes from output
+  function stripAnsi(str) {
+    return str.replace(/\x1b\[[0-9;]*[mGKHFABCDJnsu]/g, '')
+              .replace(/\x1b\][^\x07]*\x07/g, '')
+              .replace(/\x1b[()][A-B0-2]/g, '')
+              .replace(/\x1b[=>]/g, '');
+  }
+
+  function termUpdatePrompt() {
+    // Shorten long paths: /app → ~  (container workdir convention)
+    let display = termCwd.replace(/^\/app/, '~') || '/';
+    document.getElementById('term-prompt-cwd').textContent = display;
+  }
+
+  function initTerminalSection() {
+    if (!appData) return;
+    const isPremium = appData.plan === 'premium';
+    document.getElementById('terminal-gate').style.display = isPremium ? 'none' : 'flex';
+    const tc = document.getElementById('terminal-content');
+    tc.style.display = isPremium ? 'flex' : 'none';
+    if (isPremium) {
+      document.getElementById('term-app-label').textContent = appName;
+      termCwd = '/app';
+      termUpdatePrompt();
+      termWriteLine('Connected to ' + appName + '  (exec via /api/exec)', 'ok');
+      termWriteLine('Tab for autocomplete · ↑↓ history · Ctrl+C cancel', 'dim');
+    }
+  }
+
+  function termWriteLine(text, type) {
+    const out = document.getElementById('term-output');
+    const clean = stripAnsi(text);
+    clean.split('\n').forEach(line => {
+      const span = document.createElement('span');
+      span.className = 'log-line' + (type ? ' ' + type : '');
+      span.style.cssText = 'font-family:var(--mono);font-size:12.5px;';
+      span.textContent = line;
+      out.appendChild(span);
+      out.appendChild(document.createTextNode('\n'));
+    });
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function termClear() {
+    document.getElementById('term-output').innerHTML = '';
+  }
+
+  async function termHandleKey(e) {
+    const input = document.getElementById('term-input');
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      termTabCandidates = []; termTabIdx = -1;
+      await termRunCommand();
+
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      termTabCandidates = []; termTabIdx = -1;
+      if (termHistoryIdx < termHistory.length - 1) {
+        termHistoryIdx++;
+        input.value = termHistory[termHistory.length - 1 - termHistoryIdx] || '';
+      }
+
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      termTabCandidates = []; termTabIdx = -1;
+      if (termHistoryIdx > 0) {
+        termHistoryIdx--;
+        input.value = termHistory[termHistory.length - 1 - termHistoryIdx] || '';
+      } else {
+        termHistoryIdx = -1;
+        input.value = '';
+      }
+
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      await termHandleTab(input);
+
+    } else if (e.ctrlKey && e.key === 'c') {
+      e.preventDefault();
+      const out = document.getElementById('term-output');
+      const echo = document.createElement('span');
+      echo.style.cssText = 'font-family:var(--mono);font-size:12.5px;color:#5adfb5;';
+      echo.textContent = termPromptPrefix() + input.value + '^C';
+      out.appendChild(echo);
+      out.appendChild(document.createTextNode('\n'));
+      out.scrollTop = out.scrollHeight;
+      input.value = '';
+      termTabCandidates = []; termTabIdx = -1;
+    }
+  }
+
+  function termPromptPrefix() {
+    const cwd = (termCwd || '/app').replace(/^\/app/, '~');
+    return cwd + ' $ ';
+  }
+
+  async function termHandleTab(input) {
+    const val = input.value;
+    // If we already have candidates from a previous Tab, cycle through them
+    if (termTabCandidates.length > 1) {
+      termTabIdx = (termTabIdx + 1) % termTabCandidates.length;
+      const parts = val.split(' ');
+      parts[parts.length - 1] = termTabCandidates[termTabIdx];
+      input.value = parts.join(' ');
+      return;
+    }
+
+    // Fresh completion
+    const parts = val.split(' ');
+    const partial = parts[parts.length - 1];
+    if (!partial) return;
+
+    try {
+      // Use compgen for file/dir completion
+      const compCmd = `compgen -f -- ${partial} 2>/dev/null | head -20`;
+      const res = await fetch('/api/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass,
+          command: `cd ${termCwd} && ${compCmd}` })
+      });
+      const data = await res.json();
+      if (data.status !== 'success' || !data.output.trim()) return;
+
+      const matches = stripAnsi(data.output).trim().split('\n').filter(Boolean);
+      if (!matches.length) return;
+
+      if (matches.length === 1) {
+        parts[parts.length - 1] = matches[0];
+        input.value = parts.join(' ');
+        termTabCandidates = []; termTabIdx = -1;
+      } else {
+        // Show candidates in output then cycle on next Tab
+        termTabCandidates = matches;
+        termTabBase = val;
+        termTabIdx = 0;
+        termWriteLine(matches.join('  '), 'dim');
+        parts[parts.length - 1] = matches[0];
+        input.value = parts.join(' ');
+      }
+    } catch (_) { /* silently fail */ }
+  }
+
+  async function termRunCommand() {
+    if (!appPass) return;
+    const input = document.getElementById('term-input');
+    const rawCmd = input.value.trim();
+    if (!rawCmd) return;
+    input.value = '';
+    termHistoryIdx = -1;
+
+    // Avoid duplicate consecutive history entries
+    if (termHistory[termHistory.length - 1] !== rawCmd) termHistory.push(rawCmd);
+
+    const out = document.getElementById('term-output');
+
+    // Echo the command with full prompt
+    const echo = document.createElement('span');
+    echo.style.cssText = 'font-family:var(--mono);font-size:12.5px;';
+    const cwdSpan = document.createElement('span');
+    cwdSpan.style.color = '#79c0ff';
+    cwdSpan.textContent = (termCwd || '/app').replace(/^\/app/, '~');
+    const promptSpan = document.createElement('span');
+    promptSpan.style.color = '#5adfb5';
+    promptSpan.textContent = ' $ ';
+    const cmdSpan = document.createElement('span');
+    cmdSpan.style.color = '#e8e8f0';
+    cmdSpan.textContent = rawCmd;
+    echo.appendChild(cwdSpan);
+    echo.appendChild(promptSpan);
+    echo.appendChild(cmdSpan);
+    out.appendChild(echo);
+    out.appendChild(document.createTextNode('\n'));
+    out.scrollTop = out.scrollHeight;
+
+    // Built-ins
+    if (rawCmd === 'clear' || rawCmd === 'cls') { termClear(); return; }
+
+    // Wrap command with CWD persistence:
+    // Run in current dir, then always print new pwd at the end as a sentinel
+    const sentinel = '__TERM_PWD__';
+    const fullCmd = `cd ${termCwd} 2>/dev/null; ${rawCmd}; echo "${sentinel}$(pwd)"`;
+
+    try {
+      const res = await fetch('/api/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, command: fullCmd })
+      });
+      const data = await res.json();
+
+      if (data.status !== 'success') {
+        termWriteLine(data.message || 'Exec failed', 'err');
+        return;
+      }
+
+      let rawOutput = stripAnsi((data.output || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n'));
+
+      // Extract the sentinel pwd line
+      const sentinelRe = new RegExp(sentinel + '(.+)$', 'm');
+      const pwdMatch = rawOutput.match(sentinelRe);
+      if (pwdMatch) {
+        termCwd = pwdMatch[1].trim();
+        termUpdatePrompt();
+        // Remove sentinel line from displayed output
+        rawOutput = rawOutput.replace(sentinelRe, '').replace(/\n$/, '');
+      }
+
+      if (rawOutput) {
+        rawOutput.split('\n').forEach(line => {
+          const span = document.createElement('span');
+          span.style.cssText = 'font-family:var(--mono);font-size:12.5px;';
+          if (/\b(error|failed|fatal|denied|not found)\b/i.test(line)) span.className = 'log-line err';
+          else if (/\b(warning|warn|deprecated)\b/i.test(line)) span.className = 'log-line warn';
+          else if (/\b(success|ok|done|installed|running|started)\b/i.test(line)) span.className = 'log-line ok';
+          else span.className = 'log-line';
+          span.textContent = line;
+          out.appendChild(span);
+          out.appendChild(document.createTextNode('\n'));
+        });
+        out.scrollTop = out.scrollHeight;
+      }
+
+      if (data.exitCode && data.exitCode !== 0) {
+        termWriteLine('[exit ' + data.exitCode + ']', 'dim');
+      }
+
+    } catch (e) {
+      termWriteLine('[network error: ' + e.message + ']', 'err');
+    }
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'inline-msg ' + type;
+    setTimeout(() => { el.className = 'inline-msg'; }, 4000);
+  }
+
+  function openDeleteModal() { document.getElementById('modal-delete').classList.add('open'); }
+  function closeDeleteModal() { document.getElementById('modal-delete').classList.remove('open'); document.getElementById('delete-app-pass').value = ''; document.getElementById('msg-delete').className = 'inline-msg'; }
+
+  async function confirmDelete() {
+    const pass = document.getElementById('delete-app-pass').value.trim();
+    if (!pass) { showMsg('msg-delete', 'Enter app password to confirm.', 'err'); return; }
+    try {
+      const res = await fetch('/api/delete-app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: pass })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        window.location.href = 'dashboard.html';
+      } else {
+        showMsg('msg-delete', data.message || 'Deletion failed.', 'err');
+      }
+    } catch (e) {
+      showMsg('msg-delete', e.message, 'err');
+    }
+  }
+
+  document.getElementById('modal-delete').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+
+  function copyWorkflow() {
+    const yaml = document.getElementById('workflow-yaml-block').innerText;
+    navigator.clipboard.writeText(yaml).then(() => {
+      const lbl = document.getElementById('copy-workflow-label');
+      lbl.textContent = 'Copied!';
+      setTimeout(() => { lbl.textContent = 'Copy'; }, 2000);
+    });
+  }
+
+  function initWorkflowBlock() {
+    const yaml = `name: Deploy to Arachnoid
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: |
+          curl -X POST https://arachnoid.vortexa.cloud/api/deploy \\
+            -H "Content-Type: application/json" \\
+            -d '{
+              "username": "${username}",
+              "password": "\${{ secrets.USERPASS }}",
+              "appName": "${appName}",
+              "appPassword": "\${{ secrets.APPPASS }}",
+              "repo": "\${{ secrets.REPO }}",
+              "language": "nodejs",
+              "startFile": "index.js",
+              "packages": ["express"]
+            }'`;
+    const block = document.getElementById('workflow-yaml-block');
+    block.textContent = yaml;
+  }
+
+  async function changeAppPass() {
+    const oldP = document.getElementById('app-old-pass').value.trim();
+    const newP = document.getElementById('app-new-pass').value.trim();
+    if (!oldP || !newP) { showMsg('msg-app-pass', 'Fill in both fields.', 'err'); return; }
+    try {
+      const res = await fetch('/api/change-app-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, oldAppPassword: oldP, newAppPassword: newP })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        appPass = newP;
+        showMsg('msg-app-pass', 'App password updated.', 'ok');
+      } else {
+        showMsg('msg-app-pass', data.message || 'Failed.', 'err');
+      }
+    } catch (e) {
+      showMsg('msg-app-pass', e.message, 'err');
+    }
+  }
+
+  // ── Backup state ────────────────────────────────────────────────────────
+  let backupData = [];
+  let restoreTargetId = null;
+  let backupSectionLoaded = false;
+
+  // Load backup section when first opened
+  const _origSwitchSection = switchSection;
+
+  // Override switchSection to lazy-load backups
+  (function() {
+    const _orig = switchSection;
+    window.switchSection = function(id) {
+      _orig(id);
+      if (id === 'backup' && !backupSectionLoaded) {
+        backupSectionLoaded = true;
+        loadBackups();
+      }
+    };
+    // Re-wire all existing inline onclick= calls that already call switchSection
+    // (they go through window scope so this works)
+  })();
+
+  async function loadBackups() {
+    if (!appPass) return;
+    const plan = appData ? (appData.plan || 'free') : 'free';
+
+    if (plan !== 'premium') {
+      document.getElementById('backup-free-notice').style.display = 'flex';
+      document.getElementById('backup-premium-ui').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('backup-free-notice').style.display = 'none';
+    document.getElementById('backup-premium-ui').style.display = 'block';
+
+    try {
+      const res = await fetch('/api/backup-get', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Failed to load backups');
+      backupData = data.backups || [];
+      renderBackups();
+    } catch (e) {
+      showMsg('msg-backup', e.message, 'err');
+    }
+  }
+
+  function renderBackups() {
+    const count = backupData.length;
+    document.getElementById('backup-count-badge').textContent = count + ' / 5';
+    document.getElementById('btn-create-backup').disabled = count >= 5;
+
+    const wrap = document.getElementById('backup-list-wrap');
+    if (!count) {
+      wrap.innerHTML = `
+        <div class="backup-empty">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <p>No backups yet — hit <strong>Create Backup</strong> to take a snapshot.</p>
+        </div>`;
+      return;
+    }
+
+    wrap.innerHTML = `<div class="backup-list">${backupData.map(b => `
+      <div class="backup-card">
+        <div class="backup-card-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <div class="backup-card-info">
+          <div class="backup-card-id">${b.id}</div>
+          <div class="backup-card-date">${b.createdAt ? new Date(b.createdAt).toLocaleString() : '—'}</div>
+        </div>
+        <div class="backup-card-actions">
+          <button class="btn btn-restore" onclick="openRestoreModal('${b.id}')">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="1 4 1 10 7 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Restore
+          </button>
+          ${b.zipContent ? `<button class="btn btn-dl" onclick="downloadBackup('${b.id}')">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            Download
+          </button>` : ''}
+          <button class="btn btn-del-bkp" onclick="deleteBackup('${b.id}')">
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  async function createBackup() {
+    if (!appPass) return;
+    const btn = document.getElementById('btn-create-backup');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Creating…`;
+    showMsg('msg-backup', '', '');
+    try {
+      const res = await fetch('/api/backup-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Backup failed');
+      showMsg('msg-backup', 'Backup created: ' + data.backup.id, 'ok');
+      backupSectionLoaded = false; // force reload
+      await loadBackups();
+    } catch (e) {
+      showMsg('msg-backup', e.message, 'err');
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  async function deleteBackup(backupId) {
+    if (!appPass) return;
+    if (!confirm('Delete backup ' + backupId + '? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/backup-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, backupId })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Delete failed');
+      showMsg('msg-backup', 'Backup deleted.', 'ok');
+      backupSectionLoaded = false;
+      await loadBackups();
+    } catch (e) {
+      showMsg('msg-backup', e.message, 'err');
+    }
+  }
+
+  function downloadBackup(backupId) {
+    const b = backupData.find(x => x.id === backupId);
+    if (!b || !b.zipContent) return;
+    const bytes = Uint8Array.from(atob(b.zipContent), c => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: 'application/gzip' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = backupId + '.tar.gz';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  function openRestoreModal(backupId) {
+    restoreTargetId = backupId;
+    document.getElementById('restore-modal-id').textContent = backupId;
+    document.getElementById('restore-language').value = '';
+    document.getElementById('restore-start-file').value = '';
+    document.getElementById('restore-packages').value = '';
+    document.getElementById('msg-restore').className = 'inline-msg';
+    document.getElementById('modal-restore').classList.add('open');
+  }
+
+  function closeRestoreModal() {
+    document.getElementById('modal-restore').classList.remove('open');
+    restoreTargetId = null;
+  }
+
+  document.getElementById('modal-restore').addEventListener('click', function(e) {
+    if (e.target === this) closeRestoreModal();
+  });
+
+  async function confirmRestore() {
+    if (!appPass || !restoreTargetId) return;
+    const language = document.getElementById('restore-language').value;
+    const startFile = document.getElementById('restore-start-file').value.trim();
+    const pkgRaw = document.getElementById('restore-packages').value.trim();
+    const packages = pkgRaw ? pkgRaw.split(',').map(p => p.trim()).filter(Boolean) : [];
+
+    if (!language) { showMsg('msg-restore', 'Select a runtime.', 'err'); return; }
+    if (!startFile) { showMsg('msg-restore', 'Enter start file.', 'err'); return; }
+
+    const btn = document.getElementById('btn-restore-confirm');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Restoring…`;
+    showMsg('msg-restore', '', '');
+
+    try {
+      const res = await fetch('/api/backup-restore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username, password, appName, appPassword: appPass,
+          backupId: restoreTargetId, language, packages, startFile
+        })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Restore failed');
+      closeRestoreModal();
+      showMsg('msg-backup', 'App restored successfully from ' + restoreTargetId, 'ok');
+      await loadAppData();
+    } catch (e) {
+      showMsg('msg-restore', e.message, 'err');
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  loadAppData();
+  initWorkflowBlock();
+
+  // ── Redeploy Settings (stored per-app in localStorage) ──────────────────────
+  function saveRedeploySettings() {
+    const packages = document.getElementById('rdp-packages-store').value.trim();
+    const mainFile = document.getElementById('rdp-mainfile-store').value.trim();
+    const rdpKey = 'rdp_settings_' + appName;
+    localStorage.setItem(rdpKey, JSON.stringify({ packages, mainFile }));
+    showMsg('msg-rdp-settings', 'Settings saved.', 'ok');
+    setTimeout(() => showMsg('msg-rdp-settings', '', ''), 2000);
+  }
+
+  // ── Redeploy Modal ──────────────────────────────────────────────────────────
+  function detectRuntime(mainFile) {
+    if (!mainFile) return '';
+    const ext = mainFile.split('.').pop().toLowerCase();
+    const map = { js: 'nodejs', ts: 'ts', py: 'python', go: 'go', rb: 'ruby', php: 'php', ex: 'elixir', exs: 'elixir' };
+    return map[ext] || '';
+  }
+
+  function openRedeployModal() {
+    const rdpKey = 'rdp_settings_' + appName;
+    const stored = JSON.parse(localStorage.getItem(rdpKey) || '{}');
+    document.getElementById('rdp-modal-packages').value = stored.packages || '';
+    document.getElementById('rdp-modal-mainfile').value = stored.mainFile || '';
+    document.getElementById('rdp-modal-runtime').value = '';
+    document.getElementById('msg-redeploy-modal').className = 'inline-msg';
+    document.getElementById('modal-redeploy').classList.add('open');
+  }
+
+  function closeRedeployModal() {
+    document.getElementById('modal-redeploy').classList.remove('open');
+  }
+
+  document.getElementById('modal-redeploy').addEventListener('click', function(e) {
+    if (e.target === this) closeRedeployModal();
+  });
+
+  async function confirmRedeploy() {
+    if (!appPass) return;
+    const pkgRaw = document.getElementById('rdp-modal-packages').value.trim();
+    const mainFile = document.getElementById('rdp-modal-mainfile').value.trim();
+    let language = document.getElementById('rdp-modal-runtime').value;
+
+    if (!mainFile) { showMsg('msg-redeploy-modal', 'Enter a main file.', 'err'); return; }
+    if (!language) language = detectRuntime(mainFile);
+    if (!language) { showMsg('msg-redeploy-modal', 'Could not detect runtime — please select one manually.', 'err'); return; }
+
+    const packages = pkgRaw ? pkgRaw.split(/\s+/).filter(Boolean) : [];
+
+    // Save settings
+    localStorage.setItem('rdp_settings_' + appName, JSON.stringify({ packages: pkgRaw, mainFile }));
+
+    const btn = document.getElementById('btn-redeploy-confirm');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Redeploying…`;
+    showMsg('msg-redeploy-modal', '', '');
+
+    try {
+      const res = await fetch('/api/redeploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, language, packages, startFile: mainFile })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message || 'Redeploy failed');
+      closeRedeployModal();
+      await loadAppData();
+    } catch (e) {
+      showMsg('msg-redeploy-modal', e.message, 'err');
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  // ── File Manager ────────────────────────────────────────────────────────────
+  let fmFiles = [];
+  let fmCurrentFile = null;
+  let fmInited = false;
+
+  async function fmInit() {
+    if (!appPass) return;
+    await fmLoadFileList();
+  }
+
+  function fmRefresh() { fmInited = false; fmCurrentFile = null; fmInit(); }
+
+  async function fmLoadFileList() {
+    const tree = document.getElementById('fm-tree');
+    tree.innerHTML = `<div class="fm-loading-state"><svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Loading…</div>`;
+    try {
+      const res = await fetch('/api/fs/list', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      fmFiles = data.files || [];
+      fmRenderTree();
+    } catch (e) {
+      tree.innerHTML = `<div style="padding:12px 14px;font-size:0.75rem;color:var(--red);font-family:var(--mono);">${e.message}</div>`;
+    }
+  }
+
+  function fmRenderTree() {
+    const tree = document.getElementById('fm-tree');
+    if (!fmFiles.length) {
+      tree.innerHTML = `<div style="padding:12px 14px;font-size:0.74rem;color:var(--text-3);font-family:var(--mono);">No files found</div>`;
+      return;
+    }
+    tree.innerHTML = fmFiles.map(f => `
+      <button class="fm-item${fmCurrentFile === f ? ' active' : ''}" onclick="fmSelectFile('${f.replace(/'/g,"\\'")}')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        ${f.split('/').pop()}
+      </button>`).join('');
+  }
+
+  async function fmSelectFile(filePath) {
+    if (!appPass) return;
+    fmCurrentFile = filePath;
+    fmRenderTree();
+    document.getElementById('fm-current-path').textContent = filePath;
+    document.getElementById('fm-empty').style.display = 'none';
+    const editorWrap = document.getElementById('fm-editor-wrap');
+    editorWrap.style.display = 'flex';
+    const editor = document.getElementById('fm-editor');
+    editor.value = 'Loading…';
+    document.getElementById('btn-fm-save').style.display = '';
+    document.getElementById('btn-fm-del').style.display = '';
+    try {
+      const res = await fetch('/api/fs/read', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, filePath })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      editor.value = data.content || '';
+    } catch (e) {
+      editor.value = '// Error loading file: ' + e.message;
+    }
+  }
+
+  async function fmSaveFile() {
+    if (!appPass || !fmCurrentFile) return;
+    const content = document.getElementById('fm-editor').value;
+    const btn = document.getElementById('btn-fm-save');
+    btn.disabled = true;
+    showMsg('msg-fm', '', '');
+    try {
+      const res = await fetch('/api/fs/write', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, filePath: fmCurrentFile, content })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      showMsg('msg-fm', 'Saved.', 'ok');
+      setTimeout(() => showMsg('msg-fm', '', ''), 2000);
+    } catch (e) {
+      showMsg('msg-fm', e.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function fmDeleteFile() {
+    if (!appPass || !fmCurrentFile) return;
+    if (!confirm('Delete ' + fmCurrentFile + '? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/api/fs/delete', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, filePath: fmCurrentFile })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      fmCurrentFile = null;
+      document.getElementById('fm-empty').style.display = '';
+      document.getElementById('fm-editor-wrap').style.display = 'none';
+      document.getElementById('btn-fm-save').style.display = 'none';
+      document.getElementById('btn-fm-del').style.display = 'none';
+      showMsg('msg-fm', 'File deleted.', 'ok');
+      await fmLoadFileList();
+    } catch (e) {
+      showMsg('msg-fm', e.message, 'err');
+    }
+  }
+
+  async function fmNewFile() {
+    if (!appPass) return;
+    const name = prompt('Enter file path (e.g. src/utils.js):');
+    if (!name || !name.trim()) return;
+    try {
+      const res = await fetch('/api/fs/create', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, filePath: name.trim() })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') throw new Error(data.message);
+      await fmLoadFileList();
+      fmSelectFile(name.trim());
+    } catch (e) {
+      showMsg('msg-fm', e.message, 'err');
+    }
+  }
+</script>
+</body>
+</html>

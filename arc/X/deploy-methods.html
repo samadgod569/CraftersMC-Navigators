@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deploy Methods — Cloudra</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f6f7;
+      --surface: #ffffff;
+      --border: #e2e2e5;
+      --text: #1b1b1f;
+      --text-2: #6b6b78;
+      --text-3: #9b9ba8;
+      --orange: #f38020;
+      --orange-dim: rgba(243,128,32,0.10);
+      --orange-hover: #e06b10;
+      --green: #00b894;
+      --green-dim: rgba(0,184,148,0.10);
+      --red: #e53e3e;
+      --red-dim: rgba(229,62,62,0.08);
+      --yellow: #f6ad55;
+      --yellow-dim: rgba(246,173,85,0.10);
+      --blue: #0051c3;
+      --blue-dim: rgba(0,81,195,0.08);
+      --nav-bg: #1b1b1f;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e8e8f0;
+      --text-2: #8888a0;
+      --text-3: #55556a;
+      --orange-dim: rgba(243,128,32,0.14);
+      --green-dim: rgba(0,184,148,0.14);
+      --red-dim: rgba(229,62,62,0.12);
+      --yellow-dim: rgba(246,173,85,0.12);
+      --blue-dim: rgba(0,81,195,0.12);
+      --nav-bg: #0a0c12;
+    }
+
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    nav {
+      background: var(--nav-bg); height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: sticky; top: 0; z-index: 200; flex-shrink: 0;
+    }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
+    .nav-brand span { font-size: 0.95rem; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
+    .nav-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.12); }
+    .nav-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+    .nav-breadcrumb a { color: rgba(255,255,255,0.45); text-decoration: none; }
+    .nav-breadcrumb a:hover { color: rgba(255,255,255,0.8); }
+    .nav-breadcrumb svg { width: 12px; height: 12px; color: rgba(255,255,255,0.25); }
+    .nav-breadcrumb span { color: rgba(255,255,255,0.85); font-family: var(--mono); font-size: 0.78rem; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .theme-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #a0a0ae; transition: border-color 0.15s, color 0.15s;
+    }
+    .theme-toggle:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+    .theme-toggle svg { width: 15px; height: 15px; }
+
+    .avatar-wrap { position: relative; }
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      cursor: pointer; overflow: hidden; background: none; padding: 0;
+      transition: border-color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-btn:hover { border-color: var(--orange); }
+    .avatar-initials {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--orange);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.62rem; font-weight: 600; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      pointer-events: none; user-select: none;
+    }
+    .avatar-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: 0 12px 40px rgba(0,0,0,0.16);
+      min-width: 190px; overflow: hidden;
+      opacity: 0; transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+      transform-origin: top right;
+    }
+    .avatar-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .dd-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
+    .dd-username { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .dd-label { font-size: 0.7rem; color: var(--text-3); font-family: var(--mono); margin-top: 2px; }
+    .dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; cursor: pointer;
+      font-size: 0.82rem; color: var(--text-2); text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      border: none; background: none; width: 100%; text-align: left;
+      font-family: var(--sans);
+    }
+    .dd-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-3); }
+    .dd-item:hover { background: var(--orange-dim); color: var(--text); }
+    .dd-item:hover svg { color: var(--orange); }
+    .dd-item.danger:hover { background: var(--red-dim); color: var(--red); }
+    .dd-item.danger:hover svg { color: var(--red); }
+
+    /* ── Page Layout ────────────────────────────────────────────────────────── */
+    .page { flex: 1; padding: 40px 28px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+    .page-header { margin-bottom: 36px; }
+    .page-title { font-size: 1.45rem; font-weight: 600; margin-bottom: 8px; }
+    .page-sub { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; }
+
+    .section-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: var(--mono); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Method Cards ────────────────────────────────────────────────────────── */
+    .methods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 36px; }
+    @media (max-width: 640px) { .methods-grid { grid-template-columns: 1fr; } }
+
+    .method-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
+      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+      display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;
+    }
+    .method-card:hover:not(.disabled) { border-color: var(--orange); box-shadow: 0 4px 20px rgba(243,128,32,0.10); }
+    .method-card.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+    .method-card-icon {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .method-card-icon svg { width: 20px; height: 20px; }
+    .mc-github .method-card-icon { background: #1b1b1f; color: #fff; }
+    [data-theme="dark"] .mc-github .method-card-icon { background: rgba(255,255,255,0.08); }
+    .mc-quick .method-card-icon { background: var(--green-dim); color: var(--green); }
+
+    .method-card-body { flex: 1; }
+    .mc-name { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+    .mc-desc { font-size: 0.8rem; color: var(--text-2); line-height: 1.6; }
+    .mc-badge {
+      display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px;
+      font-size: 0.63rem; font-weight: 600; font-family: var(--mono); letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .badge-free { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0,81,195,0.14); }
+    .method-card-arrow {
+      position: absolute; right: 18px; bottom: 18px;
+      color: var(--text-3); transition: color 0.15s, transform 0.15s;
+    }
+    .method-card:hover:not(.disabled) .method-card-arrow { color: var(--orange); transform: translateX(3px); }
+    .method-card-arrow svg { width: 16px; height: 16px; }
+
+    /* ── Quick Method Inline Form ────────────────────────────────────────────── */
+    .quick-form-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px; margin-top: -4px; margin-bottom: 36px;
+      display: none;
+    }
+    .quick-form-wrap.open { display: block; }
+    .quick-form-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .quick-form-title svg { width: 16px; height: 16px; color: var(--green); }
+    .qf-row { display: flex; flex-direction: column; gap: 12px; max-width: 440px; }
+    .qf-group { display: flex; flex-direction: column; gap: 5px; }
+    .qf-label { font-size: 0.77rem; font-weight: 500; color: var(--text-2); }
+    .qf-input {
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); color: var(--text); font-size: 0.83rem; font-family: var(--mono);
+      outline: none; transition: border-color 0.15s;
+    }
+    .qf-input:focus { border-color: var(--orange); }
+    .qf-select {
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); color: var(--text); font-size: 0.83rem; font-family: var(--mono);
+      outline: none; cursor: pointer; transition: border-color 0.15s;
+    }
+    .qf-select:focus { border-color: var(--orange); }
+    .qf-actions { display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: var(--radius);
+      font-size: 0.8rem; font-weight: 600; font-family: var(--sans);
+      border: none; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      white-space: nowrap; text-decoration: none;
+    }
+    .btn svg { width: 14px; height: 14px; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--orange-hover); box-shadow: 0 2px 12px rgba(243,128,32,0.28); }
+    .btn-secondary { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-secondary:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-green:hover:not(:disabled) { background: #009e7e; box-shadow: 0 2px 12px rgba(0,184,148,0.3); }
+
+    .spin { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .inline-msg { font-size: 0.78rem; padding: 8px 12px; border-radius: var(--radius); margin-top: 10px; display: none; }
+    .inline-msg.ok { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,184,148,0.2); display: block; }
+    .inline-msg.err { background: var(--red-dim); color: var(--red); border: 1px solid rgba(229,62,62,0.2); display: block; }
+    .inline-msg.info { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(0,81,195,0.15); display: block; }
+
+    /* ── Premium Section ─────────────────────────────────────────────────────── */
+    .premium-section {
+      background: linear-gradient(135deg, #1b1b1f 0%, #1e1530 60%, #0a0c12 100%);
+      border-radius: var(--radius-lg); padding: 36px; position: relative; overflow: hidden;
+      border: 1px solid rgba(243,128,32,0.25);
+    }
+    [data-theme="dark"] .premium-section { background: linear-gradient(135deg, #0f1117 0%, #150e24 60%, #0a0c12 100%); }
+
+    .premium-glow {
+      position: absolute; top: -60px; right: -60px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(243,128,32,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .premium-glow-2 {
+      position: absolute; bottom: -80px; left: 30%;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(120,60,200,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .premium-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+    .premium-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      background: linear-gradient(90deg, rgba(243,128,32,0.22), rgba(200,100,20,0.18));
+      border: 1px solid rgba(243,128,32,0.35);
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      font-family: var(--mono); color: #f5a050; margin-bottom: 12px;
+    }
+    .premium-badge svg { width: 11px; height: 11px; }
+    .premium-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 10px; line-height: 1.25; }
+    .premium-subtitle { font-size: 0.88rem; color: rgba(255,255,255,0.55); line-height: 1.65; max-width: 420px; }
+
+    .premium-specs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .spec-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg); padding: 16px 18px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .spec-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(243,128,32,0.2); }
+    .spec-icon { margin-bottom: 8px; color: var(--orange); }
+    .spec-icon svg { width: 18px; height: 18px; }
+    .spec-val { font-size: 1.05rem; font-weight: 700; color: #fff; font-family: var(--mono); margin-bottom: 3px; }
+    .spec-key { font-size: 0.72rem; color: rgba(255,255,255,0.4); }
+
+    .premium-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+    .perk-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.83rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+    .perk-icon { width: 18px; height: 18px; border-radius: 50%; background: rgba(0,184,148,0.2); border: 1px solid rgba(0,184,148,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .perk-icon svg { width: 10px; height: 10px; color: var(--green); }
+    .perk-item strong { color: #fff; }
+
+    .premium-cta-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .btn-premium {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 24px; border-radius: var(--radius);
+      background: linear-gradient(90deg, var(--orange), #e06b10);
+      color: #fff; font-size: 0.88rem; font-weight: 700; font-family: var(--sans);
+      border: none; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(243,128,32,0.35);
+      transition: box-shadow 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+    .btn-premium:hover { box-shadow: 0 6px 28px rgba(243,128,32,0.5); transform: translateY(-1px); }
+    .premium-note { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+
+    /* ── Disabled overlay ────────────────────────────────────────────────────── */
+    .section-disabled-notice {
+      display: none; background: var(--yellow-dim); border: 1px solid rgba(246,173,85,0.22);
+      border-radius: var(--radius-lg); padding: 14px 18px;
+      font-size: 0.82rem; color: #b07800; margin-bottom: 20px;
+      align-items: center; gap: 10px;
+    }
+    [data-theme="dark"] .section-disabled-notice { color: var(--yellow); }
+    .section-disabled-notice svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .section-disabled-notice.show { display: flex; }
+
+    @media (max-width: 600px) { nav { padding: 0 12px; } .page { padding: 28px 16px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="dashboard.html" class="nav-brand">
+      <img src="img/icon.png" alt="" onerror="this.style.display='none'"/>
+      <span>Cloudra</span>
+    </a>
+    <div class="nav-sep"></div>
+    <div class="nav-breadcrumb">
+      <a href="dashboard.html">Servers</a>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Deploy Methods</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" style="display:none">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="avatar-wrap" id="avatar-wrap">
+      <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+        <div class="avatar-initials" id="avatar-inner"></div>
+      </button>
+      <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dd-header">
+          <div class="dd-username" id="dd-username"></div>
+          <div class="dd-label">signed in</div>
+        </div>
+        <a href="settings.html" class="dd-item">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Settings
+        </a>
+        <button class="dd-item danger" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Get a VPS</div>
+    <div class="page-sub">Choose how you want to spin up your server. Free methods are great for testing; premium gives you the power for production.</div>
+  </div>
+
+  <!-- Free disabled notice -->
+  <div class="section-disabled-notice" id="free-limit-notice">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="17" r="0.75" fill="currentColor"/></svg>
+    <span>You already have a server on your account — free tier is limited to 1 server. Upgrade to premium to create more.</span>
+  </div>
+
+  <!-- Free Methods -->
+  <div class="section-label">Free</div>
+  <div class="methods-grid" id="free-methods-grid">
+
+    <div class="method-card mc-github" id="card-github" onclick="window.location.href='deploy.html'">
+      <div class="mc-badge badge-free">Free</div>
+      <div class="method-card-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="method-card-body">
+        <div class="mc-name">GitHub Deploy</div>
+        <div class="mc-desc">Deploy directly from a GitHub repository. Cloudra clones and runs your project in seconds.</div>
+      </div>
+      <div class="method-card-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+    <div class="method-card mc-quick" id="card-quick" onclick="toggleQuickForm()">
+      <div class="mc-badge badge-free">Free · Completely fresh VPS</div>
+      <div class="method-card-icon">
+        <svg viewBox="0 0 24 24" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="method-card-body">
+        <div class="mc-name">Quick Method</div>
+        <div class="mc-desc">Instantly spin up a completely fresh, empty VPS. No repo needed — get a container you can manage yourself.</div>
+      </div>
+      <div class="method-card-arrow" id="quick-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+  </div>
+
+  <!-- Quick Method Inline Form -->
+  <div class="quick-form-wrap" id="quick-form-wrap">
+    <div class="quick-form-title">
+      <svg viewBox="0 0 24 24" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Quick VPS Setup
+    </div>
+    <div class="qf-row">
+      <div class="qf-group">
+        <label class="qf-label">App Name</label>
+        <input class="qf-input" type="text" id="qf-app-name" placeholder="my-app" autocomplete="off"/>
+      </div>
+      <div class="qf-group">
+        <label class="qf-label">App Password</label>
+        <input class="qf-input" type="password" id="qf-app-pass" placeholder="Choose a password"/>
+      </div>
+      <div class="qf-group">
+        <label class="qf-label">Runtime</label>
+        <select class="qf-select" id="qf-runtime">
+          <option value="">— Select runtime —</option>
+          <option value="nodejs">Node.js 20</option>
+          <option value="nodejs18">Node.js 18</option>
+          <option value="nodejs16">Node.js 16</option>
+          <option value="python">Python 3.12</option>
+          <option value="python310">Python 3.10</option>
+          <option value="python39">Python 3.9</option>
+          <option value="go">Go 1.22</option>
+          <option value="go121">Go 1.21</option>
+          <option value="ts">TypeScript (Node 20)</option>
+          <option value="ts18">TypeScript (Node 18)</option>
+          <option value="bun">Bun</option>
+          <option value="deno">Deno</option>
+          <option value="ruby">Ruby 3.3</option>
+          <option value="php">PHP 8.3</option>
+          <option value="rust">Rust 1.78</option>
+          <option value="java">Java 21</option>
+          <option value="dotnet">.NET 8</option>
+          <option value="elixir">Elixir 1.16</option>
+        </select>
+      </div>
+      <div class="qf-actions">
+        <button class="btn btn-green" id="qf-btn" onclick="quickConfig()">
+          <svg viewBox="0 0 24 24" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Config
+        </button>
+        <button class="btn btn-secondary" onclick="toggleQuickForm()">Cancel</button>
+      </div>
+    </div>
+    <div class="inline-msg" id="msg-quick"></div>
+  </div>
+
+  <!-- Premium Section -->
+  <div class="section-label">Premium</div>
+  <div class="premium-section">
+    <div class="premium-glow"></div>
+    <div class="premium-glow-2"></div>
+
+    <div class="premium-header">
+      <div>
+        <div class="premium-badge">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Premium
+        </div>
+        <div class="premium-title">Pro-grade VPS.<br/>No compromises.</div>
+        <div class="premium-subtitle">Dedicated resources, 30-day uptime guarantee, terminal access, backups, custom domains and SSL — everything you need to run production apps.</div>
+      </div>
+    </div>
+
+    <div class="premium-specs">
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <div class="spec-val">2 vCPU</div>
+        <div class="spec-key">Dedicated cores</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3" stroke="currentColor" stroke-width="1.7"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="spec-val">2 GB RAM</div>
+        <div class="spec-key">Allocated memory</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="spec-val">20 GB SSD</div>
+        <div class="spec-key">Fast NVMe storage</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="spec-val">30 Days</div>
+        <div class="spec-key">Uptime guarantee</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="spec-val">5 Backups</div>
+        <div class="spec-key">Point-in-time restore</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="4 17 10 11 4 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+        <div class="spec-val">Terminal</div>
+        <div class="spec-key">Full shell access</div>
+      </div>
+    </div>
+
+    <div class="premium-perks">
+      <div class="perk-item">
+        <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span><strong>No suspensions</strong> — your app stays running continuously, no 24h activity windows.</span>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span><strong>Custom domain + HTTPS</strong> — bring your own domain with automatic SSL provisioning.</span>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span><strong>Vulnerability scanning</strong> — proactive CVE detection on your container image.</span>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span><strong>IP blocklist</strong> — firewall individual IPs from reaching your app instantly.</span>
+      </div>
+      <div class="perk-item">
+        <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span><strong>Priority infrastructure</strong> — dedicated resource allocation, not shared pools.</span>
+      </div>
+    </div>
+
+    <div class="premium-cta-row">
+      <a href="payout.html" class="btn-premium">
+        <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Get Premium
+      </a>
+      <span class="premium-note">Plans start from a one-time payment · No subscription required</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const username = localStorage.getItem('username') || '';
+  const password = localStorage.getItem('password') || '';
+
+  if (!username || !password) window.location.href = 'login.html';
+
+  // ── Theme ─────────────────────────────────────────────────────────────────
+  (function() {
+    const t = localStorage.getItem('theme') || 'light';
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById(t === 'dark' ? 'icon-sun' : 'icon-moon').style.display = '';
+    document.getElementById(t === 'dark' ? 'icon-moon' : 'icon-sun').style.display = 'none';
+  })();
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('icon-sun').style.display = next === 'dark' ? '' : 'none';
+    document.getElementById('icon-moon').style.display = next === 'dark' ? 'none' : '';
+  }
+
+  // ── Avatar ─────────────────────────────────────────────────────────────────
+  (function() {
+    document.getElementById('dd-username').textContent = username;
+    document.getElementById('avatar-inner').textContent = username.slice(0, 2);
+    const avatar = localStorage.getItem('avatar');
+    if (avatar) {
+      const inner = document.getElementById('avatar-inner');
+      inner.innerHTML = '';
+      inner.style.background = 'none';
+      const img = document.createElement('img');
+      img.src = `https://cdn.discordapp.com/avatars/${localStorage.getItem('discordId')}/${avatar}.png`;
+      img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+      img.onerror = () => { inner.textContent = username.slice(0,2); inner.style.background = ''; };
+      inner.appendChild(img);
+    }
+  })();
+
+  function toggleDropdown() {
+    document.getElementById('avatar-dropdown').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('avatar-wrap').contains(e.target))
+      document.getElementById('avatar-dropdown').classList.remove('open');
+  });
+  function logout() {
+    localStorage.removeItem('username'); localStorage.removeItem('password');
+    window.location.href = 'login.html';
+  }
+
+  // ── Check server count on load ─────────────────────────────────────────────
+  (async function checkServerCount() {
+    try {
+      const res = await fetch('/api/get-app', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.status !== 'success') return;
+      const count = Object.keys(data.apps || {}).length;
+      if (count >= 1) {
+        // disable free methods
+        document.getElementById('card-github').classList.add('disabled');
+        document.getElementById('card-quick').classList.add('disabled');
+        document.getElementById('free-limit-notice').classList.add('show');
+      }
+    } catch (e) { /* silent */ }
+  })();
+
+  // ── Quick Method Form ──────────────────────────────────────────────────────
+  let quickOpen = false;
+  function toggleQuickForm() {
+    quickOpen = !quickOpen;
+    document.getElementById('quick-form-wrap').classList.toggle('open', quickOpen);
+    const arrow = document.getElementById('quick-arrow');
+    arrow.style.transform = quickOpen ? 'rotate(90deg)' : '';
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.className = 'inline-msg' + (type ? ' ' + type : '');
+    el.textContent = text;
+  }
+
+  async function quickConfig() {
+    const appName = document.getElementById('qf-app-name').value.trim();
+    const appPass  = document.getElementById('qf-app-pass').value.trim();
+    const language = document.getElementById('qf-runtime').value;
+
+    if (!appName) { showMsg('msg-quick', 'Enter an app name.', 'err'); return; }
+    if (!appPass)  { showMsg('msg-quick', 'Enter an app password.', 'err'); return; }
+    if (!language) { showMsg('msg-quick', 'Select a runtime.', 'err'); return; }
+
+    const btn = document.getElementById('qf-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:14px;height:14px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Setting up…`;
+    showMsg('msg-quick', '', '');
+
+    try {
+      // Step 1: call /api/deploy with a dummy GitHub URL to claim the app in ports.json
+      const deployRes = await fetch('/api/deploy', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username, password, appName, appPassword: appPass,
+          repo: 'https://github.com/placeholder/placeholder',
+          language, packages: [], startFile: 'index.js'
+        })
+      });
+      const deployData = await deployRes.json();
+      // deploy may "fail" but it still claims the port entry — continue regardless
+
+      // Step 2: call /api/create-vps to spin up fresh container
+      const vpsRes = await fetch('/api/create-vps', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, appName, appPassword: appPass, language })
+      });
+      const vpsData = await vpsRes.json();
+      if (vpsData.status !== 'success') throw new Error(vpsData.message || 'Failed to create VPS');
+
+      showMsg('msg-quick', 'VPS created! Redirecting to your app…', 'ok');
+      setTimeout(() => {
+        window.location.href = `app-info.html?app=${encodeURIComponent(appName)}`;
+      }, 1500);
+    } catch (e) {
+      showMsg('msg-quick', e.message, 'err');
+      btn.disabled = false;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Config`;
+    }
+  }
+</script>
+</body>
+</html>
