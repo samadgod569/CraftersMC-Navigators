@@ -763,7 +763,7 @@
         <svg viewBox="0 0 24 24" fill="none" class="spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         <span style="font-size:0.82rem;">Loading app data…</span>
       </div>
-      <div id="logs-content" style="display:none;flex-direction:column;flex:1;">
+      <div id="logs-content" style="display:none;">
         <div class="app-header-row">
           <span class="app-name-mono" id="hdr-app-name"></span>
           <span class="badge" id="hdr-badge"></span>
@@ -1634,10 +1634,16 @@
 
       await loadRuntimeLogs();
     } catch (e) {
-      document.getElementById('logs-loading').innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--red)"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.5" r="0.8" fill="currentColor"/></svg>
-        <span style="font-size:0.82rem;color:var(--red);">${e.message}</span>`;
-    }
+  const loadingDiv = document.getElementById('logs-loading');
+  loadingDiv.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:var(--red)"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/><line x1="12" y1="8" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.5" r="0.8" fill="currentColor"/></svg>
+    <span style="font-size:0.82rem;color:var(--red);">${e.message}</span>`;
+  // Also hide the spinner and show the error clearly
+  loadingDiv.style.display = 'flex';
+  loadingDiv.style.flexDirection = 'column';
+  loadingDiv.style.alignItems = 'center';
+  loadingDiv.style.justifyContent = 'center';
+  }
   }
 
   async function loadRuntimeLogs() {
